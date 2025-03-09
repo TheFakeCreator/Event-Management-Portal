@@ -7,15 +7,30 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
+  Type: {
+    type: String,
+    enum: [
+      "Workshops",
+      "Talks",
+      "Workshops & Talks",
+      "Meetups",
+      "Networking",
+      "Fun",
+      "Tech",
+      "Other",
+    ],
+    required: true,
+    default: "Other",
+  },
   date: {
     type: Date,
     required: true,
   },
   location: {
-    type: String,
-    required: true,
-  },
-  description: {
     type: String,
     required: true,
   },
