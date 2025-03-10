@@ -214,17 +214,29 @@
   .mt-10 {
     margin-top: calc(var(--spacing) * 10);
   }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
   .block {
     display: block;
   }
   .flex {
     display: flex;
   }
+  .inline-block {
+    display: inline-block;
+  }
+  .h-6 {
+    height: calc(var(--spacing) * 6);
+  }
   .h-screen {
     height: 100vh;
   }
   .min-h-screen {
     min-height: 100vh;
+  }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
   }
   .w-96 {
     width: calc(var(--spacing) * 96);
@@ -235,11 +247,17 @@
   .w-screen {
     width: 100vw;
   }
+  .cursor-pointer {
+    cursor: pointer;
+  }
   .items-center {
     align-items: center;
   }
   .justify-center {
     justify-content: center;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
     border-radius: var(--radius-lg);
@@ -247,6 +265,13 @@
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
+  }
+  .border-2 {
+    border-style: var(--tw-border-style);
+    border-width: 2px;
+  }
+  .border-blue-500 {
+    border-color: var(--color-blue-500);
   }
   .border-gray-300 {
     border-color: var(--color-gray-300);

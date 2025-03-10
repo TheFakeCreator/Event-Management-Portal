@@ -8,15 +8,18 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import expressSession from "express-session";
-import passport from "passport";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";
+import passport from "./configs/passport.js";
 
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+
+// Middleware Imports
+import { isAuthenticated } from "./middlewares/isAuthenticated.js";
 
 dotenv.config();
 
@@ -36,7 +39,7 @@ app.use(
   expressSession({
     resave: false,
     saveUninitialized: false,
-    secret: "mySecret", // We have to change it later
+    secret: process.env.SESSION_SECRET, // We have to change it later
     cookie: { secure: false },
   })
 );
@@ -54,6 +57,9 @@ app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 
+app.get("/dashboard", isAuthenticated, (req, res) => {
+  res.send(`Welcome ${req.user.name}`);
+});
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
