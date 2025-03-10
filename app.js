@@ -16,6 +16,7 @@ import ejsMate from "ejs-mate";
 import indexRouter from "./routes/index.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import userRouter from "./routes/user.routes.js";
+import authRouter from "./routes/auth.routes.js";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ app.set("view engine", "ejs");
 app.use("/", indexRouter);
 app.use("/event", eventRouter);
 app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

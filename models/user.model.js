@@ -21,6 +21,13 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+  },
   role: {
     type: String,
     enum: ["admin", "user"],
