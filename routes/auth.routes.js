@@ -42,4 +42,5 @@ router.get(
     successRedirect: "/dashboard",
   })
 );
+
 export default router;

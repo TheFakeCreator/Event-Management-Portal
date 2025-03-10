@@ -70,7 +70,21 @@ export const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials." });
     }
-  } catch (error) {}
+    if (!user.isVerified) {
+      return res.status(401).json({ message: "Email not verified." });
+    }
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 1000, // 1 day
+    });
+    res.status(200).redirect(`/${user.username}`);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 export const verifyUser = async (req, res) => {

@@ -11,23 +11,29 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user already exists in our database
-        let user = await User.findOne({ googleId: profile.id });
+        // Check if the user already exists
+        let user = await User.findOne({ email: profile.emails[0].value });
 
         if (user) {
+          // If the user exists but doesn't have a Google ID, link it
+          if (!user.googleId) {
+            user.googleId = profile.id;
+            await user.save();
+          }
           return done(null, user);
         }
 
-        // If the user doesn't exist, create a new one
+        // If the user does not exist, create a new one
         user = await User.create({
           name: profile.displayName,
           email: profile.emails[0].value,
           googleId: profile.id,
-          isVerified: true, // Automatically verified because it's from Google
+          isVerified: true, // Automatically verified if Google account
         });
 
         return done(null, user);
       } catch (error) {
+        console.error("Error in Google Strategy:", error);
         return done(error, null);
       }
     }

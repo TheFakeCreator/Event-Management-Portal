@@ -1,9 +1,9 @@
 import express from "express";
+import { isAuthenticated } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
-
-router.get("/", (req, res) => {
-  res.render("user", { title: "Event Management Portal" });
+router.get("/:username", isAuthenticated, (req, res) => {
+  res.render("dashboard", { user: req.user, title: "Dashboard" });
 });
 
 export default router;

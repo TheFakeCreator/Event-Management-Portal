@@ -18,9 +18,6 @@ import eventRouter from "./routes/event.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 
-// Middleware Imports
-import { isAuthenticated } from "./middlewares/isAuthenticated.js";
-
 dotenv.config();
 
 // App constants
@@ -39,8 +36,11 @@ app.use(
   expressSession({
     resave: false,
     saveUninitialized: false,
-    secret: process.env.SESSION_SECRET, // We have to change it later
-    cookie: { secure: false },
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      secure: false, // Change this to true in production
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },
   })
 );
 app.use(passport.initialize());
@@ -56,10 +56,6 @@ app.use("/", indexRouter);
 app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-
-app.get("/dashboard", isAuthenticated, (req, res) => {
-  res.send(`Welcome ${req.user.name}`);
-});
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
