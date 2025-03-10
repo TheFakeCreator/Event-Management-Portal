@@ -3,7 +3,7 @@ import express from "express";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.send("Event router");
+  res.render("user", { title: "Event Management Portal" });
 });
 
 export default router;

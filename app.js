@@ -1,4 +1,7 @@
+// DB Import
 import db from "./configs/mongoose-connect.js";
+
+// Package Imports
 import cookieParser from "cookie-parser";
 import express from "express";
 import path from "path";
@@ -8,14 +11,21 @@ import expressSession from "express-session";
 import passport from "passport";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";
+
+// Router Imports
 import indexRouter from "./routes/index.routes.js";
 import eventRouter from "./routes/event.routes.js";
+import userRouter from "./routes/user.routes.js";
+
 dotenv.config();
+
+// App constants
 const app = express();
 const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Middleware
 app.engine("ejs", ejsMate);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,11 +43,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+// Sets
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+// Routes
 app.use("/", indexRouter);
 app.use("/event", eventRouter);
+app.use("/user", userRouter);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
