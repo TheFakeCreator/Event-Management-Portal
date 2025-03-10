@@ -90,3 +90,55 @@ export const verifyUser = async (req, res) => {
     res.status(400).json({ message: "Invalid or expired token." });
   }
 };
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found." });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    user.resetToken = token;
+    user.expireToken = Date.now() + 3600000; // Token expires in 1 hour
+    await user.save();
+
+    const resetUrl = `http://localhost:3000/auth/reset-password/${token}`;
+    await transporter.sendMail({
+      to: email,
+      subject: "Password Reset Request",
+      html: `<p>Click the link below to reset your password:</p>
+               <a href="${resetLink}">Reset Password</a>`,
+    });
+    res.status(200).json({ message: "Reset password email sent." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword, confirmPassword } = req.body;
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match." });
+    }
+    const user = await User.findOne({
+      resetToken: token,
+      expireToken: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Invalid token or expired token." });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.expireToken = undefined;
+    await user.save();
+    res.status(200).json({ message: "Password reset successful." });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
