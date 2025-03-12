@@ -5,7 +5,7 @@ import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", isAuthenticatedLineant, (req, res) => {
-  res.render("event", {
+  res.render("eventsPage", {
     title: "Event Management Portal",
     isAuthenticated: req.isAuthenticated,
   });
