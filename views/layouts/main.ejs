@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
     <link rel="stylesheet" href="/css/style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
     <!-- Navbar -->
     <nav class="bg-white text-blue-500 p-4 shadow-md backdrop-blur-lg">
-      <div class="container mx-auto">
+      <div class="container mx-auto flex justify-between items-center">
         <a href="/" class="text-2xl font-bold">Events Portal</a>
+        <div>
+          <a href="/auth/login" class="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition">
+            Login
+          </a>
+          <a href="/auth/signup" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+            Signup
+          </a>
+        </div>
       </div>
     </nav>
 

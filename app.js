@@ -17,7 +17,7 @@ import indexRouter from "./routes/index.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
-
+import clubRouter from "./routes/club.routes.js";
 dotenv.config();
 
 // App constants
@@ -47,6 +47,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+
 // Sets
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -56,6 +57,7 @@ app.use("/", indexRouter);
 app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/club", clubRouter);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
