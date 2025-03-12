@@ -1,13 +1,26 @@
 <% layout('layouts/main') %>
 
-<h1 class="text-4xl font-bold text-blue-500">
+<!-- <h1 class="text-4xl font-bold text-blue-500">
   Welcome to Event Management Portal 🎉
 </h1>
 <p class="text-gray-600 mt-2">
   Manage, Register, and Create Amazing Events with Ease.
-</p>
+</p> -->
+
+<div class="event-container w-full flex flex-col">
+  <h1 class="text-4xl font-bold text-blue-500">Ongoing Events</h1>
+  <div class="events w-full flex row gap-2">
+    <div class="event bg-gray-700 h-[300px] w-[500px] rounded-[20px]"></div>
+  </div>
+</div>
+<div class="event-container w-full flex">
+  <h1 class="text-4xl font-bold text-blue-500">Upcoming Events</h1>
+</div>
 
 <!-- Button to Navigate to Club Listings -->
-<a href="/club" class="mt-4 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+<a
+  href="/club"
+  class="mt-4 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
+>
   View Clubs
 </a>
