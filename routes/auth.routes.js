@@ -14,9 +14,11 @@ const router = express.Router();
 router.get("/login", (req, res) => {
   res.render("login");
 });
+
 router.get("/signup", (req, res) => {
   res.render("signup");
 });
+
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
 router.get("/verify/:token", verifyUser);
