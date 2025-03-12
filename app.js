@@ -65,6 +65,7 @@ app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/club", clubRouter);
+app.use("/api/events", eventRouter);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

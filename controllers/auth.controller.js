@@ -81,10 +81,15 @@ export const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 1000, // 1 day
     });
-    res.status(200).redirect(`/${user.username}`);
+    res.status(200).redirect(`/user/${user.username}`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+export const logoutUser = async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).redirect("/");
 };
 
 export const verifyUser = async (req, res) => {

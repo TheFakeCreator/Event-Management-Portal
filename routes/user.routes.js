@@ -3,7 +3,11 @@ import { isAuthenticated } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 router.get("/:username", isAuthenticated, (req, res) => {
-  res.render("dashboard", { user: req.user, title: "Dashboard" });
+  res.render("dashboard", {
+    user: req.user,
+    title: "Dashboard",
+    isAuthenticated: req.isAuthenticated,
+  });
 });
 
 export default router;

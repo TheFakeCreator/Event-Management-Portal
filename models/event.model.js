@@ -61,3 +61,7 @@ const eventSchema = new Schema({
     default: Date.now,
   },
 });
+
+const Event = mongoose.model("Event", eventSchema);
+
+export default Event;
