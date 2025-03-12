@@ -1,6 +1,10 @@
 import express from "express";
-import Event from "../models/event.model.js";
-import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
+// import Event from "../models/event.model.js";
+import {
+  isAuthenticated,
+  isAuthenticatedLineant,
+} from "../middlewares/authMiddleware.js";
+import { createEvent } from "../controllers/event.controller.js";
 
 const router = express.Router();
 
@@ -10,6 +14,15 @@ router.get("/", isAuthenticatedLineant, (req, res) => {
     isAuthenticated: req.isAuthenticated,
   });
 });
+
+router.get("/create", isAuthenticated, (req, res) => {
+  res.render("createEvent", {
+    title: "Create Event",
+    isAuthenticated: req.isAuthenticated,
+  });
+});
+
+router.post("/create", isAuthenticated, createEvent);
 
 // router.get("/", async (req, res) => {
 //   const events = await Event.find();

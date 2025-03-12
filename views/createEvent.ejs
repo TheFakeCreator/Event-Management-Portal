@@ -1,0 +1,154 @@
+<% layout("layouts/main") %>
+
+<h1 class="text-4xl font-bold text-blue-500 mb-6">Create event</h1>
+
+<form action="/event/create" method="POST">
+  <div class="flex flex-col space-y-4">
+    <div>
+      <label for="title" class="text-lg font-semibold">Event Title</label>
+    <input
+      type="text"
+      name="title"
+      id="title"
+      class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      />
+    </div>
+    <div>
+      <label for="description" class="text-lg font-semibold"
+        >Event Description</label
+      >
+      <textarea
+        name="description"
+        id="description"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      ></textarea>
+    </div>
+    <div>
+      <label for="type" class="text-lg font-semibold">Type</label>
+    <select
+        name="type"
+        id="type"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+    >
+        <option value="Workshops">Workshops</option>
+        <option value="Talks">Talks</option>
+        <option value="Workshops & Talks">Workshops & Talks</option>
+        <option value="Meetups">Meetups</option>
+        <option value="Networking">Networking</option>
+        <option value="Fun">Fun</option>
+        <option value="Tech">Tech</option>
+        <option value="Other" selected>Other</option>
+    </select>
+    <div class="mt-6">
+      <label for="date" class="text-lg font-semibold">Event Date</label>
+      <input
+        type="date"
+        name="date"
+        id="date"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      />
+    </div>
+    <div class="mt-6">
+      <label for="time" class="text-lg font-semibold">Event Time</label>
+      <input
+        type="time"
+        name="time"
+        id="time"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      />
+    </div>
+    <div class="mt-6">
+        <label for="location" class="text-lg font-semibold">Location</label>
+        <input
+            type="text"
+            name="location"
+            id="location"
+            class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+        />
+    </div>
+    <div class="mt-6">
+      <label for="image" class="text-lg font-semibold">Event Image</label>
+      <input
+        type="text"
+        name="image"
+        id="image"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      />
+    </div>
+    <div class="mt-6">
+      <label for="club" class="text-lg font-semibold">Club</label>
+      <input
+        type="text"
+        name="club"
+        id="club"
+        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+      />
+    </div>
+    <div class="mt-6">
+        <label for="collaborators" class="text-lg font-semibold">Collaborators</label>
+        <div
+          id="collaborators-container"
+          class="w-full p-2 border border-gray-300 rounded-lg flex flex-wrap min-h-[44px] items-center gap-2"
+        >
+          <input
+            type="text"
+            id="collaborators-input"
+            placeholder="Type to add..."
+            class="flex-1 p-1 border-none focus:outline-none"
+          />
+        </div>
+        <input type="hidden" name="collaborators" id="collaborators-hidden" />
+      </div>      
+    <button
+      type="submit"
+      class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition mt-7 mb-10"
+    >
+      Create Event
+    </button>
+  </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("collaborators-input");
+  const container = document.getElementById("collaborators-container");
+  const hiddenInput = document.getElementById("collaborators-hidden");
+  let collaborators = [];
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && input.value.trim() !== "") {
+      event.preventDefault();
+      addCollaborator(input.value.trim());
+      input.value = "";
+    }
+  });
+
+  function addCollaborator(name) {
+    if (!collaborators.includes(name)) {
+      collaborators.push(name);
+      updateCollaborators();
+    }
+  }
+
+  function removeCollaborator(name) {
+    collaborators = collaborators.filter((c) => c !== name);
+    updateCollaborators();
+  }
+
+  function updateCollaborators() {
+    container.innerHTML = "";
+    collaborators.forEach((collaborator) => {
+      const tag = document.createElement("span");
+      tag.className =
+        "bg-blue-500 text-white px-2 py-1 rounded-lg flex items-center gap-1 cursor-pointer";
+      tag.innerHTML = `${collaborator} <span class="text-white font-bold ml-1">&times;</span>`;
+      tag.addEventListener("click", () => removeCollaborator(collaborator));
+      container.appendChild(tag);
+    });
+
+    container.appendChild(input);
+    hiddenInput.value = JSON.stringify(collaborators); // Store as JSON
+  }
+});
+
+</script>
