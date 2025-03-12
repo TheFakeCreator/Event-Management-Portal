@@ -11,6 +11,7 @@ import expressSession from "express-session";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";
 import passport from "./configs/passport.js";
+import session from "express-session";
 
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
@@ -46,7 +47,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // Sets
 app.set("views", path.join(__dirname, "views"));

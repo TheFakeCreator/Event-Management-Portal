@@ -32,7 +32,7 @@ router.get("/reset-password/:token", (req, res) => {
 router.post("/reset-password/:token", resetPassword);
 
 router.get(
-  "/google",
+  "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 router.get(
