@@ -1,26 +1,51 @@
 <% layout('layouts/main') %>
 
-<!-- <h1 class="text-4xl font-bold text-blue-500">
-  Welcome to Event Management Portal 🎉
-</h1>
-<p class="text-gray-600 mt-2">
-  Manage, Register, and Create Amazing Events with Ease.
-</p> -->
+<div class="w-full min-h-screen flex flex-col justify-between bg-gray-900 text-white px-8 py-6">
+  <!-- Ongoing Events Section -->
+  <section class="flex flex-col flex-grow items-center w-full">
+    <h1 class="text-4xl font-bold text-blue-400 mb-6">Ongoing Events</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]">
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Event Title</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Event Title</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Event Title</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+    </div>
+  </section>
 
-<div class="event-container w-full flex flex-col">
-  <h1 class="text-4xl font-bold text-blue-500">Ongoing Events</h1>
-  <div class="events w-full flex row gap-2">
-    <div class="event bg-gray-700 h-[300px] w-[500px] rounded-[20px]"></div>
+  <!-- Upcoming Events Section -->
+  <section class="flex flex-col flex-grow items-center w-full mt-8">
+    <h1 class="text-4xl font-bold text-blue-400 mb-6">Upcoming Events</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]">
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Upcoming Event</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Upcoming Event</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+      <div class="event bg-gray-800 h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-lg">
+        <h2 class="text-xl font-semibold">Upcoming Event</h2>
+        <p class="text-gray-400">Short event description...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- View Clubs Button -->
+  <div class="flex justify-center items-center w-full py-6">
+    <a
+      href="/club"
+      class="mt-4 bg-blue-500 text-white px-8 py-3 text-lg rounded-lg hover:bg-blue-600 transition shadow-lg"
+    >
+      View Clubs
+    </a>
   </div>
 </div>
-<div class="event-container w-full flex">
-  <h1 class="text-4xl font-bold text-blue-500">Upcoming Events</h1>
-</div>
-
-<!-- Button to Navigate to Club Listings -->
-<a
-  href="/club"
-  class="mt-4 inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
->
-  View Clubs
-</a>
