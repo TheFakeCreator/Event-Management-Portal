@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -13,42 +16,194 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-  </head>
-  <body class="bg-gray-100 min-h-screen">
-    <!-- Navbar -->
-    <nav class="bg-white text-blue-500 p-4 shadow-md backdrop-blur-lg">
-      <!-- <i class="fas fa-calendar-alt text-blue-500"></i> -->
-      <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold">EventX</a>
-        <% if (isAuthenticated) {%>
 
-        <div>
-          <form action="/auth/logout" method="post">
-            <button type="submit" class="text-red-500">
-              <i class="fas fa-sign-out-alt mr-1 text-red-500"></i>Logout
-            </button>
-          </form>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+      <div
+        class="container mx-auto flex justify-between items-center py-4 px-6"
+      >
+        <!-- Logo -->
+        <a href="/" class="text-2xl font-bold text-blue-600 flex items-center">
+          <i class="fas fa-calendar-alt mr-2"></i> EventX
+        </a>
+
+        <!-- Hamburger Menu (Mobile) -->
+        <button
+          id="menu-btn"
+          class="md:hidden text-gray-600 focus:outline-none"
+        >
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+        <!-- Navigation Links -->
+        <div id="menu" class="hidden md:flex space-x-6">
+          <a href="/event" class="text-gray-600 hover:text-blue-500 transition"
+            >Events</a
+          >
+          <a href="/club" class="text-gray-600 hover:text-blue-500 transition"
+            >Clubs</a
+          >
+        </div>
+
+        <!-- Authentication -->
+        <% if (isAuthenticated) { %>
+        <div class="relative">
+          <!-- Button -->
+          <button
+            id="account-btn"
+            class="text-gray-700 hover:text-blue-500 flex items-center focus:outline-none"
+          >
+            <i class="fas fa-user-circle text-2xl mr-2"></i>
+            <span class="font-medium">Account</span>
+            <i class="fas fa-chevron-down ml-2 text-sm"></i>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div
+            id="dropdown-menu"
+            class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md p-2 hidden"
+          >
+            <form action="/auth/logout" method="post">
+              <button
+                class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 flex items-center"
+              >
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+              </button>
+            </form>
+          </div>
         </div>
         <% } else { %>
-        <div>
+        <div class="hidden md:flex space-x-4">
           <a
             href="/auth/login"
-            class="px-4 py-2 text-blue-500 border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition"
+            class="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition"
           >
             Login
           </a>
           <a
             href="/auth/signup"
-            class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
           >
             Signup
           </a>
         </div>
-        <%} %>
+        <% } %>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md py-4">
+        <a
+          href="/event"
+          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          >Events</a
+        >
+        <a
+          href="/club"
+          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          >Clubs</a
+        >
+        <% if (!isAuthenticated) { %>
+        <a
+          href="/auth/login"
+          class="block px-6 py-2 text-blue-500 hover:bg-blue-100"
+          >Login</a
+        >
+        <a
+          href="/auth/signup"
+          class="block px-6 py-2 text-white bg-blue-500 hover:bg-blue-600"
+          >Signup</a
+        >
+        <% } %>
       </div>
     </nav>
 
-    <!-- Dynamic Content Will Load Here -->
-    <div class="container mx-auto mt-10"><%- body %></div>
+    <!-- Dynamic Content -->
+    <div class="container mx-auto mt-20 px-6 flex-grow"><%- body %></div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-md mt-10">
+      <div
+        class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center"
+      >
+        <!-- Logo & Name -->
+        <a href="/" class="text-xl font-bold text-blue-600 flex items-center">
+          <i class="fas fa-calendar-alt mr-2"></i> EventX
+        </a>
+
+        <!-- Footer Links -->
+        <div class="mt-4 md:mt-0 flex space-x-6">
+          <a href="/about" class="text-gray-600 hover:text-blue-500 transition"
+            >About</a
+          >
+          <a
+            href="/contact"
+            class="text-gray-600 hover:text-blue-500 transition"
+            >Contact</a
+          >
+          <a
+            href="/privacy"
+            class="text-gray-600 hover:text-blue-500 transition"
+            >Privacy Policy</a
+          >
+        </div>
+
+        <!-- Social Media Links -->
+        <div class="mt-4 md:mt-0 flex space-x-4">
+          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
+            ><i class="fab fa-facebook-f"></i
+          ></a>
+          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
+            ><i class="fab fa-twitter"></i
+          ></a>
+          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
+            ><i class="fab fa-instagram"></i
+          ></a>
+        </div>
+      </div>
+
+      <!-- Copyright -->
+      <div class="bg-gray-100 text-center py-3 text-gray-500 text-sm">
+        &copy;
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        EventX. All rights reserved.
+      </div>
+    </footer>
+
+    <script>
+      // Toggle Mobile Menu
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      menuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+
+      // Toggle Logout Dropdown
+      const accountBtn = document.getElementById("account-btn");
+      const dropdownMenu = document.getElementById("dropdown-menu");
+
+      if (accountBtn) {
+        accountBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          dropdownMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (event) => {
+          if (
+            !accountBtn.contains(event.target) &&
+            !dropdownMenu.contains(event.target)
+          ) {
+            dropdownMenu.classList.add("hidden");
+          }
+        });
+      }
+    </script>
   </body>
 </html>
