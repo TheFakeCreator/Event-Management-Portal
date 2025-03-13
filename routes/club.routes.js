@@ -1,6 +1,10 @@
 import express from "express";
-import Club from "../models/club.model.js";
-import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
+import {
+  isAuthenticated,
+  isAuthenticatedLineant,
+} from "../middlewares/authMiddleware.js";
+import { isAdmin } from "../middlewares/adminMiddleware.js";
+import { createClub } from "../controllers/club.controller.js";
 
 const router = express.Router();
 
@@ -19,15 +23,13 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
 });
 
 // Create a new club (Admin only)
-router.post("/add", async (req, res) => {
-  try {
-    const { name, description, contactEmail, logo } = req.body;
-    const newClub = new Club({ name, description, contactEmail, logo });
-    await newClub.save();
-    res.redirect("/clubs");
-  } catch (err) {
-    res.status(500).send("Error creating club");
-  }
+// Admin check should be placed here.
+router.get("/add", isAuthenticated, isAdmin, (req, res) => {
+  res.render("add-club", {
+    title: "Add Club",
+    isAuthenticated: req.isAuthenticated,
+  });
 });
+router.post("/add", isAuthenticated, isAdmin, createClub);
 
 export default router;

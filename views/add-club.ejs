@@ -1,0 +1,77 @@
+<% layout("layouts/main") %>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div
+    class="bg-white/90 backdrop-blur-lg shadow-xl rounded-lg p-8 max-w-lg w-full border border-gray-200"
+  >
+    <h1 class="text-4xl font-bold text-blue-600 text-center mb-6">Add Club</h1>
+
+    <form action="/club/add" method="post" class="space-y-5">
+      <div>
+        <label for="name" class="block text-lg font-semibold text-gray-700"
+          >Club Name</label
+        >
+        <input
+          type="text"
+          name="name"
+          id="name"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          placeholder="Enter club name"
+          required
+        />
+      </div>
+
+      <div>
+        <label
+          for="description"
+          class="block text-lg font-semibold text-gray-700"
+          >Description</label
+        >
+        <textarea
+          name="description"
+          id="description"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24"
+          placeholder="Write a brief description..."
+          required
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="image" class="block text-lg font-semibold text-gray-700"
+          >Club Image URL</label
+        >
+        <input
+          type="text"
+          name="image"
+          id="image"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          placeholder="Paste image URL"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="oc" class="block text-lg font-semibold text-gray-700"
+          >Overall Coordinator</label
+        >
+        <input
+          type="text"
+          name="oc"
+          id="oc"
+          class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          placeholder="Enter coordinator's name"
+          required
+        />
+      </div>
+
+      <div class="text-center">
+        <button
+          type="submit"
+          class="w-full bg-blue-500 hover:bg-blue-700 text-white py-3 px-4 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105"
+        >
+          Add Club
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
