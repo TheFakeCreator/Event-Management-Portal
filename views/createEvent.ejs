@@ -77,28 +77,34 @@
     </div>
     <div class="mt-6">
       <label for="club" class="text-lg font-semibold">Club</label>
-      <input
-        type="text"
+      <select
         name="club"
         id="club"
         class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
-      />
+      >
+        <% clubs.forEach(club => { %>
+          <option value="<%= club._id %>"><%= club.name %></option>
+        <% }); %>
+      </select>
     </div>
     <div class="mt-6">
-        <label for="collaborators" class="text-lg font-semibold">Collaborators</label>
-        <div
-          id="collaborators-container"
-          class="w-full p-2 border border-gray-300 rounded-lg flex flex-wrap min-h-[44px] items-center gap-2"
+      <label for="collaborators" class="text-lg font-semibold">Collaborators</label>
+      <div
+        id="collaborators-container"
+        class="w-full p-2 border border-gray-300 rounded-lg flex flex-wrap min-h-[44px] items-center gap-2"
+      >
+        <select
+          id="collaborators-select"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
         >
-          <input
-            type="text"
-            id="collaborators-input"
-            placeholder="Type to add..."
-            class="flex-1 p-1 border-none focus:outline-none"
-          />
-        </div>
-        <input type="hidden" name="collaborators" id="collaborators-hidden" />
-      </div>      
+          <option value="">Select a collaborator...</option>
+          <% clubs.forEach(club => { %>
+            <option value="<%= club._id %>"><%= club.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <input type="hidden" name="collaborators" id="collaborators-hidden" />
+    </div>    
     <button
       type="submit"
       class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition mt-7 mb-10"
@@ -109,46 +115,47 @@
 </form>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-  const input = document.getElementById("collaborators-input");
-  const container = document.getElementById("collaborators-container");
-  const hiddenInput = document.getElementById("collaborators-hidden");
-  let collaborators = [];
-
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" && input.value.trim() !== "") {
-      event.preventDefault();
-      addCollaborator(input.value.trim());
-      input.value = "";
-    }
-  });
-
-  function addCollaborator(name) {
-    if (!collaborators.includes(name)) {
-      collaborators.push(name);
+  document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("collaborators-select");
+    const container = document.getElementById("collaborators-container");
+    const hiddenInput = document.getElementById("collaborators-hidden");
+    let collaborators = [];
+  
+    select.addEventListener("change", () => {
+      const selectedClubId = select.value;
+      const selectedClubName = select.options[select.selectedIndex].text;
+  
+      if (selectedClubId && !collaborators.find(c => c.id === selectedClubId)) {
+        addCollaborator(selectedClubId, selectedClubName);
+        select.value = ""; // Reset dropdown
+      }
+    });
+  
+    function addCollaborator(id, name) {
+      collaborators.push({ id, name });
       updateCollaborators();
     }
-  }
-
-  function removeCollaborator(name) {
-    collaborators = collaborators.filter((c) => c !== name);
-    updateCollaborators();
-  }
-
-  function updateCollaborators() {
-    container.innerHTML = "";
-    collaborators.forEach((collaborator) => {
-      const tag = document.createElement("span");
-      tag.className =
-        "bg-blue-500 text-white px-2 py-1 rounded-lg flex items-center gap-1 cursor-pointer";
-      tag.innerHTML = `${collaborator} <span class="text-white font-bold ml-1">&times;</span>`;
-      tag.addEventListener("click", () => removeCollaborator(collaborator));
-      container.appendChild(tag);
-    });
-
-    container.appendChild(input);
-    hiddenInput.value = JSON.stringify(collaborators); // Store as JSON
-  }
-});
-
-</script>
+  
+    function removeCollaborator(id) {
+      collaborators = collaborators.filter((c) => c.id !== id);
+      updateCollaborators();
+    }
+  
+    function updateCollaborators() {
+      container.innerHTML = "";
+  
+      collaborators.forEach((collaborator) => {
+        const tag = document.createElement("span");
+        tag.className =
+          "bg-blue-500 text-white px-2 py-1 rounded-lg flex items-center gap-1 cursor-pointer";
+        tag.innerHTML = `${collaborator.name} <span class="text-white font-bold ml-1">&times;</span>`;
+        tag.addEventListener("click", () => removeCollaborator(collaborator.id));
+        container.appendChild(tag);
+      });
+  
+      container.appendChild(select);
+      hiddenInput.value = JSON.stringify(collaborators.map(c => c.id)); // Store as JSON array
+    }
+  });
+  </script>
+  

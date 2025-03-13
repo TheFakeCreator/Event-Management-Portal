@@ -1,3 +1,57 @@
 <% layout("layouts/main") %>
 
-<h1 class="text-4xl font-bold text-blue-500 mb-6">Events Listing</h1>
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-extrabold text-blue-600 mb-8 text-center">
+    Upcoming Events
+  </h1>
+
+  <!-- Event Grid -->
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+  >
+    <% events.forEach(event => { %>
+    <div
+      class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col"
+    >
+      <!-- Event Image -->
+      <img
+        src="<%= event.image %>"
+        alt="<%= event.title %>"
+        class="w-full h-56 object-cover"
+      />
+
+      <!-- Event Details -->
+      <div class="p-5 flex flex-col justify-between flex-grow">
+        <div>
+          <h2 class="text-2xl font-semibold text-gray-900 mb-2">
+            <%= event.title %>
+          </h2>
+          <p class="text-gray-600 text-sm mt-1 line-clamp-2">
+            <%= event.description %>
+          </p>
+
+          <div class="flex flex-col justify-between mt-3 text-sm text-gray-500">
+            <p>
+              <i class="far fa-calendar-alt"></i>
+              <%= new Date(event.date).toLocaleDateString('en-US', { weekday:
+              'short', day: 'numeric', month: 'long' }) %>
+            </p>
+            <p>
+              <i class="fas fa-map-marker-alt"></i>
+              <%= event.location %>
+            </p>
+          </div>
+        </div>
+
+        <!-- View More Button (Ensured Visibility) -->
+        <a
+          href="/event/<%= event.id %>"
+          class="mt-4 w-full text-center bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-all"
+        >
+          View Details
+        </a>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>

@@ -5,21 +5,35 @@ import {
   isAuthenticatedLineant,
 } from "../middlewares/authMiddleware.js";
 import { createEvent } from "../controllers/event.controller.js";
+import Event from "../models/event.model.js";
+import Club from "../models/club.model.js";
 
 const router = express.Router();
 
-router.get("/", isAuthenticatedLineant, (req, res) => {
-  res.render("eventsPage", {
-    title: "Event Management Portal",
-    isAuthenticated: req.isAuthenticated,
-  });
+router.get("/", isAuthenticatedLineant, async (req, res) => {
+  try {
+    const events = await Event.find({});
+    res.render("eventsPage", {
+      title: "Event Management Portal",
+      events,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (error) {
+    res.status(500).send("Error fetching events");
+  }
 });
 
-router.get("/create", isAuthenticated, (req, res) => {
-  res.render("createEvent", {
-    title: "Create Event",
-    isAuthenticated: req.isAuthenticated,
-  });
+router.get("/create", isAuthenticated, async (req, res) => {
+  try {
+    const clubs = await Club.find({});
+    res.render("createEvent", {
+      title: "Create Event",
+      clubs,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (error) {
+    res.status(500).send("Error fetching clubs");
+  }
 });
 
 router.post("/create", isAuthenticated, createEvent);
