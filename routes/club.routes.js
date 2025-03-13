@@ -5,6 +5,7 @@ import {
 } from "../middlewares/authMiddleware.js";
 import { isAdmin } from "../middlewares/adminMiddleware.js";
 import { createClub } from "../controllers/club.controller.js";
+import Club from "../models/club.model.js";
 
 const router = express.Router();
 
