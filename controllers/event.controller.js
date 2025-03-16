@@ -6,8 +6,10 @@ export const createEvent = async (req, res) => {
       title,
       description,
       type,
-      date,
-      time,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
       location,
       image,
       club,
@@ -18,12 +20,13 @@ export const createEvent = async (req, res) => {
       !title ||
       !description ||
       !type ||
-      !date ||
-      !time ||
+      !startDate ||
+      !endDate ||
+      !startTime ||
+      !endTime ||
       !location ||
       !image ||
-      !club ||
-      !collaborators
+      !club
     ) {
       return res.status(400).json({ message: "All fields are required." });
     }
@@ -48,8 +51,10 @@ export const createEvent = async (req, res) => {
       title,
       description,
       type,
-      date,
-      time,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
       location,
       image,
       club,

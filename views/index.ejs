@@ -7,9 +7,16 @@
   <!-- Ongoing Events Section -->
   <section class="flex flex-col flex-grow items-center w-full">
     <h1 class="text-4xl font-bold text-blue-500 mb-6">Ongoing Events</h1>
+    <% if(ongoingEvents.length === 0){ %>
+    <div class="flex flex-col items-center justify-center w-full">
+      <p class="text-2xl text-gray-500 text-center">No ongoing events</p>
+    </div>
+    <% } %>
+
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]"
     >
+      <% ongoingEvents.forEach(event => {%>
       <div
         class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
       >
@@ -24,62 +31,36 @@
           class="w-full h-3/4 object-cover rounded-t-[20px]"
         />
         <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
+          <h2 class="text-xl font-semibold text-black"><%=event.title%></h2>
+          <p class="text-black truncate"><%=event.description%></p>
         </div>
       </div>
-      <div
-        class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
-      >
-        <div
-          class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full"
-        >
-          <i class="fa-solid fa-circle animate-pulse text-xsm"></i> Live Now
-        </div>
-        <img
-          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
-          alt="Event Image"
-          class="w-full h-3/4 object-cover rounded-t-[20px]"
-        />
-        <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
-        </div>
-      </div>
-      <div
-        class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
-      >
-        <div
-          class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full"
-        >
-          <i class="fa-solid fa-circle animate-pulse text-xsm"></i> Live Now
-        </div>
-        <img
-          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
-          alt="Event Image"
-          class="w-full h-3/4 object-cover rounded-t-[20px]"
-        />
-        <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
-        </div>
-      </div>
+      <%}) %>
     </div>
   </section>
 
   <!-- Upcoming Events Section -->
   <section class="flex flex-col flex-grow items-center w-full mt-8">
     <h1 class="text-4xl font-bold text-blue-500 mb-6">Upcoming Events</h1>
+    <% if(upcomingEvents.length === 0){ %>
+    <div class="flex flex-col items-center justify-center w-full">
+      <p class="text-2xl text-gray-500 text-center">No ongoing events</p>
+    </div>
+    <% } %>
+
     <div
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]"
     >
+      <% upcomingEvents.forEach(event => {%>
       <div
         class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
       >
         <div
           class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full"
         >
-          <i class="fa-solid fa-circle animate-pulse text-xsm"></i> 1 day to go
+          <i class="fa-solid fa-circle animate-pulse text-xsm"></i>
+          <%= Math.ceil((new Date(event.startDate) - Date.now()) / (1000 * 60 *
+          60 * 24)) %> day(s) to go
         </div>
         <img
           src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
@@ -87,46 +68,11 @@
           class="w-full h-3/4 object-cover rounded-t-[20px]"
         />
         <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
+          <h2 class="text-xl font-semibold text-black"><%=event.title%></h2>
+          <p class="text-black truncate"><%=event.description%></p>
         </div>
       </div>
-      <div
-        class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
-      >
-        <div
-          class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full"
-        >
-          <i class="fa-solid fa-circle animate-pulse text-xsm"></i> 2 days to go
-        </div>
-        <img
-          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
-          alt="Event Image"
-          class="w-full h-3/4 object-cover rounded-t-[20px]"
-        />
-        <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
-        </div>
-      </div>
-      <div
-        class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl"
-      >
-        <div
-          class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full"
-        >
-          <i class="fa-solid fa-circle animate-pulse text-xsm"></i> 3 days to go
-        </div>
-        <img
-          src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
-          alt="Event Image"
-          class="w-full h-3/4 object-cover rounded-t-[20px]"
-        />
-        <div class="p-4 flex flex-col w-full h-1/3">
-          <h2 class="text-xl font-semibold text-black">Event Title</h2>
-          <p class="text-black">Short event description...</p>
-        </div>
-      </div>
+      <% })%>
     </div>
   </section>
 
@@ -140,7 +86,7 @@
     </a>
   </div> -->
 </div>
-<script>
+<!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
     var calendarEl = document.getElementById("calendar");
 
@@ -177,4 +123,4 @@
 
     calendar.render();
   });
-</script>
+</script> -->

@@ -26,11 +26,19 @@ const eventSchema = new Schema({
     required: true,
     default: "Other",
   },
-  date: {
+  startDate: {
     type: Date,
     required: true,
   },
-  time: {
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  startTime: {
+    type: String,
+    required: true,
+  },
+  endTime: {
     type: String,
     required: true,
   },

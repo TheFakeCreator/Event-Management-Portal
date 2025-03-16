@@ -39,23 +39,45 @@
         <option value="Tech">Tech</option>
         <option value="Other" selected>Other</option>
     </select>
-    <div class="mt-6">
-      <label for="date" class="text-lg font-semibold">Event Date</label>
-      <input
-        type="date"
-        name="date"
-        id="date"
-        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
-      />
+    <div class="flex flex-row width-full gap-5">
+      <div class="mt-6 w-full">
+        <label for="startDate" class="text-lg font-semibold">Event Start Date</label>
+        <input
+          type="date"
+          name="startDate"
+          id="startDate"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+        />
+      </div>
+      <div class="mt-6 w-full">
+        <label for="endDate" class="text-lg font-semibold">Event End Date</label>
+        <input
+          type="date"
+          name="endDate"
+          id="endDate"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+        />
+      </div>
     </div>
-    <div class="mt-6">
-      <label for="time" class="text-lg font-semibold">Event Time</label>
-      <input
-        type="time"
-        name="time"
-        id="time"
-        class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
-      />
+    <div class="flex flex-row width-full gap-5">
+      <div class="mt-6 w-full">
+        <label for="startTime" class="text-lg font-semibold">Event Start Time</label>
+        <input
+          type="time"
+          name="startTime"
+          id="startTime"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+        />
+      </div>
+      <div class="mt-6 w-full">
+        <label for="endTime" class="text-lg font-semibold">Event End Time</label>
+        <input
+          type="time"
+          name="endTime"
+          id="endTime"
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none"
+        />
+      </div>
     </div>
     <div class="mt-6">
         <label for="location" class="text-lg font-semibold">Location</label>
