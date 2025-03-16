@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" id="imageInput" name="image" required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <img
+      id="previewImage"
+      src=""
+      alt="Uploaded Image"
+      style="display: none; width: 200px"
+    />
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData();
+          formData.append(
+            "image",
+            document.getElementById("imageInput").files[0]
+          );
+
+          const response = await fetch("http://localhost:3000/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.imageUrl) {
+            document.getElementById("previewImage").src = data.imageUrl;
+            document.getElementById("previewImage").style.display = "block";
+          } else {
+            alert("Image upload failed!");
+          }
+        });
+    </script>
+  </body>
+</html>
