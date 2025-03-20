@@ -1,3 +1,15 @@
 <% layout("layouts/main") %>
-
-<h1>This is dashboard a protected route.</h1>
+<div class="container mx-auto p-10 flex justify-center">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome, <%= user.name %>!</h1>
+        <div class="text-lg text-gray-700">
+            <p><strong>Username:</strong> <%= user.username %></p>
+            <p><strong>Email:</strong> <%= user.email %></p>
+        </div>
+        <div class="mt-6">
+            <a href="/user/<%= user.username %>/edit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
