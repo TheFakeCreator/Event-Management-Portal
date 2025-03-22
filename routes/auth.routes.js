@@ -49,15 +49,14 @@ router.get("/reset-password/:token", isAuthenticatedLineant, (req, res) => {
 router.post("/reset-password/:token", resetPassword);
 
 router.get(
-  "/auth/google",
+  "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    successRedirect: "/dashboard",
-  })
+router.get("/google/secrets",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.redirect("/"); // Redirect to user dashboard after login
+  }
 );
 
 export default router;

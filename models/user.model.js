@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
+    googleId: { type: String, unique: true, sparse: true }, 
     name: {
       type: String,
       required: true,
@@ -11,8 +12,9 @@ const userSchema = new Schema(
     },
     username: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
+      sparse: true,
       lowercase: true, // Ensures uniformity
     },
     email: {
@@ -23,7 +25,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     avatar: {
       type: String, // Store image URL (Cloudinary, Firebase, etc.)

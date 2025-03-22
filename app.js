@@ -10,10 +10,10 @@ import dotenv from "dotenv";
 import expressSession from "express-session";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";
-import passport from "./configs/passport.js";
+import "./configs/passport.js";
 import session from "express-session";
 import cors from "cors";
-
+import passport from "passport";
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
 import eventRouter from "./routes/event.routes.js";

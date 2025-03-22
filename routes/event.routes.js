@@ -72,15 +72,21 @@ router.get("/:id/register", isAuthenticated, async (req, res) => {
       return res.status(404).send("Event not found");
     }
 
-    // Find the number of registered users
-    
+    // Check if the event has already started
+    if (new Date() >= new Date(event.startDate)) {
+      return res.status(403).render("registrationClose",{ 
+        event,
+        title: "Event Registration",
+        isAuthenticated: req.isAuthenticated,
+        user: req.user,
+      });
+    }
 
     res.render("eventRegister", { 
       event,
       title: "Event Registration",
       isAuthenticated: req.isAuthenticated,
       user: req.user,
-      // Pass count to frontend
     });
 
   } catch (error) {
