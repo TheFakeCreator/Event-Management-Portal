@@ -1,4 +1,19 @@
 <% layout("layouts/main") %>
+<% if (!!error_msg){ %><div id="flash-message" class=" bg-red-500 text-white "><%= error_msg %></div><% }%>
+<% if (!!success_msg){ %><div id="flash-message" class=" bg-green-500 text-white "><%= success_msg %></div><% }%>
+    <script>
+      // Automatically remove flash message after 3 seconds
+      setTimeout(() => {
+        const flashMessage = document.getElementById("flash-message");
+        if (flashMessage) {
+          flashMessage.style.opacity = "0";
+          setTimeout(() => {
+            flashMessage.style.display = "none";
+          }, 500); // Extra delay for smooth transition
+        }
+      }, 3000);
+    </script>
+    
 <div class="container mx-auto p-10 flex justify-center">
     <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
         <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome, <%= user.name %>!</h1>

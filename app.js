@@ -47,6 +47,7 @@ app.use(
     },
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -57,7 +58,11 @@ app.use(
     saveUninitialized: false,
   })
 );
-
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash("success");
+  res.locals.error_msg = req.flash("error");
+  next();
+});
 // Sets
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -70,6 +75,7 @@ app.use("/auth", authRouter);
 app.use("/club", clubRouter);
 app.use("/api", uploadRoutes);
 app.use("/api/events", eventRouter);
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

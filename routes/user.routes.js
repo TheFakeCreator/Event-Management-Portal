@@ -43,12 +43,16 @@ router.post("/:username/edit",isAuthenticated, async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      req.flash("error", "User not found");
+      return res.redirect(`/user/${updatedUser.username}`);
     }
+
+    req.flash("success", "Profile updated successfully!");
 
     res.redirect(`/user/${updatedUser.username}`); // Redirect to profile page after update
   } catch (error) {
     console.error("Error updating profile:", error);
+    req.flash("error", "Something went wrong!");
     res.status(500).json({ message: "Server error" });
   }
 });
