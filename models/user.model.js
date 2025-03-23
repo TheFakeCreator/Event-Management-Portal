@@ -72,10 +72,10 @@ const userSchema = new Schema(
     lastLogin: {
       type: Date,
     },
-    passwordResetToken: {
+    resetToken: {
       type: String,
     },
-    passwordResetExpires: {
+    expireToken : {
       type: Date,
     },
     isDeleted: {

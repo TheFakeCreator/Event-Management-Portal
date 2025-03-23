@@ -44,7 +44,7 @@ router.get("/reset-password/:token", isAuthenticatedLineant, (req, res) => {
   if (req.isAuthenticated) {
     return res.redirect(`/user/${req.user.username}`);
   }
-  res.render("reset-password");
+  res.render("reset-password",{token:req.params.token});
 });
 router.post("/reset-password/:token", resetPassword);
 
