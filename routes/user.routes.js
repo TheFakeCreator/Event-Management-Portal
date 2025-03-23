@@ -23,7 +23,35 @@ router.get("/:username/edit", isAuthenticated, async (req, res) => {
     res.status(500).send("Error loading page");
   }
 });
+router.post("/:username/edit",isAuthenticated, async (req, res) => {
+  try {
+    const { name, username, phone, bio, occupation, location, linkedin, github, twitter } = req.body;
+    const userId = req.user._id; // Ensure user is authenticated
 
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        name,
+        username,
+        phone,
+        bio,
+        occupation,
+        location,
+        socials: { linkedin, github, twitter },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.redirect(`/user/${updatedUser.username}`); // Redirect to profile page after update
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // ✅ Dashboard Route (Keep it below the edit route)
 router.get("/:username", isAuthenticated, (req, res) => {
   res.render("dashboard", {

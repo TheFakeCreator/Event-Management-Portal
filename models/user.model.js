@@ -36,8 +36,7 @@ const userSchema = new Schema(
       maxlength: 250, // Limit bio length
     },
     phone: {
-      type: String,
-      match: [/^\d{10}$/, "Please enter a valid phone number"], // Validates 10-digit numbers
+      type: Number,
     },
     socials: {
       linkedin: { type: String },

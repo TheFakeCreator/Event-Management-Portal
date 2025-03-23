@@ -1,23 +1,69 @@
 <% layout("layouts/main") %>
-<div class="container mx-auto p-10 flex justify-center">
-    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h1>
-        <form action="/user/<%= user.username %>/edit" method="POST" class="space-y-4">
-            <div>
-                <label class="block font-semibold">Name</label>
-                <input type="text" name="name" value="<%= user.name %>" class="w-full p-2 border rounded-lg">
-            </div>
-            <div>
-                <label class="block font-semibold">Username</label>
-                <input type="text" name="username" value="<%= user.username %>" class="w-full p-2 border rounded-lg" disabled>
-            </div>
-            <div>
-                <label class="block font-semibold">Email</label>
-                <input type="email" name="email" value="<%= user.email %>" class="w-full p-2 border rounded-lg">
-            </div>
-            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                Save Changes
-            </button>
-        </form>
-    </div>
+<div class="bg-gray-100 min-h-screen flex items-center justify-center py-10 px-4">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+    <h1 class="text-3xl font-bold text-blue-600 text-center mb-6">Edit Profile</h1>
+
+    <form action="/user/<%= user.username %>/edit" method="post" class="space-y-4">
+      <div class="flex flex-col items-center">
+        <label class="block text-gray-700 font-medium">Profile Picture</label>
+        <input type="file" name="avatar" class="w-full mt-2 p-2 border border-gray-300 rounded-lg" />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Full Name</label>
+        <input type="text" name="name" value="<%= user.name %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" required />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Username</label>
+        <input type="text" name="username" value="<%= user.username %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Email</label>
+        <input type="email" name="email" value="<%= user.email %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-gray-100" readonly />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Phone</label>
+        <input type="text" name="phone" value="<%= user.phone %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Bio</label>
+        <textarea name="bio" class="w-full mt-2 p-3 border border-gray-300 rounded-lg h-24 resize-none"><%= user.bio %></textarea>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Occupation</label>
+        <input type="text" name="occupation" value="<%= user.occupation %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium">Location</label>
+        <input type="text" name="location" value="<%= user.location %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 font-medium">LinkedIn</label>
+          <input type="url" name="linkedin" value="<%= user.socials.linkedin %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium">GitHub</label>
+          <input type="url" name="github" value="<%= user.socials.github %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-gray-700 font-medium">Twitter</label>
+          <input type="url" name="twitter" value="<%= user.socials.twitter %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+        </div>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">
+        Save Changes
+      </button>
+    </form>
+  </div>
 </div>
