@@ -12,19 +12,26 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
     const todayEnd = new Date(now.setHours(23, 59, 59, 999));
 
     // console.log("Today:", todayStart, "to", todayEnd);
-
+    
     const ongoingEvents = await Event.find({
       startDate: { $lte: todayEnd },
       endDate: { $gte: todayStart },
-      $or: [
-        { startDate: { $lt: todayStart } },
-        { startTime: { $lte: now.toISOString().split("T")[1] } },
-      ],
-      $or: [
-        { endDate: { $gt: todayEnd } },
-        { endTime: { $gte: now.toISOString().split("T")[1] } },
+      $and: [
+        {
+          $or: [
+            { startDate: { $lt: todayStart } },
+            { startTime: { $lte: now.toISOString().split("T")[1] } },
+          ],
+        },
+        {
+          $or: [
+            { endDate: { $gt: todayEnd } },
+            { endTime: { $gte: now.toISOString().split("T")[1] } },
+          ],
+        },
       ],
     });
+    
     const upcomingEvents = await Event.find({
       $or: [
         { startDate: { $gt: todayEnd } }, // Future date
@@ -43,6 +50,7 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
       isAuthenticated: req.isAuthenticated,
       ongoingEvents,
       upcomingEvents,
+      user: req.user,
     });
   } catch (error) {
     console.error("Error fetching events:", error);

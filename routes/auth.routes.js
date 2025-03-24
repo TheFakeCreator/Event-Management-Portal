@@ -44,20 +44,19 @@ router.get("/reset-password/:token", isAuthenticatedLineant, (req, res) => {
   if (req.isAuthenticated) {
     return res.redirect(`/user/${req.user.username}`);
   }
-  res.render("reset-password");
+  res.render("reset-password",{token:req.params.token});
 });
 router.post("/reset-password/:token", resetPassword);
 
 router.get(
-  "/auth/google",
+  "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-    successRedirect: "/dashboard",
-  })
+router.get("/google/secrets",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.redirect("/"); // Redirect to user dashboard after login
+  }
 );
 
 export default router;
