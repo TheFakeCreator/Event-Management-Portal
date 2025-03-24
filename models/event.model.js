@@ -60,6 +60,10 @@ const eventSchema = new Schema({
       ref: "Club",
     },
   ],
+  regiteredUsers: {
+    type: Number,
+    default: 0,
+  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

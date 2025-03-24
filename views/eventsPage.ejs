@@ -1,17 +1,16 @@
 <% layout("layouts/main") %>
 
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-4xl font-extrabold text-blue-600 mb-8 text-center">
-    Upcoming Events
-  </h1>
+  <h1 class="text-4xl font-extrabold text-blue-600 mb-8 text-center">Events</h1>
 
   <!-- Event Grid -->
-  <div
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-  >
-    <% events.forEach(event => { %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <% events.forEach(event => { 
+      const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
+    %>
     <div
-      class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col"
+      class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col 
+      <%= isExpired ? 'grayscale opacity-50' : '' %>"
     >
       <!-- Event Image -->
       <img
@@ -43,10 +42,12 @@
           </div>
         </div>
 
-        <!-- View More Button (Ensured Visibility) -->
+        <!-- View More Button (Disabled for expired events) -->
         <a
           href="/event/<%= event.id %>"
-          class="mt-4 w-full text-center bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 transition-all"
+          class="mt-4 w-full text-center py-2 rounded-lg transition-all
+          <%= isExpired ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600' %>"
+          <%= isExpired ? 'onclick="return false;"' : '' %>
         >
           View Details
         </a>
