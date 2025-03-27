@@ -58,6 +58,22 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
   }
 });
 
+router.get("/about", isAuthenticatedLineant, (req, res) => {
+  res.render("about.ejs", {
+    title: "About",
+    isAuthenticated: req.isAuthenticated,
+    user: req.user,
+  });
+});
+
+router.get("/privacy", isAuthenticatedLineant, (req, res) => {
+  res.render("privacyPolicy.ejs", {
+    title: "Privacy Policy",
+    isAuthenticated: req.isAuthenticated,
+    user: req.user,
+  });
+});
+
 // Test route for unauthorized users (lineants)
 router.get("/test", isAuthenticatedLineant, (req, res) => {
   res.render("unauthorized.ejs", {

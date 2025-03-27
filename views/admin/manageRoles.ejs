@@ -89,7 +89,6 @@
           <th class="border p-3">User</th>
           <th class="border p-3">Email</th>
           <th class="border p-3">Role</th>
-          <th class="border p-3">Actions</th>
         </tr>
       </thead>
       <tbody id="userTable">
@@ -98,22 +97,6 @@
           <td class="border p-3"><%= e.name %></td>
           <td class="border p-3"><%= e.email %></td>
           <td class="border p-3"><%= e.role %></td>
-          <td class="border p-3 flex justify-center space-x-2">
-            <a
-              href="/admin/roles/edit/<%= e.id %>"
-              class="text-yellow-500 hover:underline"
-              >Edit</a
-            >
-            <form
-              action="/admin/roles/delete/<%= e.id %>"
-              method="POST"
-              class="inline"
-            >
-              <button type="submit" class="text-red-500 hover:underline">
-                Remove
-              </button>
-            </form>
-          </td>
         </tr>
         <% }); %>
       </tbody>
