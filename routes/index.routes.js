@@ -60,7 +60,7 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
 
 // Test route for unauthorized users (lineants)
 router.get("/test", isAuthenticatedLineant, (req, res) => {
-  res.render("admin/dashboard.ejs", {
+  res.render("unauthorized.ejs", {
     title: "Admin Dashboard",
     isAuthenticated: req.isAuthenticated,
     user: req.user,
