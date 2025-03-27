@@ -1,30 +1,72 @@
-<% layout("layouts/main") %>
-<% if (!!error_msg){ %><div id="flash-message" class=" bg-red-500 text-white "><%= error_msg %></div><% }%>
-<% if (!!success_msg){ %><div id="flash-message" class=" bg-green-500 text-white "><%= success_msg %></div><% }%>
-    <script>
-      // Automatically remove flash message after 3 seconds
+<% layout("layouts/main") %> <% if (error_msg || success_msg) { %>
+<div
+  class="flashmessage-container fixed top-5 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50"
+>
+  <% if (error_msg) { %>
+  <div
+    class="flashmessage bg-red-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-between transition-opacity duration-500"
+  >
+    <span class="font-semibold"><%= error_msg %></span>
+    <button
+      class="ml-4 text-white text-2xl focus:outline-none"
+      onclick="this.parentElement.style.display='none'"
+    >
+      &times;
+    </button>
+  </div>
+  <% } %> <% if (success_msg) { %>
+  <div
+    class="flashmessage bg-green-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-between transition-opacity duration-500"
+  >
+    <span class="font-semibold"><%= success_msg %></span>
+    <button
+      class="ml-4 text-white text-2xl focus:outline-none"
+      onclick="this.parentElement.style.display='none'"
+    >
+      &times;
+    </button>
+  </div>
+  <% } %>
+</div>
+
+<script>
+  // Automatically remove flash message after 3 seconds
+  setTimeout(() => {
+    const flashMessages = document.querySelectorAll(".flashmessage");
+    flashMessages.forEach((flashMessage) => {
+      flashMessage.classList.add("opacity-0");
       setTimeout(() => {
-        const flashMessage = document.getElementById("flash-message");
-        if (flashMessage) {
-          flashMessage.style.opacity = "0";
-          setTimeout(() => {
-            flashMessage.style.display = "none";
-          }, 500); // Extra delay for smooth transition
-        }
-      }, 3000);
-    </script>
-    
+        flashMessage.style.display = "none";
+      }, 500); // Extra delay for smooth transition
+    });
+  }, 3000);
+</script>
+<% } %>
+
 <div class="container mx-auto p-10 flex justify-center">
-    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome, <%= user.name %>!</h1>
-        <div class="text-lg text-gray-700">
-            <p><strong>Username:</strong> <%= user.username %></p>
-            <p><strong>Email:</strong> <%= user.email %></p>
-        </div>
-        <div class="mt-6">
-            <a href="/user/<%= user.username %>/edit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                Edit Profile
-            </a>
-        </div>
+  <div
+    class="bg-white shadow-xl rounded-lg p-8 w-full max-w-2xl border border-gray-200"
+  >
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-6">
+      Welcome, <%= user.name %>!
+    </h1>
+    <div class="text-lg text-gray-700 space-y-2">
+      <p>
+        <strong>Username:</strong>
+        <span class="text-gray-900 font-medium"><%= user.username %></span>
+      </p>
+      <p>
+        <strong>Email:</strong>
+        <span class="text-gray-900 font-medium"><%= user.email %></span>
+      </p>
     </div>
+    <div class="mt-8">
+      <a
+        href="/user/<%= user.username %>/edit"
+        class="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-shadow shadow-md hover:shadow-lg"
+      >
+        Edit Profile
+      </a>
+    </div>
+  </div>
 </div>

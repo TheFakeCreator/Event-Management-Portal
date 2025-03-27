@@ -7,7 +7,7 @@ const router = express.Router();
 // ✅ Edit Profile Route (Place this BEFORE dashboard route)
 router.get("/:username/edit", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const user = req.user;
 
     if (!user) {
       return res.status(404).send("User not found");
@@ -23,9 +23,19 @@ router.get("/:username/edit", isAuthenticated, async (req, res) => {
     res.status(500).send("Error loading page");
   }
 });
-router.post("/:username/edit",isAuthenticated, async (req, res) => {
+router.post("/:username/edit", isAuthenticated, async (req, res) => {
   try {
-    const { name, username, phone, bio, occupation, location, linkedin, github, twitter } = req.body;
+    const {
+      name,
+      username,
+      phone,
+      bio,
+      occupation,
+      location,
+      linkedin,
+      github,
+      twitter,
+    } = req.body;
     const userId = req.user._id; // Ensure user is authenticated
 
     const updatedUser = await User.findByIdAndUpdate(
