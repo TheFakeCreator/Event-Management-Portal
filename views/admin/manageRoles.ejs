@@ -5,6 +5,17 @@
     Manage Roles
   </h1>
 
+  <!-- Role Requests Button -->
+  <div class="flex justify-end mb-4">
+    <a
+      href="/admin/roles/requests"
+      class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+    >
+      <i class="fas fa-user-shield"></i>
+      <span>View Role Requests</span>
+    </a>
+  </div>
+
   <!-- Role Assignment Form -->
   <div class="bg-white shadow-lg rounded-lg p-6">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assign Roles</h2>
@@ -49,6 +60,17 @@
     </form>
   </div>
 
+  <!-- Search Users -->
+  <div class="mt-8">
+    <input
+      type="text"
+      id="searchUser"
+      class="w-full p-2 border border-gray-300 rounded-lg"
+      placeholder="Search users by name or email..."
+      onkeyup="filterUsers()"
+    />
+  </div>
+
   <!-- Existing Roles List -->
   <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Current Roles</h2>
@@ -62,9 +84,9 @@
           <th class="border p-3">Actions</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="userTable">
         <% users.forEach(e => { %>
-        <tr>
+        <tr class="user-row">
           <td class="border p-3"><%= e.name %></td>
           <td class="border p-3"><%= e.email %></td>
           <td class="border p-3"><%= e.role %></td>
@@ -90,3 +112,17 @@
     </table>
   </div>
 </div>
+
+<script>
+  function filterUsers() {
+    let input = document.getElementById("searchUser").value.toLowerCase();
+    let rows = document.querySelectorAll(".user-row");
+
+    rows.forEach((row) => {
+      let name = row.children[0].textContent.toLowerCase();
+      let email = row.children[1].textContent.toLowerCase();
+      row.style.display =
+        name.includes(input) || email.includes(input) ? "" : "none";
+    });
+  }
+</script>

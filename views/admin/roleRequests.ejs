@@ -1,0 +1,64 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto p-10">
+  <h1 class="text-4xl font-bold text-center text-red-600 mb-8">
+    Role Change Requests
+  </h1>
+
+  <!-- Role Requests Table -->
+  <div class="bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pending Requests</h2>
+
+    <table class="w-full border-collapse border border-gray-300">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border p-3">User</th>
+          <th class="border p-3">Current Role</th>
+          <th class="border p-3">Requested Role</th>
+          <th class="border p-3">Status</th>
+          <th class="border p-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% roleRequests.forEach(request => { %>
+        <tr>
+          <td class="border p-3">
+            <%= request.user.name %> (<%= request.user.email %>)
+          </td>
+          <td class="border p-3"><%= request.currentRole %></td>
+          <td class="border p-3"><%= request.requestedRole %></td>
+          <td class="border p-3 text-center">
+            <span
+              class="<%= request.status === 'Pending' ? 'text-yellow-500' : request.status === 'Approved' ? 'text-green-500' : 'text-red-500' %>"
+            >
+              <%= request.status %>
+            </span>
+          </td>
+          <td class="border p-3 flex justify-center space-x-3">
+            <% if (request.status === 'Pending') { %>
+            <form action="/admin/roles/approve/<%= request.id %>" method="POST">
+              <button
+                type="submit"
+                class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-700"
+              >
+                Approve
+              </button>
+            </form>
+            <form action="/admin/roles/deny/<%= request.id %>" method="POST">
+              <button
+                type="submit"
+                class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700"
+              >
+                Deny
+              </button>
+            </form>
+            <% } else { %>
+            <span class="text-gray-500">Processed</span>
+            <% } %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

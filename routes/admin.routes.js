@@ -4,8 +4,10 @@ import {
   getAdminDashboard,
   getManageRoles,
   getManageClubs,
+  getEditClub,
   getManageUsers,
   getManageEvents,
+  getRoleRequests,
   getSettings,
   createClub,
   editClub,
@@ -22,14 +24,16 @@ router.use(isAdmin);
 //GET routes
 router.get("/dashboard", getAdminDashboard);
 router.get("/roles", getManageRoles);
+router.get("/roles/requests", getRoleRequests);
 router.get("/clubs", getManageClubs);
+router.get("/clubs/edit/:id", getEditClub);
 router.get("/users", getManageUsers);
 router.get("/events", getManageEvents);
 router.get("/settings", getSettings);
 
 // POST routes
 router.post("/clubs", createClub);
-router.post("/clubs/:id", editClub);
+router.post("/clubs/update/:id", editClub);
 router.post("/clubs/:id", deleteClub);
 
 // Manage Users

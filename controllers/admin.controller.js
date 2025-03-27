@@ -26,6 +26,21 @@ export const getManageRoles = async (req, res) => {
   }
 };
 
+export const getRoleRequests = async (req, res) => {
+  try {
+    const roleRequests = await User.find({ role: "pending" });
+    res.render("admin/roleRequests", {
+      title: "Role Requests",
+      isAuthenticated: req.isAuthenticated,
+      user: req.user,
+      roleRequests,
+    });
+  } catch (error) {
+    console.error("Error fetching role requests:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 export const getManageClubs = async (req, res) => {
   try {
     const clubs = await Club.find();
@@ -37,6 +52,24 @@ export const getManageClubs = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching clubs:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+export const getEditClub = async (req, res) => {
+  try {
+    const club = await Club.findById(req.params.id);
+    if (!club) {
+      return res.status(404).send("Club not found");
+    }
+    res.render("admin/editClub", {
+      title: "Edit Club",
+      isAuthenticated: req.isAuthenticated,
+      user: req.user,
+      club,
+    });
+  } catch (error) {
+    console.error("Error fetching club:", error);
     res.status(500).send("Internal Server Error");
   }
 };
@@ -84,6 +117,7 @@ export const getSettings = (req, res) => {
   }
 };
 
+// POST Routes
 // Assign Role to a User
 export const assignRole = async (req, res) => {
   try {

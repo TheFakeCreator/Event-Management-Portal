@@ -36,6 +36,19 @@
         ></textarea>
       </div>
 
+      <div>
+        <label for="bannerUrl" class="block text-gray-700 font-medium"
+          >Banner URL:</label
+        >
+        <input
+          type="text"
+          id="bannerUrl"
+          name="bannerUrl"
+          class="w-full p-2 border border-gray-300 rounded-lg"
+          required
+        />
+      </div>
+
       <button
         type="submit"
         class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
@@ -54,6 +67,7 @@
         <tr class="bg-gray-100">
           <th class="border p-3">Club Name</th>
           <th class="border p-3">Description</th>
+          <th class="border p-3">Banner</th>
           <th class="border p-3">Actions</th>
         </tr>
       </thead>
@@ -62,6 +76,13 @@
         <tr>
           <td class="border p-3"><%= club.name %></td>
           <td class="border p-3"><%= club.description %></td>
+          <td class="border p-3">
+            <img
+              src="<%= club.image %>"
+              alt="Club Banner"
+              class="w-32 h-20 object-cover rounded-lg"
+            />
+          </td>
           <td class="border p-3 flex justify-center space-x-2">
             <a
               href="/admin/clubs/edit/<%= club.id %>"
