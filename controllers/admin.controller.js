@@ -1,6 +1,7 @@
 import Club from "../models/club.model.js";
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
+import Log from "../models/log.model.js";
 
 // GET Routes
 export const getAdminDashboard = (req, res) => {
@@ -117,6 +118,21 @@ export const getSettings = (req, res) => {
   }
 };
 
+export const getLogs = async (req, res) => {
+  try {
+    const logs = await Log.find();
+    res.render("admin/logs", {
+      title: "Logs",
+      isAuthenticated: req.isAuthenticated,
+      user: req.user,
+      logs,
+    });
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 // POST Routes
 // Assign Role to a User
 export const assignRole = async (req, res) => {
@@ -126,6 +142,14 @@ export const assignRole = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.role = role;
+    const log = await Log.create({
+      user: req.user._id,
+      affectedUser: userId,
+      action: "EDIT",
+      targetType: "USER",
+      targetId: userId,
+      details: `Role of ${userId} updated to ${role} by ${req.user.name}`,
+    });
     await user.save();
     res.json({ message: "Role updated successfully" });
   } catch (error) {
@@ -136,9 +160,15 @@ export const assignRole = async (req, res) => {
 // Create a New Club
 export const createClub = async (req, res) => {
   try {
-    const { name, description } = req.body;
-    const club = new Club({ name, description });
-    await club.save();
+    const { name, description, image } = req.body;
+    const club = await Club.create({ name, description, image });
+    const log = await Log.create({
+      user: req.user._id,
+      action: "CREATE",
+      targetType: "CLUB",
+      targetId: club._id,
+      details: `Club ${club.name} created by ${req.user.name}`,
+    });
     res.json({ message: "Club created successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -156,6 +186,13 @@ export const editClub = async (req, res) => {
       { new: true }
     );
     if (!club) return res.status(404).json({ message: "Club not found" });
+    const log = await Log.create({
+      user: req.user._id,
+      action: "EDIT",
+      targetType: "CLUB",
+      targetId: id,
+      details: `Club ${club.name} edited by ${req.user.name}`,
+    });
     res.json({ message: "Club updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -168,6 +205,13 @@ export const deleteClub = async (req, res) => {
     const { id } = req.params;
     const club = await Club.findByIdAndDelete(id);
     if (!club) return res.status(404).json({ message: "Club not found" });
+    const log = await Log.create({
+      user: req.user._id,
+      action: "DELETE",
+      targetType: "CLUB",
+      targetId: id,
+      details: `Club ${club.name} deleted by ${req.user.name}`,
+    });
     res.json({ message: "Club deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

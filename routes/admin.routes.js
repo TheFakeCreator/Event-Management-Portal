@@ -9,9 +9,11 @@ import {
   getManageEvents,
   getRoleRequests,
   getSettings,
+  getLogs,
   createClub,
   editClub,
   deleteClub,
+  assignRole,
 } from "../controllers/admin.controller.js";
 import { isAdmin } from "../middlewares/adminMiddleware.js";
 
@@ -30,11 +32,13 @@ router.get("/clubs/edit/:id", getEditClub);
 router.get("/users", getManageUsers);
 router.get("/events", getManageEvents);
 router.get("/settings", getSettings);
+router.get("/logs", getLogs);
 
 // POST routes
-router.post("/clubs", createClub);
+router.post("/clubs/create", createClub);
 router.post("/clubs/update/:id", editClub);
-router.post("/clubs/:id", deleteClub);
+router.post("/clubs/delete/:id", deleteClub);
+router.post("/roles/assign", assignRole);
 
 // Manage Users
 router.get("/users", getManageUsers);

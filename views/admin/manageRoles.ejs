@@ -1,5 +1,13 @@
 <% layout('layouts/main') %>
 
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+</head>
+
 <div class="container mx-auto p-10">
   <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">
     Manage Roles
@@ -112,6 +120,13 @@
     </table>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    new Choices("#user", { searchEnabled: true });
+    new Choices("#role", { searchEnabled: true });
+  });
+</script>
 
 <script>
   function filterUsers() {
