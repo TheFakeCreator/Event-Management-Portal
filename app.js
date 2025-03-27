@@ -16,6 +16,7 @@ import cors from "cors";
 import passport from "passport";
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
+import adminRouter from "./routes/admin.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
@@ -69,6 +70,7 @@ app.set("view engine", "ejs");
 
 // Routes
 app.use("/", indexRouter);
+app.use("/admin", adminRouter);
 app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);

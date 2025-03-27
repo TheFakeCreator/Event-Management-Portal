@@ -12,7 +12,7 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
     const todayEnd = new Date(now.setHours(23, 59, 59, 999));
 
     // console.log("Today:", todayStart, "to", todayEnd);
-    
+
     const ongoingEvents = await Event.find({
       startDate: { $lte: todayEnd },
       endDate: { $gte: todayStart },
@@ -31,7 +31,7 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
         },
       ],
     });
-    
+
     const upcomingEvents = await Event.find({
       $or: [
         { startDate: { $gt: todayEnd } }, // Future date
@@ -56,6 +56,15 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
     console.error("Error fetching events:", error);
     res.status(500).send("Internal Server Error");
   }
+});
+
+// Test route for unauthorized users (lineants)
+router.get("/test", isAuthenticatedLineant, (req, res) => {
+  res.render("admin/dashboard.ejs", {
+    title: "Admin Dashboard",
+    isAuthenticated: req.isAuthenticated,
+    user: req.user,
+  });
 });
 
 export default router;

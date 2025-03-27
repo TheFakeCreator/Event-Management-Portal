@@ -1,0 +1,65 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto p-10">
+  <h1 class="text-4xl font-bold text-center text-purple-600 mb-8">
+    Manage Users
+  </h1>
+
+  <!-- Search Bar -->
+  <div class="mb-6">
+    <input
+      type="text"
+      id="searchUser"
+      class="w-full p-3 border border-gray-300 rounded-lg"
+      placeholder="Search users by name or email..."
+      onkeyup="filterUsers()"
+    />
+  </div>
+
+  <!-- Users Table -->
+  <div class="bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">User List</h2>
+
+    <table class="w-full border-collapse border border-gray-300">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border p-3">Name</th>
+          <th class="border p-3">Email</th>
+          <th class="border p-3">Role</th>
+          <th class="border p-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="usersTableBody">
+        <% users.forEach(user => { %>
+        <tr>
+          <td class="border p-3"><%= user.name %></td>
+          <td class="border p-3"><%= user.email %></td>
+          <td class="border p-3 text-center"><%= user.role %></td>
+          <td class="border p-3 flex justify-center">
+            <form action="/admin/users/delete/<%= user.id %>" method="POST">
+              <button type="submit" class="text-red-500 hover:underline">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- JavaScript for User Search -->
+<script>
+  function filterUsers() {
+    let input = document.getElementById("searchUser").value.toLowerCase();
+    let rows = document.querySelectorAll("#usersTableBody tr");
+
+    rows.forEach((row) => {
+      let name = row.children[0].textContent.toLowerCase();
+      let email = row.children[1].textContent.toLowerCase();
+      row.style.display =
+        name.includes(input) || email.includes(input) ? "" : "none";
+    });
+  }
+</script>

@@ -1,0 +1,92 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto p-10">
+  <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">
+    Manage Roles
+  </h1>
+
+  <!-- Role Assignment Form -->
+  <div class="bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assign Roles</h2>
+
+    <form action="/admin/roles/assign" method="POST" class="space-y-4">
+      <div>
+        <label for="user" class="block text-gray-700 font-medium"
+          >Select User:</label
+        >
+        <select
+          name="userId"
+          id="user"
+          class="w-full p-2 border border-gray-300 rounded-lg"
+        >
+          <% users.forEach(e => { %>
+          <option value="<%= e.id %>"><%= e.name %> (<%= e.email %>)</option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div>
+        <label for="role" class="block text-gray-700 font-medium"
+          >Select Role:</label
+        >
+        <select
+          name="role"
+          id="role"
+          class="w-full p-2 border border-gray-300 rounded-lg"
+        >
+          <option value="admin">Admin</option>
+          <option value="moderator">Moderator</option>
+          <option value="member">Member</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      >
+        Assign Role
+      </button>
+    </form>
+  </div>
+
+  <!-- Existing Roles List -->
+  <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Current Roles</h2>
+
+    <table class="w-full border-collapse border border-gray-300">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="border p-3">User</th>
+          <th class="border p-3">Email</th>
+          <th class="border p-3">Role</th>
+          <th class="border p-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(e => { %>
+        <tr>
+          <td class="border p-3"><%= e.name %></td>
+          <td class="border p-3"><%= e.email %></td>
+          <td class="border p-3"><%= e.role %></td>
+          <td class="border p-3 flex justify-center space-x-2">
+            <a
+              href="/admin/roles/edit/<%= e.id %>"
+              class="text-yellow-500 hover:underline"
+              >Edit</a
+            >
+            <form
+              action="/admin/roles/delete/<%= e.id %>"
+              method="POST"
+              class="inline"
+            >
+              <button type="submit" class="text-red-500 hover:underline">
+                Remove
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

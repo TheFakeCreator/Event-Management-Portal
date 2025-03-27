@@ -1,0 +1,57 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto p-10">
+  <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">
+    Admin Dashboard
+  </h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Assign Roles -->
+    <a
+      href="/admin/roles"
+      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+    >
+      <i class="fa-solid fa-user-shield text-4xl text-blue-500 mb-4"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">Assign Roles</h2>
+      <p class="text-gray-600">Manage user roles and permissions.</p>
+    </a>
+
+    <!-- Manage Club -->
+    <a
+      href="/admin/clubs"
+      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+    >
+      <i class="fa-solid fa-building text-4xl text-green-500 mb-4"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">Manage Club</h2>
+      <p class="text-gray-600">Create, edit, or delete clubs.</p>
+    </a>
+
+    <!-- View All Users -->
+    <a
+      href="/admin/users"
+      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+    >
+      <i class="fa-solid fa-users text-4xl text-purple-500 mb-4"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">Manage Users</h2>
+      <p class="text-gray-600">View and manage all registered users.</p>
+    </a>
+    <!-- Manage Events -->
+    <a
+      href="/admin/events"
+      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+    >
+      <i class="fa-solid fa-calendar text-4xl text-red-500 mb-4"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">Manage Events</h2>
+      <p class="text-gray-600">Create, edit, or delete events.</p>
+    </a>
+    <!-- Settings -->
+    <a
+      href="/admin/settings"
+      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+    >
+      <i class="fa-solid fa-cog text-4xl text-yellow-500 mb-4"></i>
+      <h2 class="text-2xl font-semibold text-gray-800">Settings</h2>
+      <p class="text-gray-600">Manage application settings.</p>
+    </a>
+  </div>
+</div>
