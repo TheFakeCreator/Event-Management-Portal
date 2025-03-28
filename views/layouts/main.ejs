@@ -51,6 +51,14 @@
           <a href="/club" class="text-gray-600 hover:text-blue-500 transition"
             >Clubs</a
           >
+          <% if (isAuthenticated && user.role === "admin") { %>
+          <a
+            href="/admin/dashboard"
+            class="text-gray-600 hover:text-blue-500 transition"
+          >
+            Admin Dashboard
+          </a>
+          <% } %>
         </div>
 
         <!-- Authentication -->

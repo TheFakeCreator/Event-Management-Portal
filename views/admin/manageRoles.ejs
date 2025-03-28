@@ -8,8 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
 
-<div class="container mx-auto p-10">
-  <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">
+<div class="container mx-auto p-4 sm:p-6 lg:p-10">
+  <h1
+    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-blue-600 mb-6 sm:mb-8"
+  >
     Manage Roles
   </h1>
 
@@ -17,7 +19,7 @@
   <div class="flex justify-end mb-4">
     <a
       href="/admin/roles/requests"
-      class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+      class="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 flex items-center space-x-2 text-sm sm:text-base"
     >
       <i class="fas fa-user-shield"></i>
       <span>View Role Requests</span>
@@ -25,18 +27,22 @@
   </div>
 
   <!-- Role Assignment Form -->
-  <div class="bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Assign Roles</h2>
+  <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+      Assign Roles
+    </h2>
 
     <form action="/admin/roles/assign" method="POST" class="space-y-4">
       <div>
-        <label for="user" class="block text-gray-700 font-medium"
+        <label
+          for="user"
+          class="block text-gray-700 font-medium text-sm sm:text-base"
           >Select User:</label
         >
         <select
           name="userId"
           id="user"
-          class="w-full p-2 border border-gray-300 rounded-lg"
+          class="w-full p-2 border border-gray-300 rounded-lg text-sm sm:text-base"
         >
           <% users.forEach(e => { %>
           <option value="<%= e.id %>"><%= e.name %> (<%= e.email %>)</option>
@@ -45,13 +51,15 @@
       </div>
 
       <div>
-        <label for="role" class="block text-gray-700 font-medium"
+        <label
+          for="role"
+          class="block text-gray-700 font-medium text-sm sm:text-base"
           >Select Role:</label
         >
         <select
           name="role"
           id="role"
-          class="w-full p-2 border border-gray-300 rounded-lg"
+          class="w-full p-2 border border-gray-300 rounded-lg text-sm sm:text-base"
         >
           <option value="admin">Admin</option>
           <option value="moderator">Moderator</option>
@@ -61,7 +69,7 @@
 
       <button
         type="submit"
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        class="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base"
       >
         Assign Role
       </button>
@@ -69,38 +77,44 @@
   </div>
 
   <!-- Search Users -->
-  <div class="mt-8">
+  <div class="mt-6 sm:mt-8">
     <input
       type="text"
       id="searchUser"
-      class="w-full p-2 border border-gray-300 rounded-lg"
+      class="w-full p-2 border border-gray-300 rounded-lg text-sm sm:text-base"
       placeholder="Search users by name or email..."
       onkeyup="filterUsers()"
     />
   </div>
 
   <!-- Existing Roles List -->
-  <div class="mt-8 bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Current Roles</h2>
+  <div class="mt-6 sm:mt-8 bg-white shadow-lg rounded-lg p-4 sm:p-6">
+    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+      Current Roles
+    </h2>
 
-    <table class="w-full border-collapse border border-gray-300">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="border p-3">User</th>
-          <th class="border p-3">Email</th>
-          <th class="border p-3">Role</th>
-        </tr>
-      </thead>
-      <tbody id="userTable">
-        <% users.forEach(e => { %>
-        <tr class="user-row">
-          <td class="border p-3"><%= e.name %></td>
-          <td class="border p-3"><%= e.email %></td>
-          <td class="border p-3"><%= e.role %></td>
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table
+        class="w-full border-collapse border border-gray-300 text-sm sm:text-base"
+      >
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="border p-2 sm:p-3">User</th>
+            <th class="border p-2 sm:p-3">Email</th>
+            <th class="border p-2 sm:p-3">Role</th>
+          </tr>
+        </thead>
+        <tbody id="userTable">
+          <% users.forEach(e => { %>
+          <tr class="user-row">
+            <td class="border p-2 sm:p-3"><%= e.name %></td>
+            <td class="border p-2 sm:p-3"><%= e.email %></td>
+            <td class="border p-2 sm:p-3"><%= e.role %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
