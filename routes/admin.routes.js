@@ -14,6 +14,8 @@ import {
   editClub,
   deleteClub,
   assignRole,
+  approveRoleRequest,
+  rejectRoleRequest,
 } from "../controllers/admin.controller.js";
 import { isAdmin } from "../middlewares/adminMiddleware.js";
 
@@ -39,6 +41,8 @@ router.post("/clubs/create", createClub);
 router.post("/clubs/update/:id", editClub);
 router.post("/clubs/delete/:id", deleteClub);
 router.post("/roles/assign", assignRole);
+router.post("/roles/approve/:userId", approveRoleRequest);
+router.post("/roles/deny/:userId", rejectRoleRequest);
 
 // Manage Users
 router.get("/users", getManageUsers);

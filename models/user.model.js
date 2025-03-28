@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    googleId: { type: String, unique: true, sparse: true }, 
+    googleId: { type: String, unique: true, sparse: true },
     name: {
       type: String,
       required: true,
@@ -59,8 +59,13 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "user"],
+      enum: ["admin", "user", "member", "moderator"],
       default: "user",
+    },
+    roleRequest: {
+      type: String,
+      enum: ["admin", "user", null],
+      default: null,
     },
     events: [
       {
@@ -74,7 +79,7 @@ const userSchema = new Schema(
     resetToken: {
       type: String,
     },
-    expireToken : {
+    expireToken: {
       type: Date,
     },
     isDeleted: {

@@ -1,6 +1,7 @@
 import express from "express";
 import { isAuthenticated } from "../middlewares/authMiddleware.js";
 import User from "../models/user.model.js";
+import { requestRole } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -75,4 +76,13 @@ router.get("/:username", isAuthenticated, (req, res) => {
   });
 });
 
+router.get("/:username/request-role", isAuthenticated, (req, res) => {
+  res.render("request-role", {
+    title: "Request Role",
+    user: req.user,
+    isAuthenticated: req.isAuthenticated,
+  });
+});
+
+router.post("/:username/request-role", isAuthenticated, requestRole);
 export default router;

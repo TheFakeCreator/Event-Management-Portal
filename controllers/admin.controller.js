@@ -29,12 +29,15 @@ export const getManageRoles = async (req, res) => {
 
 export const getRoleRequests = async (req, res) => {
   try {
-    const roleRequests = await User.find({ role: "pending" });
+    const users = await User.find({ roleRequest: "admin" });
+    if (!users) {
+      return res.status(404).send("No role requests found");
+    }
     res.render("admin/roleRequests", {
       title: "Role Requests",
       isAuthenticated: req.isAuthenticated,
       user: req.user,
-      roleRequests,
+      users,
     });
   } catch (error) {
     console.error("Error fetching role requests:", error);
@@ -152,6 +155,51 @@ export const assignRole = async (req, res) => {
     });
     await user.save();
     res.json({ message: "Role updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const approveRoleRequest = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.role = user.roleRequest;
+    user.roleRequest = null;
+    const log = await Log.create({
+      user: req.user._id,
+      affectedUser: userId,
+      action: "EDIT",
+      targetType: "USER",
+      targetId: userId,
+      details: `Role request of ${userId} approved by ${req.user.name}`,
+    });
+    await user.save();
+    res.json({ message: "Role request approved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const rejectRoleRequest = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.roleRequest = null;
+    const log = await Log.create({
+      user: req.user._id,
+      affectedUser: userId,
+      action: "EDIT",
+      targetType: "USER",
+      targetId: userId,
+      details: `Role request of ${userId} rejected by ${req.user.name}`,
+    });
+    await user.save();
+    res.json({ message: "Role request rejected successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
