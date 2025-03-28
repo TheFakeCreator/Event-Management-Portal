@@ -108,6 +108,26 @@ export const getManageEvents = async (req, res) => {
   }
 };
 
+export const getEditEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    const clubs = await Club.find();
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+    res.render("admin/editEvent", {
+      title: "Edit Event",
+      isAuthenticated: req.isAuthenticated,
+      user: req.user,
+      event,
+      clubs,
+    });
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 export const getSettings = (req, res) => {
   try {
     res.render("admin/settings", {
@@ -263,5 +283,41 @@ export const deleteClub = async (req, res) => {
     res.json({ message: "Club deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const log = await Log.create({
+      user: req.user._id,
+      action: "DELETE",
+      targetType: "USER",
+      targetId: userId,
+      details: `User ${user.name} deleted by ${req.user.name}`,
+    });
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event = await Event.findByIdAndDelete(id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    const log = await Log.create({
+      user: req.user._id,
+      action: "DELETE",
+      targetType: "EVENT",
+      targetId: id,
+      details: `Event ${event.title} deleted by ${req.user.name}`,
+    });
+    res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };

@@ -18,7 +18,7 @@ const logSchema = new mongoose.Schema(
     },
     targetType: {
       type: String,
-      enum: ["USER", "ROLE", "CLUB", "POST", "OTHER"], // What entity was affected
+      enum: ["USER", "ROLE", "CLUB", "EVENT", "OTHER"], // What entity was affected
       required: true,
     },
     targetId: {
