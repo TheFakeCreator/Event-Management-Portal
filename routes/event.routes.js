@@ -13,13 +13,15 @@ const router = express.Router();
 
 router.get("/", isAuthenticatedLineant, async (req, res) => {
   try {
-    const user=req.user;
+    const user = req.user;
+    const clubs = await Club.find({});
 
     const events = await Event.find({});
     res.render("eventsPage", {
       title: "Event Management Portal",
       events,
       user,
+      clubs,
       isAuthenticated: req.isAuthenticated,
     });
   } catch (error) {
@@ -29,7 +31,7 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
 
 router.get("/create", isAuthenticated, async (req, res) => {
   try {
-    const user=req.user;
+    const user = req.user;
 
     const clubs = await Club.find({});
     res.render("createEvent", {
@@ -46,13 +48,17 @@ router.get("/create", isAuthenticated, async (req, res) => {
 router.post("/create", isAuthenticated, createEvent);
 router.get("/:id", isAuthenticated, async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate("club").populate("collaborators");
-    
+    const event = await Event.findById(req.params.id)
+      .populate("club")
+      .populate("collaborators");
+
     if (!event) {
       return res.status(404).send("Event not found");
     }
 
-    const registeredUsersCount = await Registration.countDocuments({ event: req.params.id });
+    const registeredUsersCount = await Registration.countDocuments({
+      event: req.params.id,
+    });
     res.render("eventDetails", {
       title: "Event Details",
       event,
@@ -74,7 +80,7 @@ router.get("/:id/register", isAuthenticated, async (req, res) => {
 
     // Check if the event has already started
     if (new Date() >= new Date(event.startDate)) {
-      return res.status(403).render("registrationClose",{ 
+      return res.status(403).render("registrationClose", {
         event,
         title: "Event Registration",
         isAuthenticated: req.isAuthenticated,
@@ -82,24 +88,21 @@ router.get("/:id/register", isAuthenticated, async (req, res) => {
       });
     }
 
-    res.render("eventRegister", { 
+    res.render("eventRegister", {
       event,
       title: "Event Registration",
       isAuthenticated: req.isAuthenticated,
       user: req.user,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
   }
 });
 
-
 // Handle event registration
-router.post("/:id/register",isAuthenticated, async (req, res) => {
+router.post("/:id/register", isAuthenticated, async (req, res) => {
   try {
-
     const event = await Event.findById(req.params.id);
     if (!event) {
       return res.status(404).send("Event not found");
@@ -120,7 +123,6 @@ router.post("/:id/register",isAuthenticated, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 
 // router.get("/", async (req, res) => {
 //   const events = await Event.find();
