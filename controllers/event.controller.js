@@ -67,7 +67,7 @@ export const createEvent = async (req, res) => {
       user: req.user._id,
       action: "CREATE",
       targetType: "EVENT",
-      targetId: id,
+      targetId: event._id,
       details: `Event ${event.title} created by ${req.user.name}`,
     });
 
