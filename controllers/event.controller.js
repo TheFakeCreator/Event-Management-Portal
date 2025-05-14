@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
+import Log from "../models/log.model.js";
 export const createEvent = async (req, res) => {
   try {
     const {
@@ -58,12 +59,53 @@ export const createEvent = async (req, res) => {
       location,
       image,
       club,
+      createdBy: req.user._id,
       collaborators: collaboratorsArray,
+    });
+
+    const log = await Log.create({
+      user: req.user._id,
+      action: "CREATE",
+      targetType: "EVENT",
+      targetId: id,
+      details: `Event ${event.title} created by ${req.user.name}`,
     });
 
     res.send(event);
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+export const deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Check if the user is authorized to delete the event
+    if (
+      event.createdBy.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this event." });
+    }
+
+    await Event.findByIdAndDelete(event._id);
+
+    const log = await Log.create({
+      user: req.user._id,
+      action: "DELETE",
+      targetType: "EVENT",
+      targetId: id,
+      details: `Event ${event.title} deleted by ${req.user.name}`,
+    });
+
+    res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };
