@@ -27,29 +27,41 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    gender: {
+      type: String,
+      enum: ["male", "Female", "other"],
+      default: "other",
+    },
     avatar: {
       type: String, // Store image URL (Cloudinary, Firebase, etc.)
-      default: "/images/default-avatar.png",
+      default: "/images/male.jpg",
     },
     bio: {
       type: String,
       maxlength: 250, // Limit bio length
     },
     phone: {
-      type: Number,
+      type: String,
     },
     socials: {
       linkedin: { type: String },
       github: { type: String },
-      twitter: { type: String },
+      behance: { type: String },
     },
-    occupation: {
-      type: String,
-      default: "Student",
-    },
-    location: {
-      type: String,
-    },
+    clubs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Club",
+      },
+    ],
+    moderatorClubs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Club", // Assuming a separate Club model
+      },
+    ],
+    createdEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
+    participatedEvents: [{ type: Schema.Types.ObjectId, ref: "Event" }],
     isVerified: {
       type: Boolean,
       default: false,
@@ -64,15 +76,9 @@ const userSchema = new Schema(
     },
     roleRequest: {
       type: String,
-      enum: ["admin", "user", null],
+      enum: ["admin", "user", "moderator", "member", null],
       default: null,
     },
-    events: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Event",
-      },
-    ],
     lastLogin: {
       type: Date,
     },

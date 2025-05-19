@@ -5,7 +5,7 @@
     Edit Event
   </h1>
 
-  <form action="/event/<%= event._id %>/edit" method="POST" class="space-y-6">
+  <form action="/admin/event/edit/<%= event._id %>" method="POST" class="space-y-6">
     <div class="grid grid-cols-1 gap-4">
       <div>
         <label for="title" class="block text-lg font-medium text-gray-700">Event Title</label>
@@ -53,7 +53,7 @@
             type="date"
             name="startDate"
             id="startDate"
-            value="<%= event.startDate %>"
+            value="<%= event.startDate ? (event.startDate.toISOString ? event.startDate.toISOString().slice(0,10) : event.startDate.slice(0,10)) : '' %>"
             class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
           />
@@ -64,7 +64,7 @@
             type="date"
             name="endDate"
             id="endDate"
-            value="<%= event.endDate %>"
+            value="<%= event.endDate ? (event.endDate.toISOString ? event.endDate.toISOString().slice(0,10) : event.endDate.slice(0,10)) : '' %>"
             class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
           />
