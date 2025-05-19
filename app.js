@@ -14,6 +14,8 @@ import "./configs/passport.js";
 import session from "express-session";
 import cors from "cors";
 import passport from "passport";
+import "./jobs/eventReminder.js";
+
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
 import adminRouter from "./routes/admin.routes.js";
