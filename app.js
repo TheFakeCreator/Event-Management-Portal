@@ -14,6 +14,8 @@ import "./configs/passport.js";
 import session from "express-session";
 import cors from "cors";
 import passport from "passport";
+import "./jobs/eventReminder.js";
+
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
 import adminRouter from "./routes/admin.routes.js";
@@ -22,6 +24,7 @@ import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import clubRouter from "./routes/club.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import recruitmentRouter from "./routes/recruitment.routes.js";
 dotenv.config();
 
 // App constants
@@ -75,6 +78,7 @@ app.use("/event", eventRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/club", clubRouter);
+app.use("/recruitment", recruitmentRouter);
 app.use("/api", uploadRoutes);
 app.use("/api/events", eventRouter);
 

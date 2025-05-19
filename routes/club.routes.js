@@ -25,7 +25,6 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
     res.status(500).send("Error fetching clubs");
   }
 });
-
 // Create a new club (Admin only)
 // Admin check should be placed here.
 router.get("/add", isAuthenticated, isAdmin, (req, res) => {
@@ -37,7 +36,6 @@ router.get("/add", isAuthenticated, isAdmin, (req, res) => {
   });
 });
 router.post("/add", isAuthenticated, isAdmin, createClub);
-
 // Club details route
 router.get("/:id", isAuthenticatedLineant, async (req, res) => {
   try {

@@ -51,6 +51,9 @@
           <a href="/club" class="text-gray-600 hover:text-blue-500 transition"
             >Clubs</a
           >
+          <a href="/recruitment" class="text-gray-600 hover:text-blue-500 transition"
+            >Recruitments</a
+          >
           <% if (isAuthenticated && user.role === "admin") { %>
           <a
             href="/admin/dashboard"
@@ -126,6 +129,11 @@
           href="/club"
           class="block px-6 py-2 text-gray-600 hover:text-blue-500"
           >Clubs</a
+        >
+        <a
+          href="/recruitments"
+          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          >Recruitments</a
         >
         <% if (!isAuthenticated) { %>
         <a
