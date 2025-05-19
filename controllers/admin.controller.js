@@ -304,6 +304,7 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+//Delete Event
 export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -317,6 +318,58 @@ export const deleteEvent = async (req, res) => {
       details: `Event ${event.title} deleted by ${req.user.name}`,
     });
     res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+// Edit Event
+export const editEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      type,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      location,
+      image,
+      club,
+      collaborators,
+    } = req.body;
+
+    const event = await Event.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        type,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        location,
+        image,
+        club,
+        collaborators: collaborators.split(","),
+      },
+      { new: true }
+    );
+
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    const log = await Log.create({
+      user: req.user._id,
+      action: "EDIT",
+      targetType: "EVENT",
+      targetId: id,
+      details: `Event ${event.title} edited by ${req.user.name}`,
+    });
+
+    res.json({ message: "Event updated successfully" });
   } catch (error) {
     res.status(500).json({ error });
   }

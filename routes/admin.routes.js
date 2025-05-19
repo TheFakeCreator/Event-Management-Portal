@@ -19,6 +19,7 @@ import {
   deleteUser,
   getEditEvent,
   deleteEvent,
+  editEvent,
 } from "../controllers/admin.controller.js";
 import { isAdmin } from "../middlewares/adminMiddleware.js";
 
@@ -49,6 +50,7 @@ router.post("/roles/approve/:userId", approveRoleRequest);
 router.post("/roles/deny/:userId", rejectRoleRequest);
 router.post("/users/delete/:userId", deleteUser);
 router.post("/events/delete/:id", deleteEvent);
+router.post("/events/edit/:id", editEvent);
 
 // Manage Users
 router.get("/users", getManageUsers);

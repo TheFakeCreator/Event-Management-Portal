@@ -3,7 +3,11 @@
 <div class="container mx-auto px-4 py-8">
   <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
     <!-- Event Image -->
-    <img src="<%= event.image %>" alt="<%= event.title %>" class="w-full h-80 object-cover" />
+    <img
+      src="<%= event.image %>"
+      alt="<%= event.title %>"
+      class="w-full h-80 object-cover"
+    />
 
     <!-- Event Content -->
     <div class="p-6">
@@ -11,36 +15,75 @@
       <p class="text-gray-700 text-lg mb-6"><%= event.description %></p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
-        <p><i class="far fa-calendar-alt"></i> <strong>Date:</strong> 
-          <%= new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }) %> - 
-          <%= new Date(event.endDate).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' }) %>
+        <p>
+          <i class="far fa-calendar-alt"></i> <strong>Date:</strong>
+          <%= new Date(event.startDate).toLocaleDateString('en-US', { weekday:
+          'long', day: 'numeric', month: 'long' }) %> - <%= new
+          Date(event.endDate).toLocaleDateString('en-US', { weekday: 'long',
+          day: 'numeric', month: 'long' }) %>
         </p>
-        <p><i class="far fa-clock"></i> <strong>Time:</strong> <%= event.startTime %> - <%= event.endTime %></p>
-        <p><i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> <%= event.location %></p>
-        <p><i class="fas fa-user"></i> <strong>Organized by:</strong> <%= event.club.name %></p>
-        <p><i class="fas fa-user"></i> <strong>Registrations:</strong> <%= registeredUsersCount %></p>
+        <p>
+          <i class="far fa-clock"></i> <strong>Time:</strong> <%=
+          event.startTime %> - <%= event.endTime %>
+        </p>
+        <p>
+          <i class="fas fa-map-marker-alt"></i> <strong>Location:</strong> <%=
+          event.location %>
+        </p>
+        <p>
+          <i class="fas fa-user"></i> <strong>Organized by:</strong> <%=
+          event.club.name %>
+        </p>
+        <p>
+          <i class="fas fa-user"></i> <strong>Registrations:</strong> <%=
+          registeredUsersCount %>
+        </p>
       </div>
-      
+
       <% if (event.collaborators.length > 0) { %>
-        <div class="mt-6">
-          <h2 class="text-xl font-semibold text-gray-800">Collaborating Clubs:</h2>
-          <ul class="list-disc list-inside text-gray-600">
-            <% event.collaborators.forEach(collab => { %>
-              <li><%= collab.name %></li>
-            <% }); %>
-          </ul>
-        </div>
+      <div class="mt-6">
+        <h2 class="text-xl font-semibold text-gray-800">
+          Collaborating Clubs:
+        </h2>
+        <ul class="list-disc list-inside text-gray-600">
+          <% event.collaborators.forEach(collab => { %>
+          <li><%= collab.name %></li>
+          <% }); %>
+        </ul>
+      </div>
       <% } %>
-      
+
       <div class="mt-8 flex justify-between items-center">
-        <a href="/event" class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600 transition">Back to Events</a>
+        <a
+          href="/event"
+          class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600 transition"
+          >Back to Events</a
+        >
+        <%if(creator){%>
+        <a
+          href="/event/<%= event._id %>/edit"
+          class="bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition"
+          >Edit Event</a
+        >
+        <form action="/event/<%=event._id%>/delete" method="post">
+          <input type="hidden" name="_method" value="DELETE" />
+          <button
+            type="submit"
+            class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Delete Event
+          </button>
+        </form>
 
-        <% if (new Date() < new Date(event.startDate)) { %>
-          <a href="/event/<%= event._id %>/register" class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition">Register Now</a>
+        <%}%> <% if (new Date() < new Date(event.startDate)) { %>
+        <a
+          href="/event/<%= event._id %>/register"
+          class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition"
+          >Register Now</a
+        >
         <% } else { %>
-          <span class="text-red-500 font-semibold">Registration Closed</span>
+        <span class="text-red-500 font-semibold">Registration Closed</span>
         <% } %>
-
       </div>
     </div>
   </div>

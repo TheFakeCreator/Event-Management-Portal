@@ -12,7 +12,7 @@ const router = express.Router();
 // Fetch all clubs
 router.get("/", isAuthenticatedLineant, async (req, res) => {
   try {
-    const user=req.user;
+    const user = req.user;
     const clubs = await Club.find();
     res.render("clubs", {
       title: "Clubs List",
@@ -22,6 +22,25 @@ router.get("/", isAuthenticatedLineant, async (req, res) => {
     });
   } catch (err) {
     res.status(500).send("Error fetching clubs");
+  }
+});
+
+// Club details route
+router.get("/:id", isAuthenticatedLineant, async (req, res) => {
+  try {
+    const user = req.user;
+    const club = await Club.findById(req.params.id);
+    if (!club) {
+      return res.status(404).render("404", { message: "Club not found" });
+    }
+    res.render("clubDetails", {
+      title: club.name,
+      club,
+      user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (err) {
+    res.status(500).send("Error fetching club details");
   }
 });
 
