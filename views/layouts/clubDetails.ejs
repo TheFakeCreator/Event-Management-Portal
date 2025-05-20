@@ -1,0 +1,68 @@
+<div class="container mx-auto p-0">
+  <div
+    class="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-8 flex items-end"
+  >
+    <img
+      src="<%= club.banner %>"
+      alt="<%= club.name %> Banner"
+      class="absolute inset-0 w-full h-full object-cover object-center opacity-80"
+    />
+    <div
+      class="relative z-10 w-full flex items-end gap-6 p-6 bg-gradient-to-t from-black/60 via-black/30 to-transparent"
+    >
+      <img
+        src="<%= club.image %>"
+        alt="<%= club.name %> Logo"
+        class="w-28 h-28 object-cover rounded-lg shadow-md border-4 border-white hidden md:block mb-2"
+      />
+      <div class="flex-1">
+        <div class="flex items-start justify-between">
+          <div class="max-w-2xl w-full">
+            <h1
+              class="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow truncate"
+            >
+              <%= club.name %>
+            </h1>
+            <p
+              class="text-gray-100 text-lg mb-4 drop-shadow break-words max-w-2xl overflow-hidden"
+              style="
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                white-space: normal;
+              "
+            >
+              <%= club.description %>
+            </p>
+          </div>
+          <% if (user && (user.role === 'admin' || (user.role === 'moderator' &&
+          club.moderators && club.moderators.includes(user._id)))) { %>
+          <a
+            href="/club/<%= club._id %>/edit"
+            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg shadow-md transition-all duration-200 ml-4 mt-1"
+          >
+            <i class="fas fa-pencil"></i> Edit Club Details
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mb-6 border-b border-gray-200">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+      <% const tabs = ["about", "recruitments", "gallery", "socials", "events",
+      "members"]; %> <% tabs.forEach(tab => { %>
+      <li class="mr-2">
+        <a
+          href="/club/<%= club._id %>/<%= tab %>"
+          class="tab-link inline-block p-4 border-b-2 rounded-t-lg <%= currentTab === tab ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-300' %>"
+        >
+          <%= tab.charAt(0).toUpperCase() + tab.slice(1) %>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>

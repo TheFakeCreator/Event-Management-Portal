@@ -1,0 +1,36 @@
+<% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user,
+currentTab: "gallery" }) %>
+
+<div class="container mx-auto">
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold mb-2 text-blue-700">Gallery</h2>
+    <% if (club.gallery && club.gallery.length > 0) { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <% club.gallery.forEach(function(item) { %>
+      <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+        <img
+          src="<%= item.url %>"
+          alt="Gallery Image"
+          class="w-full h-56 object-cover rounded mb-3 border border-gray-200"
+        />
+        <% if (item.caption) { %>
+        <p class="text-gray-700 text-center text-base mb-1">
+          <%= item.caption %>
+        </p>
+        <% } %>
+        <div class="text-xs text-gray-400 mt-1">
+          Uploaded <%= item.uploadedAt ? new
+          Date(item.uploadedAt).toLocaleDateString() : '' %>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="text-gray-500 italic">No images in the gallery yet.</div>
+    <% } %>
+  </div>
+
+  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+    >&larr; Back to Clubs</a
+  >
+</div>

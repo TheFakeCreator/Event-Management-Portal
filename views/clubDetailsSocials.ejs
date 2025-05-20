@@ -1,0 +1,161 @@
+<% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user,
+currentTab: "socials" }) %>
+
+<div class="container mx-auto">
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold mb-5 text-blue-700">Social Links</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      <% if (club.social && (club.social.email || club.social.instagram ||
+      club.social.facebook || club.social.linkedin || club.social.discord)) { %>
+      <% if (club.social.email) { %>
+      <a
+        href="mailto:<%= club.social.email %>"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-5 border border-blue-200 cursor-pointer animated-shadow-blue transition-transform hover:scale-105"
+      >
+        <i
+          class="fas fa-envelope text-blue-600 text-2xl group-hover:text-blue-800 transition"
+        ></i>
+        <span
+          class="text-blue-700 font-semibold group-hover:underline break-all"
+          >Email: <%= club.social.email %></span
+        >
+      </a>
+      <% } %> <% if (club.social.instagram) { %>
+      <a
+        href="<%= club.social.instagram %>"
+        target="_blank"
+        rel="noopener"
+        class="group flex items-center gap-3 bg-gradient-to-r from-pink-100 to-pink-50 rounded-xl p-5 border border-pink-200 cursor-pointer animated-shadow-pink transition-transform hover:scale-105"
+      >
+        <i
+          class="fab fa-instagram text-pink-500 text-2xl group-hover:text-pink-700 transition"
+        ></i>
+        <span
+          class="text-pink-600 font-semibold group-hover:underline break-all"
+          >Instagram</span
+        >
+      </a>
+      <% } %> <% if (club.social.facebook) { %>
+      <a
+        href="<%= club.social.facebook %>"
+        target="_blank"
+        rel="noopener"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-200 to-blue-50 rounded-xl p-5 border border-blue-300 cursor-pointer animated-shadow-facebook transition-transform hover:scale-105"
+      >
+        <i
+          class="fab fa-facebook text-blue-800 text-2xl group-hover:text-blue-900 transition"
+        ></i>
+        <span
+          class="text-blue-800 font-semibold group-hover:underline break-all"
+          >Facebook</span
+        >
+      </a>
+      <% } %> <% if (club.social.linkedin) { %>
+      <a
+        href="<%= club.social.linkedin %>"
+        target="_blank"
+        rel="noopener"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-5 border border-blue-400 cursor-pointer animated-shadow-linkedin transition-transform hover:scale-105"
+      >
+        <i
+          class="fab fa-linkedin text-blue-500 text-2xl group-hover:text-blue-700 transition"
+        ></i>
+        <span
+          class="text-blue-500 font-semibold group-hover:underline break-all"
+          >LinkedIn</span
+        >
+      </a>
+      <% } %> <% if (club.social.discord) { %>
+      <a
+        href="<%= club.social.discord %>"
+        target="_blank"
+        rel="noopener"
+        class="group flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-indigo-50 rounded-xl p-5 border border-indigo-300 cursor-pointer animated-shadow-discord transition-transform hover:scale-105"
+      >
+        <i
+          class="fab fa-discord text-indigo-600 text-2xl group-hover:text-indigo-800 transition"
+        ></i>
+        <span
+          class="text-indigo-600 font-semibold group-hover:underline break-all"
+          >Discord</span
+        >
+      </a>
+      <% } %> <% } else { %>
+      <div class="text-gray-500 italic col-span-full">
+        No social links available for this club.
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+    >&larr; Back to Clubs</a
+  >
+</div>
+
+<style>
+  @keyframes shadowPulseBlue {
+    0%,
+    100% {
+      box-shadow: 0 4px 24px 0 rgba(59, 130, 246, 0.25);
+    }
+    50% {
+      box-shadow: 0 4px 32px 0 rgba(59, 130, 246, 0.45);
+    }
+  }
+  .animated-shadow-blue {
+    animation: shadowPulseBlue 2.5s infinite alternate;
+  }
+
+  @keyframes shadowPulsePink {
+    0%,
+    100% {
+      box-shadow: 0 4px 24px 0 rgba(236, 72, 153, 0.18);
+    }
+    50% {
+      box-shadow: 0 4px 32px 0 rgba(236, 72, 153, 0.38);
+    }
+  }
+  .animated-shadow-pink {
+    animation: shadowPulsePink 2.5s infinite alternate;
+  }
+
+  @keyframes shadowPulseFacebook {
+    0%,
+    100% {
+      box-shadow: 0 4px 24px 0 rgba(30, 64, 175, 0.18);
+    }
+    50% {
+      box-shadow: 0 4px 32px 0 rgba(30, 64, 175, 0.38);
+    }
+  }
+  .animated-shadow-facebook {
+    animation: shadowPulseFacebook 2.5s infinite alternate;
+  }
+
+  @keyframes shadowPulseLinkedin {
+    0%,
+    100% {
+      box-shadow: 0 4px 24px 0 rgba(59, 130, 246, 0.18);
+    }
+    50% {
+      box-shadow: 0 4px 32px 0 rgba(59, 130, 246, 0.38);
+    }
+  }
+  .animated-shadow-linkedin {
+    animation: shadowPulseLinkedin 2.5s infinite alternate;
+  }
+
+  @keyframes shadowPulseDiscord {
+    0%,
+    100% {
+      box-shadow: 0 4px 24px 0 rgba(99, 102, 241, 0.18);
+    }
+    50% {
+      box-shadow: 0 4px 32px 0 rgba(99, 102, 241, 0.38);
+    }
+  }
+  .animated-shadow-discord {
+    animation: shadowPulseDiscord 2.5s infinite alternate;
+  }
+</style>

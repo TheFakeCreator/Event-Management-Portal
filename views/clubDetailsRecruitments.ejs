@@ -1,0 +1,71 @@
+<% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user,
+currentTab: "recruitments" }) %>
+
+<div class="container mx-auto">
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold mb-2 text-blue-700">
+      Active Recruitments
+    </h2>
+    <% if (club.activeRecruitments && club.activeRecruitments.length > 0) { %>
+    <div class="space-y-6">
+      <% club.activeRecruitments.forEach(function(recruitment) { %>
+      <div
+        class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 shadow"
+      >
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800">
+            <%= recruitment.title %>
+          </h3>
+          <p class="text-gray-600 mt-1 mb-2"><%= recruitment.description %></p>
+          <p class="text-sm text-gray-500">
+            Deadline: <%= new Date(recruitment.deadline).toLocaleDateString() %>
+          </p>
+        </div>
+        <a
+          href="/recruitment/<%= recruitment._id %>"
+          class="mt-4 md:mt-0 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >View / Apply</a
+        >
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="text-gray-500 italic">
+      No active recruitments at the moment.
+    </div>
+    <% } %>
+  </div>
+
+  <div class="mt-12">
+    <h2 class="text-xl font-semibold mb-2 text-gray-500">Past Recruitments</h2>
+    <% if (club.pastRecruitments && club.pastRecruitments.length > 0) { %>
+    <div class="space-y-6">
+      <% club.pastRecruitments.forEach(function(recruitment) { %>
+      <div
+        class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-gray-100 opacity-60 cursor-not-allowed"
+      >
+        <div>
+          <h3 class="text-xl font-semibold text-gray-400">
+            <%= recruitment.title %>
+          </h3>
+          <p class="text-gray-400 mt-1 mb-2"><%= recruitment.description %></p>
+          <p class="text-sm text-gray-400">
+            Deadline: <%= new Date(recruitment.deadline).toLocaleDateString() %>
+          </p>
+        </div>
+        <span
+          class="mt-4 md:mt-0 px-6 py-2 bg-gray-300 text-gray-500 rounded-lg"
+          >Closed</span
+        >
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="text-gray-400 italic">No past recruitments.</div>
+    <% } %>
+  </div>
+
+  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+    >&larr; Back to Clubs</a
+  >
+</div>

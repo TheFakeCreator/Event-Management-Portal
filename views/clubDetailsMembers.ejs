@@ -1,0 +1,61 @@
+<% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user, currentTab: "members" }) %>
+
+<div class="container mx-auto">
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold mb-2 text-blue-700">Current Members</h2>
+    <% if (club.currentMembers && club.currentMembers.length > 0) { %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <% club.currentMembers.forEach(function(member) { %>
+          <div class="bg-white/90 border border-blue-200 rounded-xl shadow-lg p-5 flex flex-col items-center">
+            <img src="<%= member.avatar || '/images/male.jpg' %>" alt="<%= member.name %>" class="w-20 h-20 rounded-full object-cover mb-3 border-2 border-blue-400 shadow">
+            <h3 class="text-lg font-semibold text-blue-700 mb-1"><%= member.name %></h3>
+            <p class="text-gray-600 text-sm"><%= member.email %></p>
+            <% if (member.role) { %><span class="mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs"><%= member.role %></span><% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-gray-500 italic">No current members listed.</div>
+    <% } %>
+  </div>
+
+  <div class="mt-12">
+    <h2 class="text-xl font-semibold mb-2 text-gray-500">Past Members</h2>
+    <% if (club.pastMembersByYear && Object.keys(club.pastMembersByYear).length > 0) { %>
+      <div class="mb-4">
+        <label for="yearSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Academic Year:</label>
+        <select id="yearSelect" class="border border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+          <% Object.keys(club.pastMembersByYear).sort((a, b) => b - a).forEach(function(year, idx) { %>
+            <option value="<%= year %>" <%= idx === 0 ? 'selected' : '' %>><%= year %></option>
+          <% }) %>
+        </select>
+      </div>
+      <% Object.keys(club.pastMembersByYear).sort((a, b) => b - a).forEach(function(year, idx) { %>
+        <div class="past-members-group" data-year="<%= year %>" style="display: <%= idx === 0 ? 'block' : 'none' %>;">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <% club.pastMembersByYear[year].forEach(function(member) { %>
+              <div class="bg-gray-100 border border-gray-300 rounded-xl p-5 opacity-60 flex flex-col items-center">
+                <img src="<%= member.avatar || '/public/images/male.jpg' %>" alt="<%= member.name %>" class="w-20 h-20 rounded-full object-cover mb-3 border-2 border-gray-300">
+                <h3 class="text-lg font-semibold text-gray-400 mb-1"><%= member.name %></h3>
+                <p class="text-gray-400 text-sm"><%= member.email %></p>
+                <% if (member.role) { %><span class="mt-2 px-3 py-1 bg-gray-200 text-gray-500 rounded-full text-xs"><%= member.role %></span><% } %>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+      <script>
+        const yearSelect = document.getElementById('yearSelect');
+        const groups = document.querySelectorAll('.past-members-group');
+        yearSelect.addEventListener('change', function() {
+          groups.forEach(g => g.style.display = 'none');
+          document.querySelector('.past-members-group[data-year="' + this.value + '"]').style.display = 'block';
+        });
+      </script>
+    <% } else { %>
+      <div class="text-gray-400 italic">No past members listed.</div>
+    <% } %>
+  </div>
+
+  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline">&larr; Back to Clubs</a>
+</div>
