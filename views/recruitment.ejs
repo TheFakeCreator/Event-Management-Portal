@@ -6,22 +6,28 @@
     Explore current club and event recruitments. Join a team, grow your skills, and make an impact!
   </p>
 
-  <!-- Example Recruitment List -->
-  <div class="space-y-6">
-    <div class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h2 class="text-xl font-semibold text-gray-800">Web Development Club</h2>
-        <p class="text-gray-600">Looking for frontend and backend developers. Deadline: May 31, 2025</p>
-      </div>
-      <a href="#" class="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Apply</a>
+  <% if (recruitments && recruitments.length > 0) { %>
+    <div class="space-y-6">
+      <% recruitments.forEach(function(rec) { %>
+        <div class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between <%= new Date(rec.deadline).getTime() + 24*60*60*1000 < Date.now() ? 'bg-gray-300 opacity-60' : '' %>">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800"><%= rec.club?.name || 'Club' %></h2>
+            <p class="text-gray-600">
+              <span class="font-semibold"><%= rec.title %></span> - <%= rec.description %>
+              <br>
+              Deadline: <%= new Date(rec.deadline).toLocaleDateString() %>
+            </p>
+            <p class="text-sm text-green-700 mt-2">Total Applicants: <%= rec.totalApplicants || 0 %></p>
+          </div>
+          <% if (new Date(rec.deadline).getTime() + 24*60*60*1000 >= Date.now()) { %>
+            <a href="/recruitment/apply/<%= rec._id %>" class="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Apply</a>
+          <% } else { %>
+            <span class="mt-4 md:mt-0 px-6 py-2 bg-gray-500 text-white rounded-lg cursor-not-allowed">Expired</span>
+          <% } %>
+        </div>
+      <% }) %>
     </div>
-    <div class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h2 class="text-xl font-semibold text-gray-800">EventX Organizing Team</h2>
-        <p class="text-gray-600">Seeking volunteers for event management and logistics. Deadline: June 10, 2025</p>
-      </div>
-      <a href="#" class="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Apply</a>
-    </div>
-    <!-- Add more recruitment cards as needed -->
-  </div>
+  <% } else { %>
+    <p class="text-gray-500 text-center">No recruitments available at the moment.</p>
+  <% } %>
 </div>
