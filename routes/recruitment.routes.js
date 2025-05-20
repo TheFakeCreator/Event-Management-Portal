@@ -2,6 +2,7 @@ import express from 'express';
 import { isAuthenticatedLineant } from '../middlewares/authMiddleware.js';
 import Recruitment from '../models/recruitment.model.js';
 import Registration from '../models/registration.model.js';
+import { isClubModerator } from '../middlewares/moderatorMiddleware.js';
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.get('/', isAuthenticatedLineant, async (req, res) => {
 });
 
 // GET /recruitment/new - Show form to create a new recruitment
-router.get('/new', isAuthenticatedLineant, (req, res) => {
+router.get('/new', isAuthenticatedLineant,isClubModerator, (req, res) => {
   const user = req.user;
   const clubId = req.query.club;
   res.render('createRecruitment', {
@@ -58,7 +59,7 @@ router.get('/new', isAuthenticatedLineant, (req, res) => {
 });
 
 // POST /recruitment/new - Handle form submission to create a new recruitment
-router.post('/new', isAuthenticatedLineant, async (req, res) => {
+router.post('/new', isAuthenticatedLineant,isClubModerator, async (req, res) => {
   const user = req.user;
   const { title, description, deadline, clubId } = req.body;
   try {
@@ -71,7 +72,7 @@ router.post('/new', isAuthenticatedLineant, async (req, res) => {
       club: clubId,
       isActive: true
     });
-    res.redirect(`/club/${clubId}`);
+    res.redirect(`/club/${clubId}/about`);
   } catch (err) {
     console.error(err);
     res.status(500).render('createRecruitment', {

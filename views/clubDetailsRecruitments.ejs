@@ -3,9 +3,18 @@ currentTab: "recruitments" }) %>
 
 <div class="container mx-auto">
   <div class="mt-8">
-    <h2 class="text-xl font-semibold mb-2 text-blue-700">
-      Active Recruitments
-    </h2>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold mb-2 text-blue-700">
+        Active Recruitments
+      </h2>
+      <% if (user && (user.role === 'admin' || user.role === 'moderator')) { %>
+        <a
+          href="/recruitment/new?club=<%= club._id %>"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >Add Recruitment</a
+        >
+      <% } %>
+    </div>
     <% if (club.activeRecruitments && club.activeRecruitments.length > 0) { %>
     <div class="space-y-6">
       <% club.activeRecruitments.forEach(function(recruitment) { %>
