@@ -50,8 +50,13 @@ const userSchema = new Schema(
     },
     clubs: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Club",
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: "Club",
+        },
+        designation: {
+          type: String,
+        },
       },
     ],
     moderatorClubs: [

@@ -1,0 +1,103 @@
+<!-- 404.ejs - Custom 404 Page -->
+<% layout('layouts/main') %>
+<div
+  class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-tr from-blue-800 via-indigo-700 to-fuchsia-600 animate-gradient-x"
+>
+  <div
+    class="relative z-10 flex flex-col items-center justify-center p-8 rounded-3xl shadow-2xl bg-white/10 backdrop-blur-md border border-white/20 max-w-lg mx-auto"
+  >
+    <div
+      class="text-9xl font-extrabold text-white drop-shadow-2xl animate-bounce mb-2"
+    >
+      404
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+      Page Not Found
+    </h1>
+    <p class="text-lg text-white/80 max-w-md text-center mb-6">
+      Sorry, the page you are looking for doesn't exist or has been moved.<br />Let's
+      get you back on track!
+    </p>
+    <a
+      href="/"
+      class="mt-2 px-8 py-3 bg-white text-indigo-700 font-bold rounded-full shadow-lg border-2 border-indigo-500 hover:bg-indigo-600 hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+      >Go Home</a
+    >
+    <div class="mt-8 w-60 h-60 flex items-center justify-center">
+      <svg
+        class="w-full h-full animate-float"
+        viewBox="0 0 200 200"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <ellipse
+          cx="100"
+          cy="170"
+          rx="60"
+          ry="12"
+          fill="#fff"
+          fill-opacity="0.2"
+        />
+        <circle cx="100" cy="90" r="60" fill="url(#paint0_radial)" />
+        <ellipse
+          cx="100"
+          cy="90"
+          rx="40"
+          ry="20"
+          fill="#fff"
+          fill-opacity="0.15"
+        />
+        <circle cx="80" cy="80" r="8" fill="#fff" fill-opacity="0.7" />
+        <circle cx="120" cy="80" r="8" fill="#fff" fill-opacity="0.7" />
+        <ellipse
+          cx="100"
+          cy="110"
+          rx="18"
+          ry="8"
+          fill="#fff"
+          fill-opacity="0.3"
+        />
+        <defs>
+          <radialGradient
+            id="paint0_radial"
+            cx="0"
+            cy="0"
+            r="1"
+            gradientTransform="translate(100 90) scale(60)"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#fff" stop-opacity="0.8" />
+            <stop offset="1" stop-color="#a5b4fc" stop-opacity="0.3" />
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+</div>
+<style>
+  @keyframes gradient-x {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 8s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-18px);
+    }
+  }
+  .animate-float {
+    animation: float 3.5s ease-in-out infinite;
+  }
+</style>

@@ -64,6 +64,12 @@ const eventSchema = new Schema({
     type: Number,
     default: 0,
   },
+  preEventNotes: {
+    type: String, // paln for handling the event
+  },
+  postEventNotes: {
+    type: String, // feedback and suggestions for the upcoming handlers
+  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

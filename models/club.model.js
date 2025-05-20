@@ -13,20 +13,102 @@ const clubSchema = new Schema(
       type: String,
       required: true,
     },
+    about: {
+      type: String,
+    },
     image: {
       type: String,
       required: true,
     },
+    banner: {
+      type: String,
+    },
+    domains: [
+      {
+        type: String,
+      },
+    ],
+    activeRecruitments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Recruitment",
+      },
+    ],
+    pastRecruitments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Recruitment",
+      },
+    ],
+    social: {
+      email: {
+        type: String,
+      },
+      instagram: {
+        type: String,
+      },
+      facebook: {
+        type: String,
+      },
+      linkedin: {
+        type: String,
+      },
+      discord: {
+        type: String,
+      },
+    },
+    gallery: [
+      {
+        url: {
+          type: String,
+        },
+        caption: {
+          type: String,
+        },
+        uploadedBy: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+        uploadedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     events: [
       {
         type: Schema.Types.ObjectId,
         ref: "Event",
       },
     ],
-    oc: [
+    currentOc: [
       {
         type: Schema.Types.ObjectId,
-        ref: "User", 
+        ref: "User",
+      },
+    ],
+    pastOc: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    currentMembers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    pastMembers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    moderators: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     createdBy: {
@@ -34,7 +116,7 @@ const clubSchema = new Schema(
       ref: "User",
     },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
 const Club = mongoose.model("Club", clubSchema);

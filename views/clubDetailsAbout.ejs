@@ -1,0 +1,17 @@
+<% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user,
+currentTab: "about" }) %>
+
+<div class="container mx-auto">
+  <div id="tabContent">
+    <div class="tab-pane" id="about">
+      <h2 class="text-xl font-semibold mb-2 text-blue-700">About</h2>
+      <p class="text-gray-700 text-base leading-relaxed">
+        <%= club.about || club.description %>
+      </p>
+    </div>
+  </div>
+
+  <a href="/club" class="inline-block mt-4 text-blue-600 hover:underline"
+    >&larr; Back to Clubs</a
+  >
+</div>
