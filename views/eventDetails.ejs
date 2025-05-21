@@ -56,22 +56,28 @@
       <div class="mt-8 flex justify-between items-center">
         <a
           href="/event"
-          class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600 transition"
-          >Back to Events</a
+          class="inline-block mt-4 text-blue-600 hover:underline"
         >
+          &larr; Back to Events
+        </a>
         <%if(creator){%>
         <a
           href="/event/<%= event._id %>/edit"
-          class="bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition"
-          >Edit Event</a
+          class="bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center gap-2"
         >
-        <form action="/event/<%=event._id%>/delete" method="post">
+          <i class="fas fa-edit"></i> Edit Event
+        </a>
+        <form
+          action="/event/<%=event._id%>/delete"
+          method="post"
+          class="inline"
+        >
           <input type="hidden" name="_method" value="DELETE" />
           <button
             type="submit"
-            class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition"
+            class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition flex items-center gap-2"
           >
-            Delete Event
+            <i class="fas fa-trash"></i> Delete Event
           </button>
         </form>
 

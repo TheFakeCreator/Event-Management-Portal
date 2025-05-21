@@ -354,7 +354,13 @@ export const editEvent = async (req, res) => {
         location,
         image,
         club,
-        collaborators: collaborators.split(","),
+        collaborators: Array.isArray(collaborators)
+          ? collaborators
+          : typeof collaborators === "string" && collaborators.startsWith("[")
+          ? JSON.parse(collaborators)
+          : typeof collaborators === "string"
+          ? [collaborators]
+          : [],
       },
       { new: true }
     );
