@@ -19,6 +19,10 @@ const recruitmentSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  applicationForm: {
+    type: Array, // Array of field definitions (JSON)
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

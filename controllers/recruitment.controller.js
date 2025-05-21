@@ -77,19 +77,27 @@ export const getApplyRecruitment = async (req, res) => {
 
 export const postNewRecruitment = async (req, res) => {
   const user = req.user;
-  const { title, description, deadline, clubId } = req.body;
+  const { title, description, deadline, clubId, applicationForm } = req.body;
   try {
-    // Import Recruitment model here to avoid circular dependencies
     const Recruitment = (await import("../models/recruitment.model.js"))
       .default;
     const Club = (await import("../models/club.model.js")).default;
+    // Parse applicationForm JSON if present
+    let formFields = [];
+    if (applicationForm) {
+      try {
+        formFields = JSON.parse(applicationForm);
+      } catch (e) {
+        formFields = [];
+      }
+    }
     // Create the recruitment
     const newRecruitment = await Recruitment.create({
       title,
       description,
       deadline,
       club: clubId,
-      isActive: true,
+      applicationForm: formFields,
     });
     // Push the recruitment's _id into the club's recruitments array
     await Club.findByIdAndUpdate(
@@ -112,7 +120,6 @@ export const postNewRecruitment = async (req, res) => {
 
 export const postApplyRecruitment = async (req, res) => {
   try {
-    const { name, email } = req.body;
     const recruitmentId = req.params.id;
     const Recruitment = (await import("../models/recruitment.model.js"))
       .default;
@@ -141,25 +148,20 @@ export const postApplyRecruitment = async (req, res) => {
         error: "The deadline for this recruitment has passed.",
       });
     }
-    // Check if user already applied for this recruitment
-    const alreadyApplied = await Registration.findOne({
-      recruitment: recruitmentId,
-      email,
-    });
-    if (alreadyApplied) {
-      return res.render("applyRecruitment", {
-        title: "Apply for Recruitment",
-        recruitment,
-        user: req.user,
-        isAuthenticated: req.isAuthenticated,
-        error: "You have already applied for this recruitment.",
+    // Build customFields object from recruitment.applicationForm
+    let customFields = {};
+    if (recruitment.applicationForm && recruitment.applicationForm.length > 0) {
+      recruitment.applicationForm.forEach((field) => {
+        const key = `custom_${field.label.replace(/\s+/g, "_").toLowerCase()}`;
+        customFields[field.label] = req.body[key] || "";
       });
     }
-    // Save registration
+    // Save registration (add customFields)
     await Registration.create({
       recruitment: recruitmentId,
-      name,
-      email,
+      name: req.body.name,
+      email: req.body.email,
+      customFields,
     });
     // Get updated total applicants
     const totalApplicants = await Registration.countDocuments({
@@ -181,5 +183,32 @@ export const postApplyRecruitment = async (req, res) => {
       isAuthenticated: req.isAuthenticated,
       error: "Failed to submit application.",
     });
+  }
+};
+
+export const getRecruitmentDetails = async (req, res) => {
+  try {
+    const Recruitment = (await import("../models/recruitment.model.js"))
+      .default;
+    const recruitment = await Recruitment.findById(req.params.id).populate(
+      "club"
+    );
+    if (!recruitment) {
+      return res.status(404).render("404", {
+        message: "Recruitment not found",
+        title: "404 Page",
+        user: req.user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+    res.render("recruitmentDetails", {
+      title: recruitment.title,
+      recruitment,
+      user: req.user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching recruitment details");
   }
 };

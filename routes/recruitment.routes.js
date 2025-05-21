@@ -5,6 +5,7 @@ import {
   getApplyRecruitment,
   getNewRecruitments,
   getRecruitments,
+  getRecruitmentDetails,
   postApplyRecruitment,
   postNewRecruitment,
 } from "../controllers/recruitment.controller.js";
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get("/", isAuthenticatedLineant, getRecruitments);
 router.get("/new", isAuthenticatedLineant, isClubModerator, getNewRecruitments);
 router.get("/apply/:id", isAuthenticatedLineant, getApplyRecruitment);
+router.get("/:id", isAuthenticatedLineant, getRecruitmentDetails);
 
 // POST Routes
 router.post(

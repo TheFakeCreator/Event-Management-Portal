@@ -1,0 +1,105 @@
+<% layout("layouts/main") %>
+<div class="flex min-h-screen bg-gradient-to-r from-blue-50 to-white">
+  <!-- Left Navigation Pane -->
+  <nav class="w-64 bg-white border-r flex flex-col py-10 px-6 shadow-lg">
+    <h2 class="text-2xl font-extrabold mb-10 text-blue-700 tracking-tight">
+      <%= recruitment.title %>
+    </h2>
+    <ul class="space-y-3">
+      <li>
+        <a
+          href="#about"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          data-section="about"
+          >About</a
+        >
+      </li>
+      <li>
+        <a
+          href="#form"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          data-section="form"
+          >Application Form</a
+        >
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Right Content Pane -->
+  <div class="flex-1 p-10">
+    <div id="section-about" class="section">
+      <h3 class="text-2xl font-bold mb-4 text-blue-700">
+        About this Recruitment
+      </h3>
+      <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <p class="mb-4 text-lg text-gray-800"><%= recruitment.description %></p>
+        <div
+          class="flex flex-col md:flex-row md:items-center md:space-x-8 text-gray-600"
+        >
+          <span class="mb-2 md:mb-0"
+            ><strong>Deadline:</strong> <%= new
+            Date(recruitment.deadline).toLocaleDateString() %></span
+          >
+          <span><strong>Club:</strong> <%= recruitment.club.name %></span>
+        </div>
+      </div>
+    </div>
+    <div id="section-form" class="section hidden">
+      <h3 class="text-2xl font-bold mb-4 text-blue-700">Application Form</h3>
+      <div class="bg-white rounded-xl shadow p-6">
+        <form
+          action="/recruitment/apply/<%= recruitment._id %>"
+          method="POST"
+          class="space-y-6"
+        >
+          <% if (recruitment.applicationForm && recruitment.applicationForm.length > 0) { %>
+            <% recruitment.applicationForm.forEach(function(field) { %>
+              <div>
+                <label class="block text-gray-700 font-semibold mb-2"><%= field.label %><% if(field.required){ %> <span class="text-red-500">*</span><% } %></label>
+                <% if(field.type === 'text' || field.type === 'email' || field.type === 'number' || field.type === 'date') { %>
+                  <input type="<%= field.type %>" name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <% } else if(field.type === 'textarea') { %>
+                  <textarea name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" rows="4" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                <% } %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="text-gray-500">No custom application fields defined for this recruitment.</div>
+          <% } %>
+          <div>
+            <button
+              type="submit"
+              class="w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple JS to handle navigation
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      document
+        .querySelectorAll(".section")
+        .forEach((sec) => sec.classList.add("hidden"));
+      const section = this.getAttribute("data-section");
+      document.getElementById("section-" + section).classList.remove("hidden");
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) =>
+          l.classList.remove("bg-blue-100", "font-bold", "text-blue-700")
+        );
+      this.classList.add("bg-blue-100", "font-bold", "text-blue-700");
+    });
+  });
+  // Show About by default
+  document
+    .querySelector('.nav-link[data-section="about"]')
+    .classList.add("bg-blue-100", "font-bold", "text-blue-700");
+</script>

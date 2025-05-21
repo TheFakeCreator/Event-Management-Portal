@@ -1,14 +1,23 @@
 <% layout('layouts/main') %>
 
 <div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-8 mt-10">
-  <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">Create Recruitment</h1>
+  <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">
+    Create Recruitment
+  </h1>
   <% if (typeof error !== 'undefined') { %>
-    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><%= error %></div>
+  <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><%= error %></div>
   <% } %>
-  <form action="/recruitment/new" method="POST" class="space-y-6">
+  <form
+    id="recruitmentForm"
+    action="/recruitment/new"
+    method="POST"
+    class="space-y-6"
+  >
     <input type="hidden" name="clubId" value="<%= clubId %>" />
     <div>
-      <label for="title" class="block text-gray-700 font-semibold mb-2">domain</label>
+      <label for="title" class="block text-gray-700 font-semibold mb-2"
+        >Domain</label
+      >
       <input
         type="text"
         id="title"
@@ -19,7 +28,9 @@
       />
     </div>
     <div>
-      <label for="description" class="block text-gray-700 font-semibold mb-2">Description</label>
+      <label for="description" class="block text-gray-700 font-semibold mb-2"
+        >Description</label
+      >
       <textarea
         id="description"
         name="description"
@@ -30,7 +41,9 @@
       ></textarea>
     </div>
     <div>
-      <label for="deadline" class="block text-gray-700 font-semibold mb-2">Deadline</label>
+      <label for="deadline" class="block text-gray-700 font-semibold mb-2"
+        >Deadline</label
+      >
       <input
         type="date"
         id="deadline"
@@ -39,6 +52,40 @@
         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         min="<%= new Date().toISOString().split('T')[0] %>"
       />
+    </div>
+    <!-- Form Builder Section -->
+    <div>
+      <h2 class="text-lg font-bold text-blue-600 mb-2">
+        Application Form Builder
+      </h2>
+      <div id="formFields" class="space-y-4 mb-4"></div>
+      <div class="flex space-x-2">
+        <select id="fieldType" class="px-2 py-1 border rounded">
+          <option value="text">Text</option>
+          <option value="textarea">Paragraph</option>
+          <option value="date">Date</option>
+          <option value="email">Email</option>
+          <option value="number">Number</option>
+        </select>
+        <input
+          type="text"
+          id="fieldLabel"
+          class="px-2 py-1 border rounded"
+          placeholder="Field label"
+        />
+        <label class="flex items-center space-x-1">
+          <input type="checkbox" id="fieldRequired" />
+          <span class="text-sm">Required</span>
+        </label>
+        <button
+          type="button"
+          id="addFieldBtn"
+          class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Add Field
+        </button>
+      </div>
+      <input type="hidden" name="applicationForm" id="applicationFormInput" />
     </div>
     <div class="flex justify-end">
       <button
@@ -49,5 +96,56 @@
       </button>
     </div>
   </form>
-  <a href="/club/<%= clubId %>" class="block mt-6 text-blue-600 hover:underline text-center">&larr; Back to Club</a>
+  <a
+    href="/club/<%= clubId %>"
+    class="block mt-6 text-blue-600 hover:underline text-center"
+    >&larr; Back to Club</a
+  >
 </div>
+
+<script>
+  const formFields = [];
+  const formFieldsDiv = document.getElementById("formFields");
+  const applicationFormInput = document.getElementById("applicationFormInput");
+
+  function renderFields() {
+    formFieldsDiv.innerHTML = "";
+    formFields.forEach((field, idx) => {
+      const fieldDiv = document.createElement("div");
+      fieldDiv.className = "flex items-center space-x-2";
+      fieldDiv.innerHTML = `
+        <span class="px-2 py-1 bg-gray-100 rounded">${field.type}</span>
+        <span class="font-semibold">${field.label}</span>
+        <span class="text-xs text-gray-500">${
+          field.required ? "Required" : "Optional"
+        }</span>
+        <button type="button" class="removeFieldBtn text-red-500 hover:underline" data-idx="${idx}">Remove</button>
+      `;
+      formFieldsDiv.appendChild(fieldDiv);
+    });
+    applicationFormInput.value = JSON.stringify(formFields);
+  }
+
+  document.getElementById("addFieldBtn").onclick = function () {
+    const type = document.getElementById("fieldType").value;
+    const label = document.getElementById("fieldLabel").value.trim();
+    const required = document.getElementById("fieldRequired").checked;
+    if (!label) return alert("Please enter a field label.");
+    formFields.push({ type, label, required });
+    renderFields();
+    document.getElementById("fieldLabel").value = "";
+    document.getElementById("fieldRequired").checked = false;
+  };
+
+  formFieldsDiv.addEventListener("click", function (e) {
+    if (e.target.classList.contains("removeFieldBtn")) {
+      const idx = e.target.getAttribute("data-idx");
+      formFields.splice(idx, 1);
+      renderFields();
+    }
+  });
+
+  document.getElementById("recruitmentForm").onsubmit = function () {
+    applicationFormInput.value = JSON.stringify(formFields);
+  };
+</script>
