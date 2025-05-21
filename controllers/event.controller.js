@@ -1,6 +1,100 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
+import Club from "../models/club.model.js";
+import Registration from "../models/registration.model.js";
 import Log from "../models/log.model.js";
+
+export const getEvents = async (req, res) => {
+  try {
+    const user = req.user;
+    const clubs = await Club.find({});
+
+    const events = await Event.find({});
+    res.render("eventsPage", {
+      title: "Event Management Portal",
+      events,
+      user,
+      clubs,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (error) {
+    res.status(500).send("Error fetching events");
+  }
+};
+
+export const getCreateEvent = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const clubs = await Club.find({});
+    res.render("createEvent", {
+      title: "Create Event",
+      clubs,
+      user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (error) {
+    res.status(500).send("Error fetching clubs");
+  }
+};
+
+export const getEventDetails = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+      .populate("club")
+      .populate("collaborators");
+
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+
+    const registeredUsersCount = await Registration.countDocuments({
+      event: req.params.id,
+    });
+    res.render("eventDetails", {
+      title: "Event Details",
+      event,
+      user: req.user,
+      isAuthenticated: req.isAuthenticated,
+      registeredUsersCount,
+      creator:
+        event.createdBy.toString() == req.user._id.toString() ? true : false,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
+export const getEventRegister = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+
+    // Check if the event has already started
+    if (new Date() >= new Date(event.startDate)) {
+      return res.status(403).render("registrationClose", {
+        event,
+        title: "Event Registration",
+        isAuthenticated: req.isAuthenticated,
+        user: req.user,
+      });
+    }
+
+    res.render("eventRegister", {
+      event,
+      title: "Event Registration",
+      isAuthenticated: req.isAuthenticated,
+      user: req.user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+};
+
 export const createEvent = async (req, res) => {
   try {
     const {
@@ -107,5 +201,37 @@ export const deleteEvent = async (req, res) => {
     res.json({ message: "Event deleted successfully" });
   } catch (error) {
     res.status(500).json({ error });
+  }
+};
+
+export const registerEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).send("Event not found");
+    }
+
+    const { name, email, phone } = req.body;
+
+    if (new Date() >= new Date(event.startDate)) {
+      return res.status(403).json({
+        event,
+        title: "Event Registration",
+        isAuthenticated: req.isAuthenticated,
+        user: req.user,
+      });
+    }
+
+    const newRegistration = await Registration.create({
+      event: event._id,
+      name,
+      email,
+      phone,
+    });
+
+    res.redirect(`/event/${event._id}`); // Redirect to event details after registration
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
   }
 };
