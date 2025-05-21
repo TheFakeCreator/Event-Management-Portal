@@ -49,7 +49,8 @@ export const getClubTab = async (req, res) => {
       });
     }
 
-    const club = await Club.findById(id);
+    // Populate recruitments
+    const club = await Club.findById(id).populate("recruitments");
     if (!club) {
       return res.status(404).render("404", {
         message: "Club not found",
@@ -59,9 +60,13 @@ export const getClubTab = async (req, res) => {
       });
     }
 
+    // Filter recruitments into active and past
+    const activeRecruitments = club.recruitments.filter((r) => r.isActive);
+    const pastRecruitments = club.recruitments.filter((r) => !r.isActive);
+
     res.render(view, {
       title: club.name,
-      club,
+      club: { ...club.toObject(), activeRecruitments, pastRecruitments },
       user,
       isAuthenticated: req.isAuthenticated,
     });

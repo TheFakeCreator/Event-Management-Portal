@@ -82,14 +82,22 @@ export const postNewRecruitment = async (req, res) => {
     // Import Recruitment model here to avoid circular dependencies
     const Recruitment = (await import("../models/recruitment.model.js"))
       .default;
-    await Recruitment.create({
+    const Club = (await import("../models/club.model.js")).default;
+    // Create the recruitment
+    const newRecruitment = await Recruitment.create({
       title,
       description,
       deadline,
       club: clubId,
       isActive: true,
     });
-    res.redirect(`/club/${clubId}/about`);
+    // Push the recruitment's _id into the club's recruitments array
+    await Club.findByIdAndUpdate(
+      clubId,
+      { $push: { recruitments: newRecruitment._id } },
+      { new: true }
+    );
+    res.redirect(`/club/${clubId}/recruitments`);
   } catch (err) {
     console.error(err);
     res.status(500).render("createRecruitment", {

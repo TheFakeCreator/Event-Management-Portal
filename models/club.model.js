@@ -28,13 +28,7 @@ const clubSchema = new Schema(
         type: String,
       },
     ],
-    activeRecruitments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Recruitment",
-      },
-    ],
-    pastRecruitments: [
+    recruitments: [
       {
         type: Schema.Types.ObjectId,
         ref: "Recruitment",
