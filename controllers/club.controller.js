@@ -1,4 +1,76 @@
 import Club from "../models/club.model.js";
+
+export const getClubs = async (req, res) => {
+  try {
+    const user = req.user;
+    const clubs = await Club.find();
+    res.render("clubs", {
+      title: "Clubs List",
+      clubs,
+      user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching clubs");
+  }
+};
+
+export const getAddClub = (req, res) => {
+  const user = req.user;
+  res.render("add-club", {
+    title: "Add Club",
+    isAuthenticated: req.isAuthenticated,
+    user,
+  });
+};
+
+const clubSubPages = {
+  about: "clubDetailsAbout",
+  recruitments: "clubDetailsRecruitments",
+  gallery: "clubDetailsGallery",
+  socials: "clubDetailsSocials",
+  events: "clubDetailsEvents",
+  members: "clubDetailsMembers",
+};
+
+export const getClubTab = async (req, res) => {
+  try {
+    const user = req.user;
+    const { id, subPage } = req.params;
+
+    const view = clubSubPages[subPage];
+    if (!view) {
+      return res.status(404).render("404", {
+        message: "Club not found",
+        title: "404 Page",
+        user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+
+    const club = await Club.findById(id);
+    if (!club) {
+      return res.status(404).render("404", {
+        message: "Club not found",
+        title: "404 Page",
+        user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+
+    res.render(view, {
+      title: club.name,
+      club,
+      user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching club details");
+  }
+};
+
 export const createClub = async (req, res) => {
   const { name, description, image, oc } = req.body;
   if (!name || !description || !image) {
