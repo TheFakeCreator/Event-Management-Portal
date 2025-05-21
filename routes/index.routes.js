@@ -1,78 +1,17 @@
 import express from "express";
 import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
-import Event from "../models/event.model.js";
+import {
+  getAbout,
+  getIndex,
+  getPrivacy,
+} from "../controllers/index.controller.js";
 
 const router = express.Router();
 
-router.get("/", isAuthenticatedLineant, async (req, res) => {
-  try {
-    const now = new Date();
-
-    const todayStart = new Date(now.setHours(0, 0, 0, 0));
-    const todayEnd = new Date(now.setHours(23, 59, 59, 999));
-
-    // console.log("Today:", todayStart, "to", todayEnd);
-
-    const ongoingEvents = await Event.find({
-      startDate: { $lte: todayEnd },
-      endDate: { $gte: todayStart },
-      $and: [
-        {
-          $or: [
-            { startDate: { $lt: todayStart } },
-            { startTime: { $lte: now.toISOString().split("T")[1] } },
-          ],
-        },
-        {
-          $or: [
-            { endDate: { $gt: todayEnd } },
-            { endTime: { $gte: now.toISOString().split("T")[1] } },
-          ],
-        },
-      ],
-    });
-
-    const upcomingEvents = await Event.find({
-      $or: [
-        { startDate: { $gt: todayEnd } }, // Future date
-        {
-          startDate: { $eq: todayStart }, // Today but after current time
-          startTime: { $gt: now.toISOString().split("T")[1] },
-        },
-      ],
-    });
-
-    // console.log("Ongoing Events:", ongoingEvents);
-    // console.log("Upcoming Events:", upcomingEvents);
-
-    res.render("index", {
-      title: "Event Management Portal",
-      isAuthenticated: req.isAuthenticated,
-      ongoingEvents,
-      upcomingEvents,
-      user: req.user,
-    });
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-router.get("/about", isAuthenticatedLineant, (req, res) => {
-  res.render("about.ejs", {
-    title: "About",
-    isAuthenticated: req.isAuthenticated,
-    user: req.user,
-  });
-});
-
-router.get("/privacy", isAuthenticatedLineant, (req, res) => {
-  res.render("privacyPolicy.ejs", {
-    title: "Privacy Policy",
-    isAuthenticated: req.isAuthenticated,
-    user: req.user,
-  });
-});
+// GET Routes
+router.get("/", isAuthenticatedLineant, getIndex);
+router.get("/about", isAuthenticatedLineant, getAbout);
+router.get("/privacy", isAuthenticatedLineant, getPrivacy);
 
 // Test route for unauthorized users (lineants)
 router.get("/test", isAuthenticatedLineant, (req, res) => {
