@@ -47,6 +47,7 @@ export const getRequestRole = (req, res) => {
 
 export const postUserEdit = async (req, res) => {
   try {
+    console.log("Edit Profile req.body:", req.body);
     const {
       name,
       username,
@@ -54,34 +55,41 @@ export const postUserEdit = async (req, res) => {
       bio,
       occupation,
       location,
+      gender,
       linkedin,
       github,
-      twitter,
+      behance,
     } = req.body;
-    const userId = req.user._id; // Ensure user is authenticated
+    const socials = { linkedin, github, behance };
+    const userId = req.user._id;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        name,
-        username,
-        phone,
-        bio,
-        occupation,
-        location,
-        socials: { linkedin, github, twitter },
-      },
-      { new: true, runValidators: true }
-    );
+    // Handle avatar upload if a file is present
+    let updateData = {
+      name,
+      username,
+      phone,
+      bio,
+      occupation,
+      location,
+      gender,
+      socials,
+    };
+    if (req.file && req.file.path) {
+      updateData.avatar = req.file.path;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedUser) {
       req.flash("error", "User not found");
-      return res.redirect(`/user/${updatedUser.username}`);
+      return res.redirect(`/user/${req.user.username}`);
     }
 
     req.flash("success", "Profile updated successfully!");
-
-    res.redirect(`/user/${updatedUser.username}`); // Redirect to profile page after update
+    res.redirect(`/user/${updatedUser.username}`);
   } catch (error) {
     console.error("Error updating profile:", error);
     req.flash("error", "Something went wrong!");

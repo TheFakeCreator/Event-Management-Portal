@@ -1,5 +1,6 @@
 import express from "express";
 import { isAuthenticated } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/upload.js";
 import {
   getRequestRole,
   getUser,
@@ -16,6 +17,11 @@ router.get("/:username", isAuthenticated, getUser);
 router.get("/:username/request-role", isAuthenticated, getRequestRole);
 
 // POST Routes
-router.post("/:username/edit", isAuthenticated, postUserEdit);
+router.post(
+  "/:username/edit",
+  isAuthenticated,
+  upload.single("avatar"),
+  postUserEdit
+);
 router.post("/:username/request-role", isAuthenticated, requestRole);
 export default router;
