@@ -5,7 +5,7 @@
     Edit Event
   </h1>
 
-  <form action="/admin/event/edit/<%= event._id %>" method="POST" class="space-y-6">
+  <form action="/event/<%= event._id %>/edit" method="POST" class="space-y-6">
     <div class="grid grid-cols-1 gap-4">
       <div>
         <label for="title" class="block text-lg font-medium text-gray-700">Event Title</label>
@@ -140,15 +140,15 @@
           id="collaborators-container"
           class="mt-2 flex flex-wrap gap-2 p-3 border rounded-lg shadow-sm min-h-[44px]"
         >
-          <% event.collaborators.forEach(collaborator => { %>
-          <span
-            class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer"
-          >
-            <%= collaborator.name %> <span class="ml-2 font-bold">&times;</span>
-          </span>
-          <% }); %>
+          <!-- Collaborator tags will be rendered by JS -->
         </div>
-        <input type="hidden" name="collaborators" id="collaborators-hidden" value='<%= JSON.stringify(event.collaborators.map(c => c._id)) %>' />
+        <select id="collaborators-select" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+          <option value="">Select a collaborator...</option>
+          <% clubs.forEach(club => { %>
+            <option value="<%= club._id %>"><%= club.name %></option>
+          <% }); %>
+        </select>
+        <input type="hidden" name="collaborators" id="collaborators-hidden" />
       </div>
     </div>
 
@@ -166,12 +166,31 @@
     const select = document.getElementById("collaborators-select");
     const container = document.getElementById("collaborators-container");
     const hiddenInput = document.getElementById("collaborators-hidden");
+    // Pre-populate collaborators from server-side EJS
     let collaborators = [];
+    try {
+      collaborators = JSON.parse('<%- JSON.stringify(event.collaborators ? event.collaborators.map(c => ({ id: c._id, name: c.name })) : []) %>');
+    } catch (e) { collaborators = []; }
+
+    function updateCollaborators() {
+      container.innerHTML = "";
+      collaborators.forEach((collaborator) => {
+        const tag = document.createElement("span");
+        tag.className =
+          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
+        tag.innerHTML = `${collaborator.name} <span class=\"ml-2 font-bold\">&times;</span>`;
+        tag.addEventListener("click", () =>
+          removeCollaborator(collaborator.id)
+        );
+        container.appendChild(tag);
+      });
+      container.appendChild(select);
+      hiddenInput.value = JSON.stringify(collaborators.map((c) => c.id));
+    }
 
     select.addEventListener("change", () => {
       const selectedClubId = select.value;
       const selectedClubName = select.options[select.selectedIndex].text;
-
       if (
         selectedClubId &&
         !collaborators.find((c) => c.id === selectedClubId)
@@ -191,22 +210,6 @@
       updateCollaborators();
     }
 
-    function updateCollaborators() {
-      container.innerHTML = "";
-
-      collaborators.forEach((collaborator) => {
-        const tag = document.createElement("span");
-        tag.className =
-          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
-        tag.innerHTML = `${collaborator.name} <span class="ml-2 font-bold">&times;</span>`;
-        tag.addEventListener("click", () =>
-          removeCollaborator(collaborator.id)
-        );
-        container.appendChild(tag);
-      });
-
-      container.appendChild(select);
-      hiddenInput.value = JSON.stringify(collaborators.map((c) => c.id));
-    }
+    updateCollaborators(); // Initial render
   });
 </script>
