@@ -4,6 +4,54 @@ import jwt from "jsonwebtoken";
 import transporter from "../configs/nodemailer.js";
 import crypto from "crypto";
 
+export const getLoginUser = (req, res) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("login");
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
+};
+
+export const getRegisterUser = (req, res) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("signup");
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
+};
+
+export const getForgotPass = (req, res) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("forgot-password");
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
+};
+
+export const getResetPass = (req, res) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("reset-password", { token: req.params.token });
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+  }
+};
+
 export const registerUser = async (req, res) => {
   try {
     const { name, username, email, password, confirmPassword } = req.body;
@@ -127,7 +175,8 @@ export const verifyUser = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;8
+    const { email } = req.body;
+    8;
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found." });
@@ -166,7 +215,9 @@ export const resetPassword = async (req, res) => {
     console.log("User found:", user);
 
     if (!user) {
-      return res.status(400).json({ message: "User not found or token invalid." });
+      return res
+        .status(400)
+        .json({ message: "User not found or token invalid." });
     }
 
     if (user.expireToken < Date.now()) {

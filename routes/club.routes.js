@@ -14,18 +14,13 @@ import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 
 const router = express.Router();
 
-// Fetch all clubs
+// GET Routes
 router.get("/", isAuthenticatedLineant, getClubs);
-
-// Create a new club (Admin only)
-// Admin check should be placed here.
 router.get("/add", isAuthenticated, isAdmin, getAddClub);
-router.post("/add", isAuthenticated, isAdmin, createClub);
-
-// Club details routes
-// Allowed subpages and their corresponding view files
-// Generic route handler for club sub-pages
 router.get("/:id/:subPage", isAuthenticatedLineant, getClubTab);
+
+// POST Routes
+router.post("/add", isAuthenticated, isAdmin, createClub);
 
 // Test route for moderator middleware
 router.get("/:id/mod-section", isAuthenticated, isClubModerator, (req, res) => {
