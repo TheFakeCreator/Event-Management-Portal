@@ -10,7 +10,6 @@ import {
   getClubs,
   getClubTab,
 } from "../controllers/club.controller.js";
-import Club from "../models/club.model.js";
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 
 const router = express.Router();
