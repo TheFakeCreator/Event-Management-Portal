@@ -32,10 +32,17 @@ passport.use(new GoogleStrategy({
         email: profile.emails[0].value,
         username: generatedUsername, // Assign the generated username
         name: profile.displayName,
-        profilePicture: profile.photos[0].value
+        profilePicture: profile.photos[0].value,
+        isVerified: true // Mark as verified for Google users
       });
 
       await user.save();
+    } else {
+      // If user exists, ensure isVerified is true for Google login
+      if (!user.isVerified) {
+        user.isVerified = true;
+        await user.save();
+      }
     }
 
     return done(null, user);
