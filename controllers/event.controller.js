@@ -239,6 +239,9 @@ export const registerEvent = async (req, res) => {
       user: req.user ? req.user._id : undefined,
     });
 
+    // Increment registeredUsers count in the Event model
+    await Event.findByIdAndUpdate(event._id, { $inc: { registeredUsers: 1 } });
+
     res.redirect(`/event/${event._id}`); // Redirect to event details after registration
   } catch (error) {
     console.error(error);

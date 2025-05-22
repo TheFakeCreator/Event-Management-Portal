@@ -94,7 +94,11 @@ export const getManageUsers = async (req, res, next) => {
 
 export const getManageEvents = async (req, res, next) => {
   try {
-    const events = await Event.find();
+    // Populate createdBy with user name
+    const events = await Event.find().populate({
+      path: "createdBy",
+      select: "name",
+    });
     res.render("admin/manageEvents", {
       title: "Manage Events",
       isAuthenticated: req.isAuthenticated,
