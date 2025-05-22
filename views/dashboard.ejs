@@ -2,33 +2,7 @@
 <div
   class="flashmessage-container fixed top-5 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 px-4"
 >
-  <% if (error_msg) { %>
-  <div
-    class="flashmessage bg-red-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-between transition-opacity duration-500"
-  >
-    <span class="font-semibold"><%= error_msg %></span>
-    <button
-      class="ml-4 text-white text-2xl focus:outline-none"
-      onclick="this.parentElement.style.display='none'"
-    >
-      &times;
-    </button>
-  </div>
-  <% } %> <% if (success_msg) { %>
-  <div
-    class="flashmessage bg-green-600 text-white p-4 rounded-lg shadow-lg flex items-center justify-between transition-opacity duration-500"
-  >
-    <span class="font-semibold"><%= success_msg %></span>
-    <button
-      class="ml-4 text-white text-2xl focus:outline-none"
-      onclick="this.parentElement.style.display='none'"
-    >
-      &times;
-    </button>
-  </div>
-  <% } %>
 </div>
-
 <script>
   setTimeout(() => {
     const flashMessages = document.querySelectorAll(".flashmessage");
