@@ -104,10 +104,6 @@ export const postNewRecruitment = async (req, res) => {
 export const postApplyRecruitment = async (req, res) => {
   try {
     const recruitmentId = req.params.id;
-    const Recruitment = (await import("../models/recruitment.model.js"))
-      .default;
-    const Registration = (await import("../models/registration.model.js"))
-      .default;
     const recruitment = await Recruitment.findById(recruitmentId).populate(
       "club"
     );
@@ -138,6 +134,9 @@ export const postApplyRecruitment = async (req, res) => {
         customFields[field.label] = req.body[key] || "";
       });
     }
+    // Debug: Log request body and customFields
+    console.log("REQ.BODY:", req.body);
+    console.log("CUSTOM FIELDS:", customFields);
     // Save registration (add customFields)
     await Registration.create({
       recruitment: recruitmentId,
@@ -145,16 +144,10 @@ export const postApplyRecruitment = async (req, res) => {
       email: req.body.email,
       customFields,
     });
-    // Get updated total applicants
-    const totalApplicants = await Registration.countDocuments({
-      recruitment: recruitmentId,
-    });
-    // Set flash message for success
     req.flash("success", "Application submitted successfully!");
-    // Redirect to GET
     return res.redirect(`/recruitment/${recruitmentId}`);
   } catch (err) {
-    // On error, redirect to GET with error message
+    console.error("Recruitment application error:", err);
     return res.redirect(
       `/recruitment/${req.params.id}?error=Failed to submit application.`
     );

@@ -11,7 +11,22 @@
 
     <!-- Event Content -->
     <div class="p-6">
-      <h1 class="text-4xl font-bold text-blue-600 mb-4"><%= event.title %></h1>
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-4xl font-bold text-blue-600 flex items-center gap-3">
+          <%= event.title %>
+        </h1>
+        <% if (new Date() >= new Date(event.startDate) && new Date() <= new
+        Date(event.endDate)) { %>
+        <span
+          class="flex items-center gap-2 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full animate-pulse"
+        >
+          <span
+            class="w-2 h-2 bg-white rounded-full inline-block animate-ping"
+          ></span>
+          LIVE
+        </span>
+        <% } %>
+      </div>
       <p class="text-gray-700 text-lg mb-6"><%= event.description %></p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
@@ -81,9 +96,7 @@
             <button
               type="submit"
               class="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition flex items-center gap-2 w-full sm:w-auto justify-center"
-            >
-              <i class="fas fa-trash"></i> Delete Event
-            </button>
+            ></button>
           </form>
           <% } %> <% if (new Date() < new Date(event.startDate)) { %> <% if
           (alreadyRegistered) { %>

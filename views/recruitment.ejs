@@ -1,31 +1,47 @@
 <% layout("layouts/main") %>
 
 <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-8 mt-8">
-  <h1 class="text-3xl font-bold text-blue-600 mb-4 text-center">Recruitments</h1>
+  <h1 class="text-3xl font-bold text-blue-600 mb-4 text-center">
+    Recruitments
+  </h1>
   <p class="text-gray-700 text-center mb-8">
-    Explore current club and event recruitments. Join a team, grow your skills, and make an impact!
+    Explore current club and event recruitments. Join a team, grow your skills,
+    and make an impact!
   </p>
 
-  <% const now = Date.now(); %>
-  <% const activeRecruitments = (recruitments || []).filter(function(rec) { return new Date(rec.deadline).getTime() > now; }); %>
-  <% if (activeRecruitments.length > 0) { %>
-    <div class="space-y-6">
-      <% activeRecruitments.forEach(function(rec) { %>
-        <div class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 class="text-xl font-semibold text-gray-800"><%= rec.club?.name || 'Club' %></h2>
-            <p class="text-gray-600">
-              <span class="font-semibold"><%= rec.title %></span> - <%= rec.description %>
-              <br>
-              Deadline: <%= new Date(rec.deadline).toLocaleDateString() %>
-            </p>
-            <p class="text-sm text-green-700 mt-2">Total Applicants: <%= rec.totalApplicants || 0 %></p>
-          </div>
-          <a href="/recruitment/apply/<%= rec._id %>" class="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Apply</a>
-        </div>
-      <% }) %>
+  <% const now = Date.now(); %> <% const activeRecruitments = (recruitments ||
+  []).filter(function(rec) { return new Date(rec.deadline).getTime() > now; });
+  %> <% if (activeRecruitments.length > 0) { %>
+  <div class="space-y-6">
+    <% activeRecruitments.forEach(function(rec) { %>
+    <div
+      class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between"
+    >
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">
+          <%= rec.club?.name || 'Club' %>
+        </h2>
+        <p class="text-gray-600">
+          <span class="font-semibold"><%= rec.title %></span> - <%=
+          rec.description %>
+          <br />
+          Deadline: <%= new Date(rec.deadline).toLocaleDateString() %>
+        </p>
+        <p class="text-sm text-green-700 mt-2">
+          Total Applicants: <%= rec.totalApplicants || 0 %>
+        </p>
+      </div>
+      <a
+        href="/recruitment/<%= rec._id %>"
+        class="mt-4 md:mt-0 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        >Apply</a
+      >
     </div>
+    <% }) %>
+  </div>
   <% } else { %>
-    <p class="text-gray-500 text-center">No recruitments available at the moment.</p>
+  <p class="text-gray-500 text-center">
+    No recruitments available at the moment.
+  </p>
   <% } %>
 </div>
