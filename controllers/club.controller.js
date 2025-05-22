@@ -1,6 +1,6 @@
 import Club from "../models/club.model.js";
 
-export const getClubs = async (req, res) => {
+export const getClubs = async (req, res, next) => {
   try {
     const user = req.user;
     const clubs = await Club.find();
@@ -11,18 +11,21 @@ export const getClubs = async (req, res) => {
       isAuthenticated: req.isAuthenticated,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching clubs");
+    next(err);
   }
 };
 
-export const getAddClub = (req, res) => {
-  const user = req.user;
-  res.render("add-club", {
-    title: "Add Club",
-    isAuthenticated: req.isAuthenticated,
-    user,
-  });
+export const getAddClub = (req, res, next) => {
+  try {
+    const user = req.user;
+    res.render("add-club", {
+      title: "Add Club",
+      isAuthenticated: req.isAuthenticated,
+      user,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const clubSubPages = {
@@ -34,30 +37,24 @@ const clubSubPages = {
   members: "clubDetailsMembers",
 };
 
-export const getClubTab = async (req, res) => {
+export const getClubTab = async (req, res, next) => {
   try {
     const user = req.user;
     const { id, subPage } = req.params;
 
     const view = clubSubPages[subPage];
     if (!view) {
-      return res.status(404).render("404", {
-        message: "Club not found",
-        title: "404 Page",
-        user,
-        isAuthenticated: req.isAuthenticated,
-      });
+      const error = new Error("Club not found");
+      error.status = 404;
+      return next(error);
     }
 
     // Populate recruitments
     const club = await Club.findById(id).populate("recruitments");
     if (!club) {
-      return res.status(404).render("404", {
-        message: "Club not found",
-        title: "404 Page",
-        user,
-        isAuthenticated: req.isAuthenticated,
-      });
+      const error = new Error("Club not found");
+      error.status = 404;
+      return next(error);
     }
 
     // Filter recruitments into active and past
@@ -71,21 +68,24 @@ export const getClubTab = async (req, res) => {
       isAuthenticated: req.isAuthenticated,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching club details");
+    next(err);
   }
 };
 
-export const createClub = async (req, res) => {
-  const { name, description, image, oc } = req.body;
-  if (!name || !description || !image) {
-    return res.status(400).json({ message: "All fields are required." });
+export const createClub = async (req, res, next) => {
+  try {
+    const { name, description, image, oc } = req.body;
+    if (!name || !description || !image) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+    const newClub = await Club.create({
+      name,
+      description,
+      image,
+      // oc,
+    });
+    res.status(201).json(newClub);
+  } catch (err) {
+    next(err);
   }
-  const newClub = await Club.create({
-    name,
-    description,
-    image,
-    // oc,
-  });
-  res.status(201).json(newClub);
 };

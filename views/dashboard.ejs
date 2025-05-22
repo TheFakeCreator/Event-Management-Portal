@@ -42,27 +42,22 @@
     class="bg-white shadow-xl rounded-2xl border border-gray-200 p-8 md:flex gap-10 max-w-5xl mx-auto"
   >
     <!-- Avatar -->
-    <div class="flex justify-center md:justify-start mb-6 md:mb-0">
+    <div
+      class="flex flex-col items-center justify-center md:justify-start mb-6 md:mb-0"
+    >
       <img
         src="<%= user.avatar %>"
         alt="Avatar"
         class="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border-4 border-blue-500 shadow-md"
       />
+      <div class="mt-4 text-2xl font-bold text-gray-900"><%= user.name %></div>
+      <div class="text-gray-500 text-base">@<%= user.username %></div>
     </div>
 
     <!-- User Info -->
     <div class="flex-1 space-y-6">
-      <!-- Welcome -->
-      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">
-        Welcome, <%= user.name %>!
-      </h1>
-
       <!-- Grid Info -->
       <div class="grid sm:grid-cols-2 gap-4 text-gray-700">
-        <p>
-          <strong>Username:</strong>
-          <span class="font-medium"><%= user.username %></span>
-        </p>
         <p>
           <strong>Email:</strong>
           <span class="font-medium"><%= user.email %></span>

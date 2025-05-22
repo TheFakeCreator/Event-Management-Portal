@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Event from "../models/event.model.js";
 import Club from "../models/club.model.js";
-import Registration from "../models/registration.model.js";
+import EventRegistration from "../models/eventRegistration.model.js";
 import Log from "../models/log.model.js";
 
 export const getEvents = async (req, res) => {
@@ -48,7 +48,15 @@ export const getEventDetails = async (req, res) => {
       return res.status(404).send("Event not found");
     }
 
-    const registeredUsersCount = await Registration.countDocuments({
+    let alreadyRegistered = false;
+    if (req.user) {
+      alreadyRegistered = await EventRegistration.exists({
+        event: req.params.id,
+        user: req.user._id,
+      });
+    }
+
+    const registeredUsersCount = await EventRegistration.countDocuments({
       event: req.params.id,
     });
     res.render("eventDetails", {
@@ -59,6 +67,7 @@ export const getEventDetails = async (req, res) => {
       registeredUsersCount,
       creator:
         event.createdBy.toString() == req.user._id.toString() ? true : false,
+      alreadyRegistered,
     });
   } catch (error) {
     console.error(error);
@@ -222,11 +231,12 @@ export const registerEvent = async (req, res) => {
       });
     }
 
-    const newRegistration = await Registration.create({
+    await EventRegistration.create({
       event: event._id,
       name,
       email,
       phone,
+      user: req.user ? req.user._id : undefined,
     });
 
     res.redirect(`/event/${event._id}`); // Redirect to event details after registration

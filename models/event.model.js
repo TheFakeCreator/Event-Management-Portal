@@ -60,12 +60,18 @@ const eventSchema = new Schema({
       ref: "Club",
     },
   ],
-  regiteredUsers: {
+  registeredUsers: {
     type: Number,
     default: 0,
   },
+  // registrations: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "EventRegistration",
+  //   },
+  // ],
   preEventNotes: {
-    type: String, // paln for handling the event
+    type: String, // plan for handling the event
   },
   postEventNotes: {
     type: String, // feedback and suggestions for the upcoming handlers

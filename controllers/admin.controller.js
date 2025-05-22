@@ -12,7 +12,7 @@ export const getAdminDashboard = (req, res) => {
   });
 };
 
-export const getManageRoles = async (req, res) => {
+export const getManageRoles = async (req, res, next) => {
   try {
     const users = await User.find();
     res.render("admin/manageRoles", {
@@ -22,16 +22,17 @@ export const getManageRoles = async (req, res) => {
       user: req.user,
     });
   } catch (error) {
-    console.error("Error fetching roles:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getRoleRequests = async (req, res) => {
+export const getRoleRequests = async (req, res, next) => {
   try {
     const users = await User.find({ roleRequest: "admin" });
     if (!users) {
-      return res.status(404).send("No role requests found");
+      const err = new Error("No role requests found");
+      err.status = 404;
+      return next(err);
     }
     res.render("admin/roleRequests", {
       title: "Role Requests",
@@ -40,12 +41,11 @@ export const getRoleRequests = async (req, res) => {
       users,
     });
   } catch (error) {
-    console.error("Error fetching role requests:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getManageClubs = async (req, res) => {
+export const getManageClubs = async (req, res, next) => {
   try {
     const clubs = await Club.find();
     res.render("admin/manageClubs", {
@@ -55,16 +55,17 @@ export const getManageClubs = async (req, res) => {
       clubs,
     });
   } catch (error) {
-    console.error("Error fetching clubs:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getEditClub = async (req, res) => {
+export const getEditClub = async (req, res, next) => {
   try {
     const club = await Club.findById(req.params.id);
     if (!club) {
-      return res.status(404).send("Club not found");
+      const err = new Error("Club not found");
+      err.status = 404;
+      return next(err);
     }
     res.render("admin/editClub", {
       title: "Edit Club",
@@ -73,12 +74,11 @@ export const getEditClub = async (req, res) => {
       club,
     });
   } catch (error) {
-    console.error("Error fetching club:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getManageUsers = async (req, res) => {
+export const getManageUsers = async (req, res, next) => {
   try {
     const users = await User.find();
     res.render("admin/manageUsers", {
@@ -88,12 +88,11 @@ export const getManageUsers = async (req, res) => {
       users,
     });
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getManageEvents = async (req, res) => {
+export const getManageEvents = async (req, res, next) => {
   try {
     const events = await Event.find();
     res.render("admin/manageEvents", {
@@ -103,17 +102,18 @@ export const getManageEvents = async (req, res) => {
       events,
     });
   } catch (error) {
-    console.error("Error fetching events:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getEditEvent = async (req, res) => {
+export const getEditEvent = async (req, res, next) => {
   try {
     const event = await Event.findById(req.params.id);
     const clubs = await Club.find();
     if (!event) {
-      return res.status(404).send("Event not found");
+      const err = new Error("Event not found");
+      err.status = 404;
+      return next(err);
     }
     res.render("admin/editEvent", {
       title: "Edit Event",
@@ -123,12 +123,11 @@ export const getEditEvent = async (req, res) => {
       clubs,
     });
   } catch (error) {
-    console.error("Error fetching event:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getSettings = (req, res) => {
+export const getSettings = (req, res, next) => {
   try {
     res.render("admin/settings", {
       title: "Settings",
@@ -136,12 +135,11 @@ export const getSettings = (req, res) => {
       user: req.user,
     });
   } catch (error) {
-    console.error("Error fetching settings:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-export const getLogs = async (req, res) => {
+export const getLogs = async (req, res, next) => {
   try {
     const logs = await Log.find();
     res.render("admin/logs", {
@@ -151,8 +149,7 @@ export const getLogs = async (req, res) => {
       logs,
     });
   } catch (error) {
-    console.error("Error fetching logs:", error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 

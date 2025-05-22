@@ -58,23 +58,6 @@ export const getNewRecruitments = async (req, res) => {
   }
 };
 
-export const getApplyRecruitment = async (req, res) => {
-  try {
-    const recruitment = await Recruitment.findById(req.params.id).populate(
-      "club"
-    );
-    if (!recruitment) return res.status(404).send("Recruitment not found");
-    res.render("applyRecruitment", {
-      title: "Apply for Recruitment",
-      recruitment,
-      user: req.user,
-      isAuthenticated: req.isAuthenticated,
-    });
-  } catch (err) {
-    res.status(500).send("Server Error");
-  }
-};
-
 export const postNewRecruitment = async (req, res) => {
   const user = req.user;
   const { title, description, deadline, clubId, applicationForm } = req.body;
@@ -129,19 +112,18 @@ export const postApplyRecruitment = async (req, res) => {
       "club"
     );
     if (!recruitment) {
-      return res.status(404).render("applyRecruitment", {
-        title: "Apply for Recruitment",
-        recruitment: {},
+      return res.status(404).render("404", {
+        message: "Recruitment not found",
+        title: "404 Page",
         user: req.user,
         isAuthenticated: req.isAuthenticated,
-        error: "Recruitment not found.",
       });
     }
     // Check deadline
     const now = new Date();
     if (now > recruitment.deadline) {
-      return res.render("applyRecruitment", {
-        title: "Apply for Recruitment",
+      return res.render("recruitmentDetails", {
+        title: recruitment.title,
         recruitment,
         user: req.user,
         isAuthenticated: req.isAuthenticated,
@@ -167,22 +149,15 @@ export const postApplyRecruitment = async (req, res) => {
     const totalApplicants = await Registration.countDocuments({
       recruitment: recruitmentId,
     });
-    res.render("applyRecruitment", {
-      title: "Apply for Recruitment",
-      recruitment,
-      user: req.user,
-      isAuthenticated: req.isAuthenticated,
-      success: "Application submitted successfully!",
-      totalApplicants,
-    });
+    // Set flash message for success
+    req.flash("success", "Application submitted successfully!");
+    // Redirect to GET
+    return res.redirect(`/recruitment/${recruitmentId}`);
   } catch (err) {
-    res.status(500).render("applyRecruitment", {
-      title: "Apply for Recruitment",
-      recruitment: {},
-      user: req.user,
-      isAuthenticated: req.isAuthenticated,
-      error: "Failed to submit application.",
-    });
+    // On error, redirect to GET with error message
+    return res.redirect(
+      `/recruitment/${req.params.id}?error=Failed to submit application.`
+    );
   }
 };
 
@@ -201,11 +176,15 @@ export const getRecruitmentDetails = async (req, res) => {
         isAuthenticated: req.isAuthenticated,
       });
     }
+    // If redirected after POST, pass success/error/totalApplicants if present
     res.render("recruitmentDetails", {
       title: recruitment.title,
       recruitment,
       user: req.user,
       isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
+      totalApplicants: req.query.totalApplicants,
     });
   } catch (err) {
     console.error(err);

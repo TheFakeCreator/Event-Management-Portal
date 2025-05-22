@@ -1,127 +1,213 @@
-<% layout('layouts/main') %>
-
-<div class="max-w-xl mx-auto bg-white shadow-md rounded-lg p-8 mt-10">
-  <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">
-    Create Recruitment
-  </h1>
-  <% if (typeof error !== 'undefined') { %>
-  <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><%= error %></div>
-  <% } %>
-  <form
-    id="recruitmentForm"
-    action="/recruitment/new"
-    method="POST"
-    class="space-y-6"
-  >
-    <input type="hidden" name="clubId" value="<%= clubId %>" />
-    <div>
-      <label for="title" class="block text-gray-700 font-semibold mb-2"
-        >Domain</label
-      >
-      <input
-        type="text"
-        id="title"
-        name="title"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        placeholder="e.g. Web Developer, Designer, etc."
-      />
-    </div>
-    <div>
-      <label for="description" class="block text-gray-700 font-semibold mb-2"
-        >Description</label
-      >
-      <textarea
-        id="description"
-        name="description"
-        required
-        rows="4"
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        placeholder="Describe the recruitment role, requirements, etc."
-      ></textarea>
-    </div>
-    <div>
-      <label for="deadline" class="block text-gray-700 font-semibold mb-2"
-        >Deadline</label
-      >
-      <input
-        type="date"
-        id="deadline"
-        name="deadline"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        min="<%= new Date().toISOString().split('T')[0] %>"
-      />
-    </div>
-    <!-- Form Builder Section -->
-    <div>
-      <h2 class="text-lg font-bold text-blue-600 mb-2">
-        Application Form Builder
-      </h2>
-      <div id="formFields" class="space-y-4 mb-4"></div>
-      <div class="flex space-x-2">
-        <select id="fieldType" class="px-2 py-1 border rounded">
-          <option value="text">Text</option>
-          <option value="textarea">Paragraph</option>
-          <option value="date">Date</option>
-          <option value="email">Email</option>
-          <option value="number">Number</option>
-        </select>
-        <input
-          type="text"
-          id="fieldLabel"
-          class="px-2 py-1 border rounded"
-          placeholder="Field label"
-        />
-        <label class="flex items-center space-x-1">
-          <input type="checkbox" id="fieldRequired" />
-          <span class="text-sm">Required</span>
-        </label>
-        <button
-          type="button"
-          id="addFieldBtn"
-          class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+<% layout("layouts/main") %>
+<div class="flex min-h-screen bg-gradient-to-r from-blue-50 to-white">
+  <!-- Left Navigation Pane -->
+  <nav class="w-64 bg-white border-r flex flex-col py-10 px-6 shadow-lg">
+    <h2 class="text-2xl font-extrabold mb-10 text-blue-700 tracking-tight">
+      Create Recruitment
+    </h2>
+    <ul class="space-y-3">
+      <li>
+        <a
+          href="#about"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          data-section="about"
+          >About</a
         >
-          Add Field
-        </button>
+      </li>
+      <li>
+        <a
+          href="#form"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          data-section="form"
+          >Application Form</a
+        >
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Right Content Pane -->
+  <div class="flex-1 p-10">
+    <% if (typeof error !== 'undefined') { %>
+    <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><%= error %></div>
+    <% } %> <% if (typeof success !== 'undefined') { %>
+    <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+      <%= success %>
+    </div>
+    <% } %>
+    <form id="recruitmentForm" action="/recruitment/new" method="POST">
+      <input type="hidden" name="clubId" value="<%= clubId %>" />
+      <div id="section-about" class="section">
+        <h3 class="text-2xl font-bold mb-4 text-blue-700">
+          About this Recruitment
+        </h3>
+        <div class="bg-white rounded-xl shadow p-6 mb-6 space-y-6">
+          <div>
+            <label for="title" class="block text-gray-700 font-semibold mb-2"
+              >Domain</label
+            >
+            <input
+              type="text"
+              id="title"
+              name="title"
+              required
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="e.g. Web Developer, Designer, etc."
+            />
+          </div>
+          <div>
+            <label
+              for="description"
+              class="block text-gray-700 font-semibold mb-2"
+              >Description</label
+            >
+            <textarea
+              id="description"
+              name="description"
+              required
+              rows="4"
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Describe the recruitment role, requirements, etc."
+            ></textarea>
+          </div>
+          <div>
+            <label for="deadline" class="block text-gray-700 font-semibold mb-2"
+              >Deadline</label
+            >
+            <input
+              type="date"
+              id="deadline"
+              name="deadline"
+              required
+              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              min="<%= new Date().toISOString().split('T')[0] %>"
+            />
+          </div>
+        </div>
       </div>
-      <input type="hidden" name="applicationForm" id="applicationFormInput" />
-    </div>
-    <div class="flex justify-end">
-      <button
-        type="submit"
-        class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-      >
-        Create
-      </button>
-    </div>
-  </form>
-  <a
-    href="/club/<%= clubId %>"
-    class="block mt-6 text-blue-600 hover:underline text-center"
-    >&larr; Back to Club</a
-  >
+      <div id="section-form" class="section hidden">
+        <h3 class="text-2xl font-bold mb-4 text-blue-700">Application Form</h3>
+        <div class="bg-white rounded-xl shadow p-6 space-y-6">
+          <div id="formFields" class="space-y-4 mb-4"></div>
+          <!-- Visual Preview of Form Fields -->
+          <div id="formPreview" class="space-y-4 mb-6">
+            <h4 class="text-lg font-semibold text-blue-600 mb-2">
+              Form Preview
+            </h4>
+            <!-- Dynamic preview fields will be rendered here -->
+          </div>
+          <div class="flex space-x-2 mb-4">
+            <select id="fieldType" class="px-2 py-1 border rounded">
+              <option value="text">Text</option>
+              <option value="textarea">Paragraph</option>
+              <option value="date">Date</option>
+              <option value="email">Email</option>
+              <option value="number">Number</option>
+            </select>
+            <input
+              type="text"
+              id="fieldLabel"
+              class="px-2 py-1 border rounded"
+              placeholder="Field label"
+            />
+            <label class="flex items-center space-x-1">
+              <input type="checkbox" id="fieldRequired" />
+              <span class="text-sm">Required</span>
+            </label>
+            <button
+              type="button"
+              id="addFieldBtn"
+              class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Add Field
+            </button>
+          </div>
+          <input
+            type="hidden"
+            name="applicationForm"
+            id="applicationFormInput"
+          />
+          <div>
+            <button
+              type="submit"
+              class="w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+    <a
+      href="/club/<%= clubId %>"
+      class="block mt-6 text-blue-600 hover:underline text-center"
+      >&larr; Back to Club</a
+    >
+  </div>
 </div>
 
 <script>
+  // Navigation logic
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      document
+        .querySelectorAll(".section")
+        .forEach((sec) => sec.classList.add("hidden"));
+      const section = this.getAttribute("data-section");
+      document.getElementById("section-" + section).classList.remove("hidden");
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) =>
+          l.classList.remove("bg-blue-100", "font-bold", "text-blue-700")
+        );
+      this.classList.add("bg-blue-100", "font-bold", "text-blue-700");
+    });
+  });
+  // Show About by default
+  document
+    .querySelector('.nav-link[data-section="about"]')
+    .classList.add("bg-blue-100", "font-bold", "text-blue-700");
+
+  // Form builder logic
   const formFields = [];
   const formFieldsDiv = document.getElementById("formFields");
   const applicationFormInput = document.getElementById("applicationFormInput");
+  const formPreview = document.getElementById("formPreview");
 
   function renderFields() {
     formFieldsDiv.innerHTML = "";
+    formPreview.innerHTML =
+      '<h4 class="text-lg font-semibold text-blue-600 mb-2">Form Preview</h4>';
     formFields.forEach((field, idx) => {
+      // Editable label input
       const fieldDiv = document.createElement("div");
-      fieldDiv.className = "flex items-center space-x-2";
+      fieldDiv.className = "flex items-center space-x-2 mb-2";
       fieldDiv.innerHTML = `
         <span class="px-2 py-1 bg-gray-100 rounded">${field.type}</span>
-        <span class="font-semibold">${field.label}</span>
+        <input type="text" value="${
+          field.label
+        }" data-idx="${idx}" class="editLabelInput font-semibold border px-2 py-1 rounded w-48" />
         <span class="text-xs text-gray-500">${
           field.required ? "Required" : "Optional"
         }</span>
         <button type="button" class="removeFieldBtn text-red-500 hover:underline" data-idx="${idx}">Remove</button>
       `;
       formFieldsDiv.appendChild(fieldDiv);
+
+      // Visual preview
+      const previewDiv = document.createElement("div");
+      previewDiv.className = "mb-2";
+      let labelHtml = `<label class='block text-gray-700 font-semibold mb-1 preview-label'>${
+        field.label
+      }${field.required ? " <span class='text-red-500'>*</span>" : ""}</label>`;
+      let inputHtml = "";
+      if (["text", "email", "number", "date"].includes(field.type)) {
+        inputHtml = `<input type='${field.type}' disabled class='w-full px-4 py-2 border rounded-lg bg-gray-100 preview-input' placeholder='${field.label}' />`;
+      } else if (field.type === "textarea") {
+        inputHtml = `<textarea disabled class='w-full px-4 py-2 border rounded-lg bg-gray-100 preview-input' rows='3' placeholder='${field.label}'></textarea>`;
+      }
+      previewDiv.innerHTML = labelHtml + inputHtml;
+      formPreview.appendChild(previewDiv);
     });
     applicationFormInput.value = JSON.stringify(formFields);
   }
@@ -142,6 +228,28 @@
       const idx = e.target.getAttribute("data-idx");
       formFields.splice(idx, 1);
       renderFields();
+    }
+  });
+
+  formFieldsDiv.addEventListener("input", function (e) {
+    if (e.target.classList.contains("editLabelInput")) {
+      const idx = e.target.getAttribute("data-idx");
+      formFields[idx].label = e.target.value;
+      // Do NOT call renderFields here to avoid losing focus
+      applicationFormInput.value = JSON.stringify(formFields);
+      // Also update the preview label live
+      // Find the corresponding preview label and update its text
+      const previewDivs = formPreview.querySelectorAll(".preview-label");
+      if (previewDivs[idx]) {
+        previewDivs[idx].innerHTML = `${formFields[idx].label}${
+          formFields[idx].required ? " <span class='text-red-500'>*</span>" : ""
+        }`;
+      }
+      // Update the placeholder of the preview input/textarea
+      const previewInputs = formPreview.querySelectorAll(".preview-input");
+      if (previewInputs[idx]) {
+        previewInputs[idx].setAttribute("placeholder", formFields[idx].label);
+      }
     }
   });
 

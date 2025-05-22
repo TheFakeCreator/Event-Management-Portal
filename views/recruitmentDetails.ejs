@@ -27,6 +27,12 @@
 
   <!-- Right Content Pane -->
   <div class="flex-1 p-10">
+    <% if (success && success.length) { %>
+      <div class="mb-4 p-3 bg-green-100 text-green-700 rounded"><%= success[0] %></div>
+    <% } %>
+    <% if (error && error.length) { %>
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><%= error[0] %></div>
+    <% } %>
     <div id="section-about" class="section">
       <h3 class="text-2xl font-bold mb-4 text-blue-700">
         About this Recruitment
@@ -48,7 +54,7 @@
       <h3 class="text-2xl font-bold mb-4 text-blue-700">Application Form</h3>
       <div class="bg-white rounded-xl shadow p-6">
         <form
-          action="/recruitment/apply/<%= recruitment._id %>"
+          action="/recruitment/<%= recruitment._id %>"
           method="POST"
           class="space-y-6"
         >

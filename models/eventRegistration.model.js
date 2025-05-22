@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const registrationSchema = new Schema(
+const eventRegistrationSchema = new Schema(
   {
-    recruitment: {
+    event: {
       type: Schema.Types.ObjectId,
-      ref: "Recruitment",
+      ref: "Event",
       required: true,
     },
     name: {
@@ -20,9 +20,15 @@ const registrationSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    customFields: {
-      type: Object,
-      default: {},
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false, // allow guest registrations if needed
     },
     registeredAt: {
       type: Date,
@@ -32,5 +38,8 @@ const registrationSchema = new Schema(
   { timestamps: true }
 );
 
-const Registration = mongoose.model("Registration", registrationSchema);
-export default Registration;
+const EventRegistration = mongoose.model(
+  "EventRegistration",
+  eventRegistrationSchema
+);
+export default EventRegistration;
