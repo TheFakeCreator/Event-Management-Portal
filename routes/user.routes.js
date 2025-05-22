@@ -1,88 +1,37 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/authMiddleware.js";
-import User from "../models/user.model.js";
-import { requestRole } from "../controllers/user.controller.js";
+import {
+  isAuthenticated,
+  isAuthenticatedLineant,
+} from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/upload.js";
+import {
+  getRequestRole,
+  getUser,
+  getUserEdit,
+  postUserEdit,
+  requestRole,
+} from "../controllers/user.controller.js";
 
 const router = express.Router();
 
-// ✅ Edit Profile Route (Place this BEFORE dashboard route)
-router.get("/:username/edit", isAuthenticated, async (req, res) => {
-  try {
-    const user = req.user;
-
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    res.render("edit-profile", {
-      title: "Edit Profile",
-      user,
-      isAuthenticated: req.isAuthenticated,
-    });
-  } catch (err) {
-    console.error("Error loading edit profile page:", err);
-    res.status(500).send("Error loading page");
-  }
+router.get("/test-error", isAuthenticatedLineant, (req, res, next) => {
+  const error = new Error("This is a test error!");
+  error.status = 500;
+  next(error);
 });
-router.post("/:username/edit", isAuthenticated, async (req, res) => {
-  try {
-    const {
-      name,
-      username,
-      phone,
-      bio,
-      occupation,
-      location,
-      linkedin,
-      github,
-      twitter,
-    } = req.body;
-    const userId = req.user._id; // Ensure user is authenticated
+// GET Routes
+router.get("/:username/edit", isAuthenticated, getUserEdit);
+router.get("/:username", isAuthenticated, getUser);
+router.get("/:username/request-role", isAuthenticated, getRequestRole);
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        name,
-        username,
-        phone,
-        bio,
-        occupation,
-        location,
-        socials: { linkedin, github, twitter },
-      },
-      { new: true, runValidators: true }
-    );
+// Test route for error handler
 
-    if (!updatedUser) {
-      req.flash("error", "User not found");
-      return res.redirect(`/user/${updatedUser.username}`);
-    }
-
-    req.flash("success", "Profile updated successfully!");
-
-    res.redirect(`/user/${updatedUser.username}`); // Redirect to profile page after update
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    req.flash("error", "Something went wrong!");
-    res.status(500).json({ message: "Server error" });
-  }
-});
-// ✅ Dashboard Route (Keep it below the edit route)
-router.get("/:username", isAuthenticated, (req, res) => {
-  res.render("dashboard", {
-    user: req.user,
-    title: "Dashboard",
-    isAuthenticated: req.isAuthenticated,
-  });
-});
-
-router.get("/:username/request-role", isAuthenticated, (req, res) => {
-  res.render("request-role", {
-    title: "Request Role",
-    user: req.user,
-    isAuthenticated: req.isAuthenticated,
-  });
-});
-
+// POST Routes
+router.post(
+  "/:username/edit",
+  isAuthenticated,
+  upload.single("avatar"),
+  postUserEdit
+);
 router.post("/:username/request-role", isAuthenticated, requestRole);
 export default router;

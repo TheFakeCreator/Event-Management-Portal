@@ -1,77 +1,85 @@
-<% layout("layouts/main") %> <% if (error_msg || success_msg) { %>
+<% layout("layouts/main") %>
+
+<!-- Flash Messages -->
+<% if (error_msg || success_msg) { %>
 <div
-  class="flashmessage-container fixed top-5 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 px-4"
+  class="fixed top-5 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 px-4"
 >
+  <% if (error_msg) { %>
+  <div
+    class="bg-red-600 text-white p-4 rounded-lg shadow-lg flex justify-between items-center transition duration-300"
+  >
+    <span><%= error_msg %></span>
+    <button onclick="this.parentElement.style.display='none'" class="text-xl">
+      &times;
+    </button>
+  </div>
+  <% } %> <% if (success_msg) { %>
+  <div
+    class="bg-green-600 text-white p-4 rounded-lg shadow-lg flex justify-between items-center transition duration-300 mt-2"
+  >
+    <span><%= success_msg %></span>
+    <button onclick="this.parentElement.style.display='none'" class="text-xl">
+      &times;
+    </button>
+  </div>
+  <% } %>
 </div>
 <script>
   setTimeout(() => {
-    const flashMessages = document.querySelectorAll(".flashmessage");
-    flashMessages.forEach((flashMessage) => {
-      flashMessage.classList.add("opacity-0");
-      setTimeout(() => {
-        flashMessage.style.display = "none";
-      }, 500);
+    document.querySelectorAll(".flashmessage").forEach((el) => {
+      el.classList.add("opacity-0");
+      setTimeout(() => (el.style.display = "none"), 500);
     });
   }, 3000);
 </script>
 <% } %>
 
-<!-- Main Profile Layout -->
-<div class="container mx-auto px-4 sm:px-6 lg:px-10 py-10">
+<!-- Profile Page -->
+<div class="container mx-auto px-4 py-12">
   <div
-    class="bg-white shadow-2xl rounded-2xl border border-gray-200 flex flex-col md:flex-row items-center md:items-start p-8 gap-10 max-w-5xl mx-auto"
+    class="bg-white shadow-xl rounded-2xl border border-gray-200 p-8 md:flex gap-10 max-w-5xl mx-auto"
   >
-    <!-- Avatar Section -->
-    <div class="flex-shrink-0">
+    <!-- Avatar -->
+    <div
+      class="flex flex-col items-center justify-center md:justify-start mb-6 md:mb-0"
+    >
       <img
         src="<%= user.avatar %>"
         alt="Avatar"
-        class="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-blue-500 shadow-lg"
+        class="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border-4 border-blue-500 shadow-md"
       />
+      <div class="mt-4 text-2xl font-bold text-gray-900"><%= user.name %></div>
+      <div class="text-gray-500 text-base">@<%= user.username %></div>
     </div>
 
-    <!-- User Info Section -->
-    <div class="flex-1 w-full">
-      <!-- Name -->
-      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-        Welcome, <%= user.name %>!
-      </h1>
-
-      <!-- Basic Info -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-base sm:text-lg"
-      >
-        <p>
-          <strong>Username:</strong>
-          <span class="font-medium text-gray-900"><%= user.username %></span>
-        </p>
+    <!-- User Info -->
+    <div class="flex-1 space-y-6">
+      <!-- Grid Info -->
+      <div class="grid sm:grid-cols-2 gap-4 text-gray-700">
         <p>
           <strong>Email:</strong>
-          <span class="font-medium text-gray-900"><%= user.email %></span>
+          <span class="font-medium"><%= user.email %></span>
         </p>
+
         <% if (user.phone) { %>
         <p>
           <strong>Phone:</strong>
-          <span class="font-medium text-gray-900"><%= user.phone %></span>
-        </p>
-        <% } %> <% if (user.bio) { %>
-        <p class="sm:col-span-2">
-          <strong>Bio:</strong>
-          <span class="font-medium text-gray-900"><%= user.bio %></span>
+          <span class="font-medium"><%= user.phone %></span>
         </p>
         <% } %> <% if (user.role) { %>
         <p>
           <strong>Role:</strong>
-          <span class="font-medium capitalize text-gray-900"
-            ><%= user.role %></span
-          >
+          <span class="font-medium capitalize"><%= user.role %></span>
         </p>
         <% } %> <% if (user.roleRequest) { %>
         <p>
           <strong>Role Requested:</strong>
-          <span class="font-medium capitalize text-gray-900"
-            ><%= user.roleRequest %></span
-          >
+          <span class="font-medium capitalize"><%= user.roleRequest %></span>
+        </p>
+        <% } %> <% if (user.bio) { %>
+        <p class="sm:col-span-2">
+          <strong>Bio:</strong> <span class="font-medium"><%= user.bio %></span>
         </p>
         <% } %>
       </div>
@@ -79,9 +87,9 @@
       <!-- Social Links -->
       <% if (user.socials && (user.socials.linkedin || user.socials.github ||
       user.socials.behance)) { %>
-      <div class="mt-6">
-        <h2 class="text-lg font-semibold mb-2 text-gray-800">Social Links</h2>
-        <div class="flex flex-wrap gap-4">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">Social Links</h2>
+        <div class="flex flex-wrap gap-3">
           <% if (user.socials.linkedin) { %>
           <a
             href="<%= user.socials.linkedin %>"
@@ -93,7 +101,7 @@
           <a
             href="<%= user.socials.github %>"
             target="_blank"
-            class="text-gray-800 hover:underline"
+            class="text-gray-900 hover:underline"
             >GitHub</a
           >
           <% } %> <% if (user.socials.behance) { %>
@@ -108,19 +116,17 @@
       </div>
       <% } %>
 
-      <!-- Action Buttons -->
-      <div
-        class="mt-8 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0"
-      >
+      <!-- Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 pt-4">
         <a
           href="/user/<%= user.username %>/edit"
-          class="px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-shadow shadow-md hover:shadow-xl text-center w-full sm:w-auto"
+          class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg text-center shadow hover:shadow-lg transition"
         >
           Edit Profile
         </a>
         <a
           href="/user/<%= user.username %>/request-role"
-          class="px-5 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-shadow shadow-md hover:shadow-xl text-center w-full sm:w-auto"
+          class="bg-gray-800 hover:bg-gray-900 text-white py-2 px-6 rounded-lg text-center shadow hover:shadow-lg transition"
         >
           Request Role
         </a>

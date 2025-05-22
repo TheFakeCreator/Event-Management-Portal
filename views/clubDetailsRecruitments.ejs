@@ -7,12 +7,14 @@ currentTab: "recruitments" }) %>
       <h2 class="text-xl font-semibold mb-2 text-blue-700">
         Active Recruitments
       </h2>
-      <% if (user && (user.role === 'admin' || user.role === 'moderator')) { %>
-        <a
-          href="/recruitment/new?club=<%= club._id %>"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >Add Recruitment</a
-        >
+      <% if ( user && ( user.role === 'admin' || (club.moderators &&
+      club.moderators.some(function(m) { return m.toString() ===
+      user._id.toString(); })) ) ) { %>
+      <a
+        href="/recruitment/new?club=<%= club._id %>"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >Add Recruitment</a
+      >
       <% } %>
     </div>
     <% if (club.activeRecruitments && club.activeRecruitments.length > 0) { %>
@@ -45,13 +47,15 @@ currentTab: "recruitments" }) %>
     <% } %>
   </div>
 
+  <% const PAST_BATCH_SIZE = 3; %>
   <div class="mt-12">
     <h2 class="text-xl font-semibold mb-2 text-gray-500">Past Recruitments</h2>
     <% if (club.pastRecruitments && club.pastRecruitments.length > 0) { %>
-    <div class="space-y-6">
-      <% club.pastRecruitments.forEach(function(recruitment) { %>
+    <div class="space-y-6" id="pastRecruitmentsList">
+      <% club.pastRecruitments.forEach(function(recruitment, idx) { %>
       <div
-        class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-gray-100 opacity-60 cursor-not-allowed"
+        class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-gray-100 opacity-60 cursor-not-allowed past-recruitment-item"
+        style="<%= idx >= PAST_BATCH_SIZE ? 'display:none;' : '' %>"
       >
         <div>
           <h3 class="text-xl font-semibold text-gray-400">
@@ -69,10 +73,41 @@ currentTab: "recruitments" }) %>
       </div>
       <% }) %>
     </div>
-    <% } else { %>
+    <% if (club.pastRecruitments.length > PAST_BATCH_SIZE) { %>
+    <div class="flex justify-center mt-4">
+      <button
+        id="loadMorePastBtn"
+        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
+      >
+        Load More
+      </button>
+    </div>
+    <% } %> <% } else { %>
     <div class="text-gray-400 italic">No past recruitments.</div>
     <% } %>
   </div>
+
+  <script>
+    (function () {
+      var batchSize = parseInt("<%= PAST_BATCH_SIZE %>", 10);
+      var shown = batchSize;
+      var items = Array.from(
+        document.querySelectorAll(".past-recruitment-item")
+      );
+      var btn = document.getElementById("loadMorePastBtn");
+      if (btn) {
+        btn.addEventListener("click", function () {
+          for (var i = shown; i < shown + batchSize && i < items.length; i++) {
+            items[i].style.display = "";
+          }
+          shown += batchSize;
+          if (shown >= items.length) {
+            btn.style.display = "none";
+          }
+        });
+      }
+    })();
+  </script>
 
   <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
     >&larr; Back to Clubs</a

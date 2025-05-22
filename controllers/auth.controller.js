@@ -4,7 +4,51 @@ import jwt from "jsonwebtoken";
 import transporter from "../configs/nodemailer.js";
 import crypto from "crypto";
 
-export const registerUser = async (req, res) => {
+export const getLoginUser = (req, res, next) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("login");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getRegisterUser = (req, res, next) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("signup");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getForgotPass = (req, res, next) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("forgot-password");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getResetPass = (req, res, next) => {
+  try {
+    if (req.isAuthenticated) {
+      return res.redirect(`/user/${req.user.username}`);
+    }
+    res.render("reset-password", { token: req.params.token });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const registerUser = async (req, res, next) => {
   try {
     const { name, username, email, password, confirmPassword } = req.body;
 
@@ -56,11 +100,11 @@ export const registerUser = async (req, res) => {
         "Signup successful! Please check your email to verify your account.",
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -84,16 +128,20 @@ export const loginUser = async (req, res) => {
     });
     res.status(200).redirect(`/user/${user.username}`);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-export const logoutUser = async (req, res) => {
-  res.clearCookie("token");
-  res.status(200).redirect("/");
+export const logoutUser = async (req, res, next) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).redirect("/");
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const verifyUser = async (req, res) => {
+export const verifyUser = async (req, res, next) => {
   const { token } = req.params;
 
   try {
@@ -121,13 +169,14 @@ export const verifyUser = async (req, res) => {
       <p>You can now <a href="/auth/login">login</a> to your account.</p>
     `);
   } catch (error) {
-    res.status(400).json({ message: "Invalid or expired token." });
+    next(error);
   }
 };
 
-export const forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res, next) => {
   try {
-    const { email } = req.body;8
+    const { email } = req.body;
+    8;
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found." });
@@ -147,11 +196,11 @@ export const forgotPassword = async (req, res) => {
     });
     res.status(200).json({ message: "Reset password email sent." });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req, res, next) => {
   try {
     const { newPassword, confirmPassword } = req.body;
     const { token } = req.params;
@@ -166,7 +215,9 @@ export const resetPassword = async (req, res) => {
     console.log("User found:", user);
 
     if (!user) {
-      return res.status(400).json({ message: "User not found or token invalid." });
+      return res
+        .status(400)
+        .json({ message: "User not found or token invalid." });
     }
 
     if (user.expireToken < Date.now()) {
@@ -181,7 +232,6 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Password reset successful." });
   } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };

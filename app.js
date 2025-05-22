@@ -16,6 +16,9 @@ import cors from "cors";
 import passport from "passport";
 import "./jobs/eventReminder.js";
 
+// Middleware Imports
+import errorHandler from "./middlewares/errorHandler.js";
+
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
 import adminRouter from "./routes/admin.routes.js";
@@ -81,6 +84,9 @@ app.use("/club", clubRouter);
 app.use("/recruitment", recruitmentRouter);
 app.use("/api", uploadRoutes);
 app.use("/api/events", eventRouter);
+
+// Centralized error handler (must be after all routes)
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

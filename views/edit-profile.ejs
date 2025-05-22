@@ -1,70 +1,276 @@
 <% layout("layouts/main") %>
 
-<div class="bg-gray-100 min-h-screen flex items-center justify-center py-10 px-4">
-  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-    <h1 class="text-3xl font-bold text-blue-600 text-center mb-6">Edit Profile</h1>
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
+/>
 
-    <form action="/user/<%= user.username %>/edit" method="post" class="space-y-4">
-      <div class="flex flex-col items-center">
-        <label class="block text-gray-700 font-medium">Profile Picture</label>
-        <input type="file" name="avatar" class="w-full mt-2 p-2 border border-gray-300 rounded-lg" />
+<div class="min-h-screen w-full bg-gray-100 flex">
+  <!-- Sidebar -->
+  <aside
+    class="w-64 bg-white border-r border-gray-200 flex flex-col items-center py-8 px-4 shadow z-10 h-screen fixed top-16 left-0"
+    style="height: calc(100vh - 4rem)"
+  >
+    <div class="flex flex-col items-center w-full mb-8">
+      <div
+        class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-2"
+      >
+        <img
+          src="<%= user.avatarUrl || '/images/male.jpg' %>"
+          alt="Avatar"
+          class="object-cover w-full h-full"
+        />
       </div>
+      <div class="text-lg font-semibold text-gray-800"><%= user.name %></div>
+      <div class="text-sm text-gray-500">@<%= user.username %></div>
+    </div>
+    <nav class="flex flex-col gap-3 w-full">
+      <a href="#profile-info" class="sidebar-link">
+        <i class="fas fa-user mr-2"></i> Profile
+      </a>
+      <a href="#social-links" class="sidebar-link">
+        <i class="fab fa-linkedin mr-2"></i> Social
+      </a>
+      <a href="#account" class="sidebar-link text-red-600">
+        <i class="fas fa-user-shield mr-2"></i> Account
+      </a>
+    </nav>
+  </aside>
 
-      <div>
-        <label class="block text-gray-700 font-medium">Full Name</label>
-        <input type="text" name="name" value="<%= user.name %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" required />
-      </div>
+  <!-- Main Content -->
+  <main class="flex-1 flex justify-center py-10 px-4 ml-0 md:ml-64 mt-16">
+    <form
+      action="/user/<%= user.username %>/edit"
+      method="post"
+      enctype="multipart/form-data"
+      class="w-full max-w-3xl bg-white rounded-lg shadow p-8 space-y-10 border border-gray-200"
+    >
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">Edit Profile</h1>
 
-      <div>
-        <label class="block text-gray-700 font-medium">Username</label>
-        <input type="text" name="username" value="<%= user.username %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium">Email</label>
-        <input type="email" name="email" value="<%= user.email %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg bg-gray-100" readonly />
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium">Phone</label>
-        <input type="text" name="phone" value="<%= user.phone %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium">Bio</label>
-        <textarea name="bio" class="w-full mt-2 p-3 border border-gray-300 rounded-lg h-24 resize-none"><%= user.bio %></textarea>
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium">Occupation</label>
-        <input type="text" name="occupation" value="<%= user.occupation %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium">Location</label>
-        <input type="text" name="location" value="<%= user.location %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-gray-700 font-medium">LinkedIn</label>
-          <input type="url" name="linkedin" value="<%= user.socials.linkedin %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      <!-- Profile Info Section -->
+      <section id="profile-info" class="space-y-6">
+        <h2
+          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+        >
+          Profile Information
+        </h2>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col md:flex-row gap-6">
+            <div class="flex flex-col items-center">
+              <label class="block text-gray-700 font-medium mb-2"
+                >Profile Picture</label
+              >
+              <div
+                class="w-24 h-24 rounded-full overflow-hidden border border-gray-300 mb-2"
+              >
+                <img
+                  src="<%= user.avatarUrl || '/images/male.jpg' %>"
+                  alt="Avatar"
+                  class="object-cover w-full h-full"
+                />
+              </div>
+              <input
+                type="file"
+                name="avatar"
+                class="w-36 text-sm border border-gray-300 rounded px-2 py-1 bg-gray-50"
+              />
+            </div>
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-gray-700 font-medium">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value="<%= user.name %>"
+                  class="input-field"
+                  required
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value="<%= user.username %>"
+                  class="input-field"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value="<%= user.email %>"
+                  class="input-field bg-gray-100 cursor-not-allowed"
+                  readonly
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium">Phone</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value="<%= user.phone %>"
+                  class="input-field"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium">Gender</label>
+                <select name="gender" class="input-field">
+                  <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
+                  <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
+                  <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700 font-medium">Bio</label>
+              <textarea name="bio" class="input-field h-24 resize-none" maxlength="250"><%= user.bio %></textarea>
+            </div>
+            <div class="flex flex-col gap-4">
+              <div>
+                <label class="block text-gray-700 font-medium">Occupation</label>
+                <input
+                  type="text"
+                  name="occupation"
+                  value="<%= user.occupation %>"
+                  class="input-field"
+                />
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value="<%= user.location %>"
+                  class="input-field"
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div>
-          <label class="block text-gray-700 font-medium">GitHub</label>
-          <input type="url" name="github" value="<%= user.socials.github %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      <!-- Social Links Section -->
+      <section id="social-links" class="space-y-6">
+        <h2
+          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+        >
+          Social Links
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 font-medium">LinkedIn</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700">
+                <i class="fab fa-linkedin"></i>
+              </span>
+              <input
+                type="url"
+                name="linkedin"
+                value="<%= user.socials.linkedin %>"
+                class="input-field pl-10"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium">GitHub</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-800">
+                <i class="fab fa-github"></i>
+              </span>
+              <input
+                type="url"
+                name="github"
+                value="<%= user.socials.github %>"
+                class="input-field pl-10"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium">Behance</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
+                <i class="fab fa-behance"></i>
+              </span>
+              <input
+                type="url"
+                name="behance"
+                value="<%= user.socials.behance %>"
+                class="input-field pl-10"
+              />
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div class="md:col-span-2">
-          <label class="block text-gray-700 font-medium">Twitter</label>
-          <input type="url" name="twitter" value="<%= user.socials.twitter %>" class="w-full mt-2 p-3 border border-gray-300 rounded-lg" />
+      <!-- Account Section -->
+      <section id="account" class="space-y-6">
+        <h2
+          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+        >
+          Account
+        </h2>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <p class="text-red-700 font-semibold mb-2">Danger Zone</p>
+          <p class="text-sm text-red-600 mb-4">
+            Deactivating your account will disable your profile and remove your
+            access. Deletion is permanent and cannot be undone.
+          </p>
+          <div class="flex flex-col md:flex-row gap-4">
+            <button
+              type="button"
+              onclick="if(confirm('Are you sure you want to deactivate your account?')){ window.location.href='/user/<%= user.username %>/deactivate'; }"
+              class="bg-yellow-500 text-white px-6 py-2 rounded font-semibold hover:bg-yellow-600 transition"
+            >
+              <i class="fas fa-user-slash mr-2"></i>Deactivate Account
+            </button>
+            <button
+              type="button"
+              onclick="if(confirm('Are you sure you want to delete your account? This action cannot be undone.')){ window.location.href='/user/<%= user.username %>/delete'; }"
+              class="bg-red-600 text-white px-6 py-2 rounded font-semibold hover:bg-red-700 transition"
+            >
+              <i class="fas fa-trash-alt mr-2"></i>Delete Account
+            </button>
+          </div>
         </div>
+      </section>
+
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-8 py-3 rounded font-bold text-lg hover:bg-blue-700 transition"
+        >
+          <i class="fas fa-save mr-2"></i>Save Changes
+        </button>
       </div>
-
-      <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">
-        Save Changes
-      </button>
     </form>
-  </div>
+  </main>
 </div>
+
+<!-- Custom styles -->
+<style>
+  .input-field {
+    border: 1.5px solid #cbd5e1; /* Tailwind gray-300 */
+    background: #fff;
+    border-radius: 0.375rem; /* rounded */
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .input-field:focus {
+    border-color: #2563eb; /* Tailwind blue-600 */
+    box-shadow: 0 0 0 2px #bfdbfe; /* Tailwind blue-200 */
+  }
+  .sidebar-link {
+    @apply flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium transition;
+  }
+  .sidebar-link.text-red-600 {
+    @apply hover:bg-red-50;
+  }
+</style>

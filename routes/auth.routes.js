@@ -8,51 +8,35 @@ import {
   verifyUser,
   forgotPassword,
   resetPassword,
+  getLoginUser,
+  getRegisterUser,
+  getForgotPass,
+  getResetPass,
 } from "../controllers/auth.controller.js";
 import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/login", isAuthenticatedLineant, (req, res) => {
-  if (req.isAuthenticated) {
-    return res.redirect(`/user/${req.user.username}`);
-  }
-  res.render("login");
-});
+// GET Routes
+router.get("/login", isAuthenticatedLineant, getLoginUser);
+router.get("/signup", isAuthenticatedLineant, getRegisterUser);
+router.get("/verify/:token", verifyUser);
+router.get("/forgot-password", isAuthenticatedLineant, getForgotPass);
+router.get("/reset-password/:token", isAuthenticatedLineant, getResetPass);
 
-router.get("/signup", isAuthenticatedLineant, (req, res) => {
-  if (req.isAuthenticated) {
-    return res.redirect(`/user/${req.user.username}`);
-  }
-  res.render("signup");
-});
-
+// POST Routes
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
-router.get("/verify/:token", verifyUser);
-
-router.get("/forgot-password", isAuthenticatedLineant, (req, res) => {
-  if (req.isAuthenticated) {
-    return res.redirect(`/user/${req.user.username}`);
-  }
-  res.render("forgot-password");
-});
 router.post("/forgot-password", forgotPassword);
-
-router.get("/reset-password/:token", isAuthenticatedLineant, (req, res) => {
-  if (req.isAuthenticated) {
-    return res.redirect(`/user/${req.user.username}`);
-  }
-  res.render("reset-password",{token:req.params.token});
-});
 router.post("/reset-password/:token", resetPassword);
 
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-router.get("/google/secrets",
+router.get(
+  "/google/secrets",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect("/"); // Redirect to user dashboard after login
