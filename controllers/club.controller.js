@@ -1,5 +1,5 @@
 import Club from "../models/club.model.js";
-
+import { marked } from "marked";
 export const getClubs = async (req, res, next) => {
   try {
     const user = req.user;
@@ -61,10 +61,15 @@ export const getClubTab = async (req, res, next) => {
     const activeRecruitments = club.recruitments.filter((r) => r.isActive);
     const pastRecruitments = club.recruitments.filter((r) => !r.isActive);
 
+    // Markdown support for about/description
+    const aboutSource = club.about || club.description || "";
+    const aboutHtml = marked.parse(aboutSource);
+
     res.render(view, {
       title: club.name,
       club: { ...club.toObject(), activeRecruitments, pastRecruitments },
       user,
+      aboutHtml,
       isAuthenticated: req.isAuthenticated,
     });
   } catch (err) {

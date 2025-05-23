@@ -248,14 +248,48 @@ export const createClub = async (req, res) => {
 export const editClub = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const {
+      name,
+      description,
+      about,
+      image,
+      banner,
+      domains,
+      social = {},
+    } = req.body;
+
+    // Ensure domains is always an array
+    let domainsArray = [];
+    if (Array.isArray(domains)) {
+      domainsArray = domains.filter(Boolean);
+    } else if (typeof domains === "string" && domains.trim() !== "") {
+      domainsArray = [domains.trim()];
+    }
+
+    // Social fields: ensure all keys exist
+    const socialObj = {
+      email: social.email || "",
+      instagram: social.instagram || "",
+      facebook: social.facebook || "",
+      linkedin: social.linkedin || "",
+      discord: social.discord || "",
+    };
+
     const club = await Club.findByIdAndUpdate(
       id,
-      { name, description },
+      {
+        name,
+        description,
+        about,
+        image,
+        banner,
+        domains: domainsArray,
+        social: socialObj,
+      },
       { new: true }
     );
     if (!club) return res.status(404).json({ message: "Club not found" });
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       action: "EDIT",
       targetType: "CLUB",

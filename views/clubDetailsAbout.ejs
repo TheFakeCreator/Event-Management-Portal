@@ -4,10 +4,11 @@ currentTab: "about" }) %>
 <div class="container mx-auto">
   <div id="tabContent">
     <div class="tab-pane" id="about">
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">About</h2>
-      <p class="text-gray-700 text-base leading-relaxed">
-        <%= club.about || club.description %>
-      </p>
+      <div
+        class="text-gray-700 text-base leading-relaxed prose prose-blue max-w-none"
+      >
+        <%- aboutHtml %>
+      </div>
     </div>
   </div>
 
@@ -15,3 +16,132 @@ currentTab: "about" }) %>
     >&larr; Back to Clubs</a
   >
 </div>
+
+<style>
+  /* Headings */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    color: #1d4ed8;
+    font-weight: 700;
+    margin-top: 1.25em;
+    margin-bottom: 0.5em;
+  }
+  .prose h1 {
+    font-size: 2.25rem;
+  }
+  .prose h2 {
+    font-size: 1.5rem;
+  }
+  .prose h3 {
+    font-size: 1.25rem;
+  }
+  .prose h4 {
+    font-size: 1.1rem;
+  }
+  .prose h5 {
+    font-size: 1rem;
+  }
+  .prose h6 {
+    font-size: 0.95rem;
+  }
+
+  /* Paragraphs */
+  .prose p {
+    margin: 0.5em 0 1em 0;
+    color: #374151;
+    line-height: 1.7;
+  }
+
+  /* Lists */
+  .prose ul,
+  .prose ol {
+    margin: 1em 0 1em 1.5em;
+    padding-left: 1.5em;
+  }
+  .prose ul {
+    list-style-type: disc;
+  }
+  .prose ol {
+    list-style-type: decimal;
+  }
+  .prose li {
+    margin-bottom: 0.3em;
+  }
+
+  /* Blockquotes */
+  .prose blockquote {
+    border-left: 4px solid #3b82f6;
+    background: #f1f5f9;
+    color: #334155;
+    padding: 0.5em 1em;
+    margin: 1em 0;
+    font-style: italic;
+  }
+
+  /* Code */
+  .prose code {
+    background: #f3f4f6;
+    color: #be185d;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.95em;
+  }
+  .prose pre {
+    background: #f3f4f6;
+    color: #334155;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+  .prose pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  /* Links */
+  .prose a {
+    color: #2563eb;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+  .prose a:hover {
+    color: #1e40af;
+  }
+
+  /* Tables */
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-size: 1em;
+  }
+  .prose th,
+  .prose td {
+    border: 1px solid #d1d5db;
+    padding: 0.5em 1em;
+    text-align: left;
+  }
+  .prose th {
+    background: #e0e7ef;
+    font-weight: 600;
+  }
+  .prose tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+
+  /* Images */
+  .prose img {
+    max-width: 100%;
+    border-radius: 0.5em;
+    margin: 1em 0;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+  }
+</style>

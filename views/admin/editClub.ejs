@@ -45,17 +45,134 @@
         </div>
 
         <div>
+          <label for="about" class="block text-gray-700 font-medium">
+            About:
+          </label>
+          <textarea
+            id="about"
+            name="about"
+            rows="3"
+            class="w-full p-2 border border-gray-300 rounded-lg"
+          >
+<%= club.about %></textarea
+          >
+        </div>
+
+        <div>
+          <label for="imageUrl" class="block text-gray-700 font-medium">
+            Image URL:
+          </label>
+          <input
+            type="text"
+            id="imageUrl"
+            name="image"
+            class="w-full p-2 border border-gray-300 rounded-lg"
+            value="<%= club.image %>"
+            required
+          />
+        </div>
+
+        <div>
           <label for="bannerUrl" class="block text-gray-700 font-medium">
             Banner URL:
           </label>
           <input
             type="text"
             id="bannerUrl"
-            name="image"
+            name="banner"
             class="w-full p-2 border border-gray-300 rounded-lg"
-            value="<%= club.image %>"
-            required
+            value="<%= club.banner %>"
           />
+        </div>
+
+        <div>
+          <label for="domains" class="block text-gray-700 font-medium">
+            Domains:
+          </label>
+          <div id="domainsContainer" class="space-y-2">
+            <% if (club.domains && club.domains.length) { %> <%
+            club.domains.forEach(function(domain, idx) { %>
+            <div class="flex gap-2 mb-1">
+              <input
+                type="text"
+                name="domains[]"
+                class="w-full p-2 border border-gray-300 rounded-lg"
+                value="<%= domain %>"
+              />
+              <button
+                type="button"
+                class="remove-domain bg-red-500 text-white px-2 rounded"
+              >
+                &times;
+              </button>
+            </div>
+            <% }) %> <% } else { %>
+            <div class="flex gap-2 mb-1">
+              <input
+                type="text"
+                name="domains[]"
+                class="w-full p-2 border border-gray-300 rounded-lg"
+                value=""
+              />
+              <button
+                type="button"
+                class="remove-domain bg-red-500 text-white px-2 rounded"
+              >
+                &times;
+              </button>
+            </div>
+            <% } %>
+          </div>
+          <button
+            type="button"
+            id="addDomainBtn"
+            class="mt-2 bg-green-500 text-white px-3 py-1 rounded"
+          >
+            Add Domain
+          </button>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1"
+            >Social Links:</label
+          >
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <input
+              type="email"
+              name="social[email]"
+              placeholder="Email"
+              class="p-2 border border-gray-300 rounded-lg"
+              value="<%= club.social?.email || '' %>"
+            />
+            <input
+              type="text"
+              name="social[instagram]"
+              placeholder="Instagram"
+              class="p-2 border border-gray-300 rounded-lg"
+              value="<%= club.social?.instagram || '' %>"
+            />
+            <input
+              type="text"
+              name="social[facebook]"
+              placeholder="Facebook"
+              class="p-2 border border-gray-300 rounded-lg"
+              value="<%= club.social?.facebook || '' %>"
+            />
+            <input
+              type="text"
+              name="social[linkedin]"
+              placeholder="LinkedIn"
+              class="p-2 border border-gray-300 rounded-lg"
+              value="<%= club.social?.linkedin || '' %>"
+            />
+            <input
+              type="text"
+              name="social[discord]"
+              placeholder="Discord"
+              class="p-2 border border-gray-300 rounded-lg"
+              value="<%= club.social?.discord || '' %>"
+            />
+          </div>
         </div>
 
         <button
@@ -99,4 +216,28 @@
     // Update the preview image
     previewImage.src = newImageUrl || "<%= club.image %>";
   });
+
+  document
+    .getElementById("addDomainBtn")
+    .addEventListener("click", function () {
+      const container = document.getElementById("domainsContainer");
+      const div = document.createElement("div");
+      div.className = "flex gap-2 mb-1";
+      div.innerHTML = `<input type=\"text\" name=\"domains[]\" class=\"w-full p-2 border border-gray-300 rounded-lg\" value=\"\" />
+      <button type=\"button\" class=\"remove-domain bg-red-500 text-white px-2 rounded\">&times;</button>`;
+      container.appendChild(div);
+    });
+  document
+    .getElementById("domainsContainer")
+    .addEventListener("click", function (e) {
+      if (e.target.classList.contains("remove-domain")) {
+        const parent = e.target.closest("div");
+        if (
+          parent &&
+          document.querySelectorAll("#domainsContainer input").length > 1
+        ) {
+          parent.remove();
+        }
+      }
+    });
 </script>
