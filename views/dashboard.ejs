@@ -1,40 +1,4 @@
 <% layout("layouts/main") %>
-
-<!-- Flash Messages -->
-<% if (error_msg || success_msg) { %>
-<div
-  class="fixed top-5 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 px-4"
->
-  <% if (error_msg) { %>
-  <div
-    class="bg-red-600 text-white p-4 rounded-lg shadow-lg flex justify-between items-center transition duration-300"
-  >
-    <span><%= error_msg %></span>
-    <button onclick="this.parentElement.style.display='none'" class="text-xl">
-      &times;
-    </button>
-  </div>
-  <% } %> <% if (success_msg) { %>
-  <div
-    class="bg-green-600 text-white p-4 rounded-lg shadow-lg flex justify-between items-center transition duration-300 mt-2"
-  >
-    <span><%= success_msg %></span>
-    <button onclick="this.parentElement.style.display='none'" class="text-xl">
-      &times;
-    </button>
-  </div>
-  <% } %>
-</div>
-<script>
-  setTimeout(() => {
-    document.querySelectorAll(".flashmessage").forEach((el) => {
-      el.classList.add("opacity-0");
-      setTimeout(() => (el.style.display = "none"), 500);
-    });
-  }, 3000);
-</script>
-<% } %>
-
 <!-- Profile Page -->
 <div class="container mx-auto px-4 py-12">
   <div
