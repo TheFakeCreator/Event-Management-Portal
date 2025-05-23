@@ -11,7 +11,6 @@ import expressSession from "express-session";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";
 import "./configs/passport.js";
-import session from "express-session";
 import cors from "cors";
 import passport from "passport";
 import "./jobs/eventReminder.js";
@@ -58,18 +57,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash("success");
-  res.locals.error_msg = req.flash("error");
-  next();
-});
+
 // Sets
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

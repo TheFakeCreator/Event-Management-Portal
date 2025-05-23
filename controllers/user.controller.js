@@ -7,9 +7,11 @@ export const getUser = (req, res, next) => {
       user: req.user,
       title: "Dashboard",
       isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 

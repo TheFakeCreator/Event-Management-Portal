@@ -126,6 +126,15 @@ export const postApplyRecruitment = async (req, res) => {
         error: "The deadline for this recruitment has passed.",
       });
     }
+    // Prevent multiple registrations by the same user (by email)
+    const existingRegistration = await Registration.findOne({
+      recruitment: recruitmentId,
+      email: req.body.email.trim().toLowerCase(),
+    });
+    if (existingRegistration) {
+      req.flash("error", "You have already applied for this recruitment.");
+      return res.redirect(`/recruitment/${recruitmentId}`);
+    }
     // Build customFields object from recruitment.applicationForm
     let customFields = {};
     if (recruitment.applicationForm && recruitment.applicationForm.length > 0) {
@@ -134,14 +143,11 @@ export const postApplyRecruitment = async (req, res) => {
         customFields[field.label] = req.body[key] || "";
       });
     }
-    // Debug: Log request body and customFields
-    console.log("REQ.BODY:", req.body);
-    console.log("CUSTOM FIELDS:", customFields);
     // Save registration (add customFields)
     await Registration.create({
       recruitment: recruitmentId,
       name: req.body.name,
-      email: req.body.email,
+      email: req.body.email.trim().toLowerCase(),
       customFields,
     });
     req.flash("success", "Application submitted successfully!");
