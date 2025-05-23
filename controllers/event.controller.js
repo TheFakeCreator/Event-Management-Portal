@@ -45,7 +45,8 @@ export const getEventDetails = async (req, res) => {
       .populate("collaborators");
 
     if (!event) {
-      return res.status(404).send("Event not found");
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
     }
 
     let alreadyRegistered = false;
@@ -66,12 +67,17 @@ export const getEventDetails = async (req, res) => {
       isAuthenticated: req.isAuthenticated,
       registeredUsersCount,
       creator:
-        event.createdBy.toString() == req.user._id.toString() ? true : false,
+        req.user && event.createdBy.toString() == req.user._id.toString()
+          ? true
+          : false,
       alreadyRegistered,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server Error");
+    req.flash("error", "Server Error");
+    res.redirect("/event");
   }
 };
 
@@ -174,10 +180,12 @@ export const createEvent = async (req, res) => {
       details: `Event ${event.title} created by ${req.user.name}`,
     });
 
+    req.flash("success", "Event created successfully!");
     res.redirect("/event");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    req.flash("error", "Failed to create event.");
+    res.redirect("/event");
   }
 };
 
@@ -185,16 +193,18 @@ export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const event = await Event.findById(id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) {
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
+    }
 
     // Check if the user is authorized to delete the event
     if (
       event.createdBy.toString() !== req.user._id.toString() &&
       req.user.role !== "admin"
     ) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to delete this event." });
+      req.flash("error", "You are not authorized to delete this event.");
+      return res.redirect(`/event/${id}`);
     }
 
     await Event.findByIdAndDelete(event._id);
@@ -207,9 +217,11 @@ export const deleteEvent = async (req, res) => {
       details: `Event ${event.title} deleted by ${req.user.name}`,
     });
 
-    res.json({ message: "Event deleted successfully" });
+    req.flash("success", "Event deleted successfully!");
+    res.redirect("/event");
   } catch (error) {
-    res.status(500).json({ error });
+    req.flash("error", "Failed to delete event.");
+    res.redirect("/event");
   }
 };
 
@@ -217,24 +229,31 @@ export const registerEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).send("Event not found");
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
     }
 
     const { name, email, phone } = req.body;
 
     if (new Date() >= new Date(event.startDate)) {
-      return res.status(403).json({
-        event,
-        title: "Event Registration",
-        isAuthenticated: req.isAuthenticated,
-        user: req.user,
-      });
+      req.flash("error", "Registration is closed for this event.");
+      return res.redirect(`/event/${event._id}`);
+    }
+
+    // Prevent duplicate registration by email for this event
+    const alreadyRegistered = await EventRegistration.findOne({
+      event: event._id,
+      email: email.trim().toLowerCase(),
+    });
+    if (alreadyRegistered) {
+      req.flash("error", "You have already registered for this event.");
+      return res.redirect(`/event/${event._id}`);
     }
 
     await EventRegistration.create({
       event: event._id,
       name,
-      email,
+      email: email.trim().toLowerCase(),
       phone,
       user: req.user ? req.user._id : undefined,
     });
@@ -242,10 +261,12 @@ export const registerEvent = async (req, res) => {
     // Increment registeredUsers count in the Event model
     await Event.findByIdAndUpdate(event._id, { $inc: { registeredUsers: 1 } });
 
-    res.redirect(`/event/${event._id}`); // Redirect to event details after registration
+    req.flash("success", "Successfully registered for the event!");
+    res.redirect(`/event/${event._id}`);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server Error");
+    req.flash("error", "Failed to register for the event.");
+    res.redirect(`/event/${req.params.id}`);
   }
 };
 
@@ -265,7 +286,7 @@ export const getEditEvent = async (req, res) => {
     ) {
       return res.status(403).send("You are not authorized to edit this event.");
     }
-    res.render("admin/editEvent", {
+    res.render("editEvent", {
       title: "Edit Event",
       isAuthenticated: req.isAuthenticated,
       user: req.user,
@@ -297,12 +318,16 @@ export const editEvent = async (req, res) => {
 
     // Only allow the creator or admin to edit
     const event = await Event.findById(id);
-    if (!event) return res.status(404).send("Event not found");
+    if (!event) {
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
+    }
     if (
       event.createdBy.toString() !== req.user._id.toString() &&
       req.user.role !== "admin"
     ) {
-      return res.status(403).send("You are not authorized to edit this event.");
+      req.flash("error", "You are not authorized to edit this event.");
+      return res.redirect(`/event/${id}`);
     }
 
     let collaboratorsArray = [];
@@ -315,7 +340,8 @@ export const editEvent = async (req, res) => {
           );
         }
       } catch (error) {
-        return res.status(400).send("Invalid collaborators format.");
+        req.flash("error", "Invalid collaborators format.");
+        return res.redirect(`/event/${id}`);
       }
     }
 
@@ -337,7 +363,10 @@ export const editEvent = async (req, res) => {
       { new: true }
     );
 
-    if (!updatedEvent) return res.status(404).send("Event not found");
+    if (!updatedEvent) {
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
+    }
 
     await Log.create({
       user: req.user._id,
@@ -347,9 +376,11 @@ export const editEvent = async (req, res) => {
       details: `Event ${updatedEvent.title} edited by ${req.user.name}`,
     });
 
+    req.flash("success", "Event updated successfully!");
     res.redirect(`/event/${id}`);
   } catch (error) {
     console.error("Error updating event:", error);
-    res.status(500).send("Internal Server Error");
+    req.flash("error", "Failed to update event.");
+    res.redirect(`/event/${req.params.id}`);
   }
 };

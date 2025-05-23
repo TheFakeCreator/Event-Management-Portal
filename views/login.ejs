@@ -1,58 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <title>Login</title>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  
-  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
-    <h1 class="text-3xl font-bold text-blue-600 text-center mb-6">Login</h1>
-
-    <!-- Login Form -->
-    <form action="/auth/login" method="post" class="space-y-4">
-      <div>
-        <label for="email" class="block text-gray-700 font-medium">Email</label>
-        <input 
-          type="email" name="email" id="email" required
-          class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-        />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Login</title>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- Flash Messages -->
+    <% var _success = (typeof success !== 'undefined' && success) ? success :
+    (locals.success || []); %> <% var _error = (typeof error !== 'undefined' &&
+    error) ? error : (locals.error || []); %> <% if ((_success &&
+    _success.length) || (_error && _error.length)) { %>
+    <div
+      id="flash-message-container"
+      style="min-width: 320px; right: 1.5rem; left: auto"
+      class="fixed top-6 z-50 flex flex-col items-end w-auto max-w-xs"
+    >
+      <% if (_success && _success.length) { %>
+      <div
+        class="relative flex items-center bg-green-100 border border-green-400 text-green-700 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px]"
+      >
+        <svg
+          class="w-5 h-5 mr-2 text-green-500"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+        <span class="font-medium"><%= _success[0] %></span>
+        <div class="ml-4">
+          <svg class="w-5 h-5" viewBox="0 0 36 36">
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="#bbf7d0"
+              stroke-width="4"
+            />
+            <circle
+              id="success-timer"
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="#22c55e"
+              stroke-width="4"
+              stroke-dasharray="100.48"
+              stroke-dashoffset="0"
+            />
+          </svg>
+        </div>
+        <span id="success-countdown" class="ml-2 text-xs font-semibold"></span>
+        <button
+          onclick="closeFlashMessage()"
+          class="absolute top-1 right-2 text-green-700 hover:text-green-900 text-xl"
+        >
+          &times;
+        </button>
       </div>
-
-      <div>
-        <label for="password" class="block text-gray-700 font-medium">Password</label>
-        <input 
-          type="password" name="password" id="password" required
-          class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-        />
+      <% } %> <% if (_error && _error.length) { %>
+      <div
+        class="relative flex items-center bg-red-100 border border-red-400 text-red-700 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px]"
+      >
+        <svg
+          class="w-5 h-5 mr-2 text-red-500"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+        <span class="font-medium"><%= _error[0] %></span>
+        <div class="ml-4">
+          <svg class="w-5 h-5" viewBox="0 0 36 36">
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="#fecaca"
+              stroke-width="4"
+            />
+            <circle
+              id="error-timer"
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="#ef4444"
+              stroke-width="4"
+              stroke-dasharray="100.48"
+              stroke-dashoffset="0"
+            />
+          </svg>
+        </div>
+        <span id="error-countdown" class="ml-2 text-xs font-semibold"></span>
+        <button
+          onclick="closeFlashMessage()"
+          class="absolute top-1 right-2 text-red-700 hover:text-red-900 text-xl"
+        >
+          &times;
+        </button>
       </div>
-
-      <!-- Forgot Password Link -->
-      <div class="text-right">
-        <a href="/auth/forgot-password" class="text-sm text-blue-500 hover:underline">Forgot Password?</a>
-      </div>
-
-      <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">
-        Login
-      </button>
-    </form>
-
-    <div class="text-center my-4 text-gray-500">— OR —</div>
-
-    <!-- Google Sign-in Button -->
-    <a href="/auth/google" class="text-center border-2 border-blue-500 text-blue-500 font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-500 hover:text-white transition duration-300">
-      <img src="/images/google-icon.png" alt="Google Icon" class="w-6 h-6">
-      <span>Sign in with Google</span>
-    </a>
-
-    <!-- Signup Link -->
-    <div class="mt-6 text-center text-blue-600">
-      <a href="/auth/signup" class="hover:underline">Don't have an account? Signup</a>
+      <% } %>
     </div>
-  </div>
+    <script>
+      let timer = 20;
+      let interval;
+      function closeFlashMessage() {
+        const container = document.getElementById("flash-message-container");
+        if (container) container.style.display = "none";
+        clearInterval(interval);
+      }
+      function animateTimer(id, countdownId) {
+        let dashArray = 100.48;
+        let dashOffset = 0;
+        interval = setInterval(() => {
+          timer--;
+          if (timer < 0) {
+            closeFlashMessage();
+            return;
+          }
+          if (countdownId) {
+            document.getElementById(countdownId).innerText = timer + "s";
+          }
+          dashOffset = dashArray * (1 - timer / 20);
+          const circle = document.getElementById(id);
+          if (circle) circle.setAttribute("stroke-dashoffset", dashOffset);
+        }, 1000);
+        if (countdownId) {
+          document.getElementById(countdownId).innerText = timer + "s";
+        }
+      }
+      window.addEventListener("DOMContentLoaded", function () {
+        if (document.getElementById("success-timer")) {
+          animateTimer("success-timer", "success-countdown");
+        } else if (document.getElementById("error-timer")) {
+          animateTimer("error-timer", "error-countdown");
+        }
+        setTimeout(closeFlashMessage, 20000);
+      });
+    </script>
+    <% } %>
+    <div class="flex items-center justify-center min-h-screen">
+      <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h1 class="text-3xl font-bold text-blue-600 text-center mb-6">Login</h1>
 
-</body>
+        <!-- Login Form -->
+        <form action="/auth/login" method="post" class="space-y-4">
+          <div>
+            <label for="email" class="block text-gray-700 font-medium"
+              >Email</label
+            >
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-gray-700 font-medium"
+              >Password</label
+            >
+            <input
+              type="password"
+              name="password"
+              id="password"
+              required
+              class="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="text-right">
+            <a
+              href="/auth/forgot-password"
+              class="text-sm text-blue-500 hover:underline"
+              >Forgot Password?</a
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition duration-300"
+          >
+            Login
+          </button>
+        </form>
+
+        <div class="text-center my-4 text-gray-500">— OR —</div>
+
+        <!-- Google Sign-in Button -->
+        <a
+          href="/auth/google"
+          class="text-center border-2 border-blue-500 text-blue-500 font-semibold py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-blue-500 hover:text-white transition duration-300"
+        >
+          <img
+            src="/images/google-icon.png"
+            alt="Google Icon"
+            class="w-6 h-6"
+          />
+          <span>Sign in with Google</span>
+        </a>
+
+        <!-- Signup Link -->
+        <div class="mt-6 text-center text-blue-600">
+          <a href="/auth/signup" class="hover:underline"
+            >Don't have an account? Signup</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

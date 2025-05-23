@@ -9,6 +9,8 @@ export const getAdminDashboard = (req, res) => {
     title: "Admin Dashboard",
     isAuthenticated: req.isAuthenticated,
     user: req.user,
+    success: req.flash("success"),
+    error: req.flash("error"),
   });
 };
 
@@ -20,6 +22,8 @@ export const getManageRoles = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       users,
       user: req.user,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -39,6 +43,8 @@ export const getRoleRequests = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       users,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -53,6 +59,8 @@ export const getManageClubs = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       clubs,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -72,6 +80,8 @@ export const getEditClub = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       club,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -86,6 +96,8 @@ export const getManageUsers = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       users,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -104,6 +116,8 @@ export const getManageEvents = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       events,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -112,12 +126,13 @@ export const getManageEvents = async (req, res, next) => {
 
 export const getEditEvent = async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id)
+      .populate("club")
+      .populate("collaborators");
     const clubs = await Club.find();
     if (!event) {
-      const err = new Error("Event not found");
-      err.status = 404;
-      return next(err);
+      req.flash("error", "Event not found");
+      return res.redirect("/admin/events");
     }
     res.render("admin/editEvent", {
       title: "Edit Event",
@@ -125,6 +140,8 @@ export const getEditEvent = async (req, res, next) => {
       user: req.user,
       event,
       clubs,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -137,6 +154,8 @@ export const getSettings = (req, res, next) => {
       title: "Settings",
       isAuthenticated: req.isAuthenticated,
       user: req.user,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -151,6 +170,8 @@ export const getLogs = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       logs,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     next(error);
@@ -163,10 +184,13 @@ export const assignRole = async (req, res) => {
   try {
     const { userId, role } = req.body;
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/admin/roles");
+    }
 
     user.role = role;
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       affectedUser: userId,
       action: "EDIT",
@@ -175,9 +199,11 @@ export const assignRole = async (req, res) => {
       details: `Role of ${userId} updated to ${role} by ${req.user.name}`,
     });
     await user.save();
-    res.json({ message: "Role updated successfully" });
+    req.flash("success", "Role updated successfully");
+    res.redirect("/admin/roles");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/roles");
   }
 };
 
@@ -185,11 +211,14 @@ export const approveRoleRequest = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/admin/roles/requests");
+    }
 
     user.role = user.roleRequest;
     user.roleRequest = null;
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       affectedUser: userId,
       action: "EDIT",
@@ -198,9 +227,11 @@ export const approveRoleRequest = async (req, res) => {
       details: `Role request of ${userId} approved by ${req.user.name}`,
     });
     await user.save();
-    res.json({ message: "Role request approved successfully" });
+    req.flash("success", "Role request approved successfully");
+    res.redirect("/admin/roles/requests");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/roles/requests");
   }
 };
 
@@ -208,10 +239,13 @@ export const rejectRoleRequest = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/admin/roles/requests");
+    }
 
     user.roleRequest = null;
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       affectedUser: userId,
       action: "EDIT",
@@ -220,9 +254,11 @@ export const rejectRoleRequest = async (req, res) => {
       details: `Role request of ${userId} rejected by ${req.user.name}`,
     });
     await user.save();
-    res.json({ message: "Role request rejected successfully" });
+    req.flash("success", "Role request rejected successfully");
+    res.redirect("/admin/roles/requests");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/roles/requests");
   }
 };
 
@@ -231,16 +267,18 @@ export const createClub = async (req, res) => {
   try {
     const { name, description, image } = req.body;
     const club = await Club.create({ name, description, image });
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       action: "CREATE",
       targetType: "CLUB",
       targetId: club._id,
       details: `Club ${club.name} created by ${req.user.name}`,
     });
-    res.json({ message: "Club created successfully" });
+    req.flash("success", "Club created successfully");
+    res.redirect("/admin/clubs");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/clubs");
   }
 };
 
@@ -288,7 +326,10 @@ export const editClub = async (req, res) => {
       },
       { new: true }
     );
-    if (!club) return res.status(404).json({ message: "Club not found" });
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/admin/clubs");
+    }
     await Log.create({
       user: req.user._id,
       action: "EDIT",
@@ -296,9 +337,11 @@ export const editClub = async (req, res) => {
       targetId: id,
       details: `Club ${club.name} edited by ${req.user.name}`,
     });
-    res.json({ message: "Club updated successfully" });
+    req.flash("success", "Club updated successfully");
+    res.redirect("/admin/clubs");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/clubs");
   }
 };
 
@@ -307,17 +350,22 @@ export const deleteClub = async (req, res) => {
   try {
     const { id } = req.params;
     const club = await Club.findByIdAndDelete(id);
-    if (!club) return res.status(404).json({ message: "Club not found" });
-    const log = await Log.create({
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/admin/clubs");
+    }
+    await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "CLUB",
       targetId: id,
       details: `Club ${club.name} deleted by ${req.user.name}`,
     });
-    res.json({ message: "Club deleted successfully" });
+    req.flash("success", "Club deleted successfully");
+    res.redirect("/admin/clubs");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/clubs");
   }
 };
 
@@ -325,17 +373,22 @@ export const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findByIdAndDelete(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    const log = await Log.create({
+    if (!user) {
+      req.flash("error", "User not found");
+      return res.redirect("/admin/users");
+    }
+    await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "USER",
       targetId: userId,
       details: `User ${user.name} deleted by ${req.user.name}`,
     });
-    res.json({ message: "User deleted successfully" });
+    req.flash("success", "User deleted successfully");
+    res.redirect("/admin/users");
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    req.flash("error", "Server error");
+    res.redirect("/admin/users");
   }
 };
 
@@ -344,17 +397,22 @@ export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const event = await Event.findByIdAndDelete(id);
-    if (!event) return res.status(404).json({ message: "Event not found" });
-    const log = await Log.create({
+    if (!event) {
+      req.flash("error", "Event not found");
+      return res.redirect("/admin/events");
+    }
+    await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "EVENT",
       targetId: id,
       details: `Event ${event.title} deleted by ${req.user.name}`,
     });
-    res.json({ message: "Event deleted successfully" });
+    req.flash("success", "Event deleted successfully");
+    res.redirect("/admin/events");
   } catch (error) {
-    res.status(500).json({ error });
+    req.flash("error", "Server error");
+    res.redirect("/admin/events");
   }
 };
 
@@ -400,9 +458,12 @@ export const editEvent = async (req, res) => {
       { new: true }
     );
 
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) {
+      req.flash("error", "Event not found");
+      return res.redirect("/admin/events");
+    }
 
-    const log = await Log.create({
+    await Log.create({
       user: req.user._id,
       action: "EDIT",
       targetType: "EVENT",
@@ -410,8 +471,10 @@ export const editEvent = async (req, res) => {
       details: `Event ${event.title} edited by ${req.user.name}`,
     });
 
-    res.json({ message: "Event updated successfully" });
+    req.flash("success", "Event updated successfully");
+    res.redirect("/admin/events");
   } catch (error) {
-    res.status(500).json({ error });
+    req.flash("error", "An error occurred while updating the event");
+    res.redirect("/admin/mevents");
   }
 };

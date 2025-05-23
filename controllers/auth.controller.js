@@ -9,7 +9,10 @@ export const getLoginUser = (req, res, next) => {
     if (req.isAuthenticated) {
       return res.redirect(`/user/${req.user.username}`);
     }
-    res.render("login");
+    res.render("login", {
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
   } catch (err) {
     next(err);
   }
@@ -20,7 +23,10 @@ export const getRegisterUser = (req, res, next) => {
     if (req.isAuthenticated) {
       return res.redirect(`/user/${req.user.username}`);
     }
-    res.render("signup");
+    res.render("signup", {
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
   } catch (err) {
     next(err);
   }
@@ -31,7 +37,10 @@ export const getForgotPass = (req, res, next) => {
     if (req.isAuthenticated) {
       return res.redirect(`/user/${req.user.username}`);
     }
-    res.render("forgot-password");
+    res.render("forgot-password", {
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
   } catch (err) {
     next(err);
   }
@@ -42,7 +51,11 @@ export const getResetPass = (req, res, next) => {
     if (req.isAuthenticated) {
       return res.redirect(`/user/${req.user.username}`);
     }
-    res.render("reset-password", { token: req.params.token });
+    res.render("reset-password", {
+      token: req.params.token,
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
   } catch (err) {
     next(err);
   }
@@ -54,13 +67,15 @@ export const registerUser = async (req, res, next) => {
 
     // Check if passwords match
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match." });
+      req.flash("error", "Passwords do not match.");
+      return res.redirect("/auth/signup");
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists." });
+      req.flash("error", "User already exists.");
+      return res.redirect("/auth/signup");
     }
 
     // Hash the password
@@ -95,10 +110,11 @@ export const registerUser = async (req, res, next) => {
       `,
     });
 
-    res.status(200).json({
-      message:
-        "Signup successful! Please check your email to verify your account.",
-    });
+    req.flash(
+      "success",
+      "Signup successful! Please check your email to verify your account."
+    );
+    res.redirect("/auth/login");
   } catch (error) {
     next(error);
   }
@@ -109,14 +125,17 @@ export const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials." });
+      req.flash("error", "Invalid credentials.");
+      return res.redirect("/auth/login");
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials." });
+      req.flash("error", "Invalid credentials.");
+      return res.redirect("/auth/login");
     }
     if (!user.isVerified) {
-      return res.status(401).json({ message: "Email not verified." });
+      req.flash("error", "Email not verified.");
+      return res.redirect("/auth/login");
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
@@ -126,7 +145,7 @@ export const loginUser = async (req, res, next) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 1000, // 1 day
     });
-    res.status(200).redirect(`/user/${user.username}`);
+    res.redirect(`/user/${user.username}`);
   } catch (error) {
     next(error);
   }
@@ -135,7 +154,7 @@ export const loginUser = async (req, res, next) => {
 export const logoutUser = async (req, res, next) => {
   try {
     res.clearCookie("token");
-    res.status(200).redirect("/");
+    res.redirect("/");
   } catch (error) {
     next(error);
   }
@@ -150,36 +169,35 @@ export const verifyUser = async (req, res, next) => {
     const user = await User.findById(decoded.id);
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "Invalid token or user not found." });
+      req.flash("error", "Invalid token or user not found.");
+      return res.redirect("/auth/login");
     }
 
     // Check if user is already verified
     if (user.isVerified) {
-      return res.status(400).json({ message: "User already verified." });
+      req.flash("info", "User already verified.");
+      return res.redirect("/auth/login");
     }
 
     // Verify the user
     user.isVerified = true;
     await user.save();
 
-    res.status(200).send(`
-      <h4>Email Verified Successfully!</h4>
-      <p>You can now <a href="/auth/login">login</a> to your account.</p>
-    `);
+    req.flash("success", "Email Verified Successfully! You can now login.");
+    res.redirect("/auth/login");
   } catch (error) {
-    next(error);
+    req.flash("error", "Verification link is invalid or expired.");
+    res.redirect("/auth/login");
   }
 };
 
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    8;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "User not found." });
+      req.flash("error", "User not found.");
+      return res.redirect("/auth/forgot-password");
     }
 
     const token = crypto.randomBytes(32).toString("hex");
@@ -194,7 +212,8 @@ export const forgotPassword = async (req, res, next) => {
       html: `<p>Click the link below to reset your password:</p>
                <a href="${resetUrl}">Reset Password</a>`,
     });
-    res.status(200).json({ message: "Reset password email sent." });
+    req.flash("success", "Reset password email sent.");
+    res.redirect("/auth/login");
   } catch (error) {
     next(error);
   }
@@ -205,23 +224,21 @@ export const resetPassword = async (req, res, next) => {
     const { newPassword, confirmPassword } = req.body;
     const { token } = req.params;
 
-    console.log(token);
-
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match." });
+      req.flash("error", "Passwords do not match.");
+      return res.redirect(`/auth/reset-password/${token}`);
     }
 
     const user = await User.findOne({ resetToken: token });
-    console.log("User found:", user);
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "User not found or token invalid." });
+      req.flash("error", "User not found or token invalid.");
+      return res.redirect("/auth/forgot-password");
     }
 
     if (user.expireToken < Date.now()) {
-      return res.status(400).json({ message: "Token has expired." });
+      req.flash("error", "Token has expired.");
+      return res.redirect("/auth/forgot-password");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -230,7 +247,8 @@ export const resetPassword = async (req, res, next) => {
     user.expireToken = undefined;
     await user.save();
 
-    res.status(200).json({ message: "Password reset successful." });
+    req.flash("success", "Password reset successful. You can now login.");
+    res.redirect("/auth/login");
   } catch (error) {
     next(error);
   }
