@@ -14,7 +14,7 @@
 
   <!-- Event Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    <% events.forEach(event => { 
+    <% events.filter(event => new Date(event.endDate) >= new Date()).forEach(event => { 
       const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
     %>
     <div
