@@ -9,6 +9,8 @@ export const getClubs = async (req, res, next) => {
       clubs,
       user,
       isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (err) {
     next(err);
@@ -22,6 +24,8 @@ export const getAddClub = (req, res, next) => {
       title: "Add Club",
       isAuthenticated: req.isAuthenticated,
       user,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (err) {
     next(err);
@@ -71,6 +75,8 @@ export const getClubTab = async (req, res, next) => {
       user,
       aboutHtml,
       isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (err) {
     next(err);
@@ -81,7 +87,8 @@ export const createClub = async (req, res, next) => {
   try {
     const { name, description, image, oc } = req.body;
     if (!name || !description || !image) {
-      return res.status(400).json({ message: "All fields are required." });
+      req.flash("error", "All fields are required.");
+      return res.redirect("/club/add");
     }
     const newClub = await Club.create({
       name,
@@ -89,7 +96,8 @@ export const createClub = async (req, res, next) => {
       image,
       // oc,
     });
-    res.status(201).json(newClub);
+    req.flash("success", "Club created successfully!");
+    res.redirect("/club");
   } catch (err) {
     next(err);
   }
