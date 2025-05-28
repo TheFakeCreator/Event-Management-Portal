@@ -1,4 +1,5 @@
 import Club from "../models/club.model.js";
+import Event from "../models/event.model.js";
 import { marked } from "marked";
 export const getClubs = async (req, res, next) => {
   try {
@@ -45,14 +46,12 @@ export const getClubTab = async (req, res, next) => {
   try {
     const user = req.user;
     const { id, subPage } = req.params;
-
     const view = clubSubPages[subPage];
     if (!view) {
       const error = new Error("Club not found");
       error.status = 404;
       return next(error);
     }
-
     // Populate recruitments
     const club = await Club.findById(id).populate("recruitments");
     if (!club) {
@@ -60,23 +59,43 @@ export const getClubTab = async (req, res, next) => {
       error.status = 404;
       return next(error);
     }
-
     // Filter recruitments into active and past
     const activeRecruitments = club.recruitments.filter((r) => r.isActive);
     const pastRecruitments = club.recruitments.filter((r) => !r.isActive);
-
     // Markdown support for about/description
     const aboutSource = club.about || club.description || "";
     const aboutHtml = marked.parse(aboutSource);
 
+    // --- EVENTS LOGIC ---
+    let activeEvents = [];
+    let pastEvents = [];
+    if (subPage === "events") {
+      const now = new Date();
+      activeEvents = await Event.find({
+        club: id,
+        startDate: { $lte: now },
+        endDate: { $gte: now },
+      }).sort({ startDate: 1 });
+      pastEvents = await Event.find({
+        club: id,
+        endDate: { $lt: now },
+      }).sort({ endDate: -1 });
+    }
+
     res.render(view, {
       title: club.name,
-      club: { ...club.toObject(), activeRecruitments, pastRecruitments },
+      club: {
+        ...club.toObject(),
+        activeRecruitments,
+        pastRecruitments,
+        activeEvents,
+        pastEvents,
+      },
       user,
-      aboutHtml,
       isAuthenticated: req.isAuthenticated,
       success: req.flash("success"),
       error: req.flash("error"),
+      aboutHtml,
     });
   } catch (err) {
     next(err);
