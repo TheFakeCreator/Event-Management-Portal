@@ -25,7 +25,7 @@ export const getIndex = async (req, res) => {
           ],
         },
       ],
-    });
+    }).populate("club");
 
     const upcomingEvents = await Event.find({
       $or: [
@@ -35,7 +35,7 @@ export const getIndex = async (req, res) => {
           startTime: { $gt: now.toISOString().split("T")[1] },
         },
       ],
-    });
+    }).populate("club");
 
     // console.log("Ongoing Events:", ongoingEvents);
     // console.log("Upcoming Events:", upcomingEvents);

@@ -1,81 +1,154 @@
 <% layout('layouts/main') %>
 
-<div
-  class="w-full min-h-screen flex flex-col justify-between text-white px-8 py-6"
->
-  <!-- Ongoing Events Section -->
-  <section class="flex flex-col flex-grow items-center w-full">
-    <h1 class="text-4xl font-bold text-blue-500 mb-6">Ongoing Events</h1>
-    <% if(ongoingEvents.length === 0){ %>
-    <div class="flex flex-col items-center justify-center w-full">
-      <p class="text-2xl text-gray-500 text-center">No ongoing events</p>
+<!-- Hero Section: Featured Ongoing Event -->
+<div class="w-full min-h-screen flex flex-col justify-between px-0 py-0">
+  <section class="w-full flex flex-col items-center pt-8 pb-4">
+    <% if(ongoingEvents.length > 0) { const event = ongoingEvents[0]; %>
+    <div
+      class="flex flex-col md:flex-row items-start justify-center w-full max-w-none gap-8 relative px-0"
+    >
+      <!-- Event Image with Badge -->
+      <div
+        class="relative w-full md:w-[55%] flex-shrink-0"
+        style="max-width: 700px"
+      >
+        <img
+          src="<%= event.image %>"
+          alt="Event Image"
+          class="rounded-2xl w-full h-[450px] object-cover border border-gray-200 shadow-none"
+          style="margin-left: 0"
+        />
+        <span
+          class="absolute top-4 left-4 bg-white text-primary text-sm font-normal px-4 py-2 rounded-xl shadow border border-primary"
+          style="
+            border-width: 1px;
+            border-radius: 20px;
+            border-color: var(--color-primary);
+          "
+        >
+          <i
+            class="fa-solid fa-circle animate-pulse text-xs mr-1 text-primary"
+          ></i
+          >Live Now
+        </span>
+      </div>
+      <!-- Event Details -->
+      <div
+        class="w-full md:w-[45%] flex flex-col gap-0 mt-0 h-[450px] pr-2 pt-2"
+      >
+        <h2 class="text-4xl font-regular text-primary-900 mb-0 mt-2 pt-0">
+          <%= event.title %>
+        </h2>
+        <div class="flex items-center gap-2 text-gray-500 text-sm mb-0 mt-3">
+          <span><%= event.club.name || 'Sanskriti' %></span>
+          <svg
+            class="inline-block ml-1"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="var(--color-primary)"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="12" fill="var(--color-primary)" />
+            <path
+              d="M17 9l-5.2 5.2-2.8-2.8"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+          <span class="mx-1">|</span>
+          <i class="fa-solid fa-location-dot mr-0"></i> <%= event.venue ||
+          'Sports Ground' %>
+        </div>
+        <p
+          class="text-gray-500 mb-8 font-light whitespace-pre-line overflow-hidden"
+          style="
+            display: -webkit-box;
+            -webkit-line-clamp: 7;
+            -webkit-box-orient: vertical;
+          "
+        >
+          <%= event.description %> <% if (event.description &&
+          event.description.split('\n').length > 7 || event.description.length >
+          500) { %> ... <% } %>
+        </p>
+        <a
+          href="/event/<%= event.id %>"
+          class="inline-block bg-primary hover:bg-primary/90 text-white font-regular px-6 py-2 rounded-lg shadow transition w-auto min-w-[120px] text-center ml-0 mb-10 mt-0"
+          style="align-self: flex-start; margin-top: 0"
+          >Watch Live</a
+        >
+      </div>
+      <!-- Decorative SVGs (optional, add your SVGs here) -->
+      <!-- <img src="/images/wave.svg" class="absolute bottom-0 left-0 w-full opacity-30 -z-10" /> -->
     </div>
     <% } %>
-
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]"
-    >
-      <% ongoingEvents.forEach(event => { %>
-      <a href="/event/<%= event.id %>" class="block">
-        <div
-          class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl transition-transform transform hover:scale-105"
-        >
-          <div
-            class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full"
-          >
-            <i class="fa-solid fa-circle animate-pulse text-xsm"></i> Live Now
-          </div>
-          <img
-            src="<%= event.image %>"
-            alt="Event Image"
-            class="w-full h-3/4 object-cover rounded-t-[20px]"
-          />
-          <div class="p-4 flex flex-col w-full h-1/3">
-            <h2 class="text-xl font-semibold text-black"><%= event.title %></h2>
-            <p class="text-black truncate"><%= event.description %></p>
-          </div>
-        </div>
-      </a>
-      <% }) %>
-    </div>
   </section>
 
   <!-- Upcoming Events Section -->
-  <section class="flex flex-col flex-grow items-center w-full mt-8">
-    <h1 class="text-4xl font-bold text-blue-500 mb-6">Upcoming Events</h1>
+  <section class="flex flex-col items-center w-full mt-8">
+    <h1
+      class="text-3xl md:text-4xl font-bold text-primary mb-8 w-full max-w-6xl"
+    >
+      Upcoming Events
+    </h1>
     <% if(upcomingEvents.length === 0){ %>
     <div class="flex flex-col items-center justify-center w-full">
       <p class="text-2xl text-gray-500 text-center">No upcoming events</p>
     </div>
-    <% } %>
-
+    <% } else { %> <% upcomingEvents.forEach((event, idx) => { %>
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-[1200px]"
+      class="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-8 mb-12 relative"
     >
-      <% upcomingEvents.forEach(event => { %>
-      <a href="/event/<%= event.id %>" class="block">
-        <div
-          class="relative event h-[350px] flex flex-col justify-center items-center rounded-[20px] shadow-2xl transition-transform transform hover:scale-105"
-        >
-          <div
-            class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full"
-          >
-            <i class="fa-solid fa-circle animate-pulse text-xsm"></i>
-            <%= Math.ceil((new Date(event.startDate) - Date.now()) / (1000 * 60
-            * 60 * 24)) %> day(s) to go
-          </div>
-          <img
-            src="<%= event.image %>"
-            alt="Event Image"
-            class="w-full h-3/4 object-cover rounded-t-[20px]"
-          />
-          <div class="p-4 flex flex-col w-full h-1/3">
-            <h2 class="text-xl font-semibold text-black"><%= event.title %></h2>
-            <p class="text-black truncate"><%= event.description %></p>
-          </div>
+      <!-- Event Details -->
+      <div class="w-full md:w-1/2 flex flex-col gap-2 order-2 md:order-1">
+        <h2 class="text-2xl font-bold text-primary-900 mb-2">
+          <%= event.title %>
+        </h2>
+        <div class="flex items-center gap-3 text-gray-500 text-sm mb-2">
+          <span><%= event.club.name || 'Sanskriti' %></span>
+          <span class="mx-1">|</span>
+          <i class="fa-solid fa-calendar-days mr-1"></i>
+          <%= event.startDate ? new Date(event.startDate).toLocaleDateString() :
+          '' %>
+          <span class="mx-1">|</span>
+          <i class="fa-solid fa-clock mr-1"></i> <%= event.time || '6PM Onwards'
+          %>
+          <span class="mx-1">|</span>
+          <i class="fa-solid fa-location-dot mr-1"></i> <%= event.venue ||
+          'Sports Ground' %>
         </div>
-      </a>
-      <% }) %>
+        <p class="text-gray-700 mb-4 whitespace-pre-line">
+          <%= event.description %>
+        </p>
+        <a
+          href="/event/<%= event.id %>"
+          class="inline-block bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-2 rounded-lg shadow transition"
+          >Register</a
+        >
+      </div>
+      <!-- Event Image with Badge -->
+      <div class="relative w-full md:w-2/3 order-1 md:order-2">
+        <img
+          src="<%= event.image %>"
+          alt="Event Image"
+          class="rounded-2xl shadow-xl w-full h-[350px] object-cover border border-gray-200"
+        />
+        <span
+          class="absolute top-4 left-4 bg-primary/10 text-primary text-xs px-4 py-1 rounded-full font-semibold shadow"
+          ><i class="fa-solid fa-clock mr-1"></i> <%= Math.ceil((new
+          Date(event.startDate) - Date.now()) / (1000 * 60 * 60 * 24)) %> Days
+          to go</span
+        >
+      </div>
+      <!-- Decorative SVGs (optional, add your SVGs here) -->
+      <!-- <img src="/images/dots.svg" class="absolute top-0 right-0 w-1/3 opacity-20 -z-10" /> -->
     </div>
+    <% }) %> <% } %>
   </section>
+
+  <!-- Footer (optional, for full match add your footer here) -->
 </div>
