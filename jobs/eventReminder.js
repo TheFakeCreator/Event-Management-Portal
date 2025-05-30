@@ -4,7 +4,7 @@ import EventRegistration from "../models/eventRegistration.model.js";
 import sendEmail from "../utils/sendEmail.js";
 
 // Run every hour
-cron.schedule("0 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("[Event Reminder] Checking for upcoming event reminders...");
   const now = new Date();
   const nextHour = new Date(now.getTime() + 60 * 60 * 1000);

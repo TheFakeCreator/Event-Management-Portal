@@ -9,6 +9,8 @@ import {
   getAddClub,
   getClubs,
   getClubTab,
+  getEditClub,
+  postEditClub
 } from "../controllers/club.controller.js";
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 import upload from "../middlewares/upload.js";
@@ -18,10 +20,12 @@ const router = express.Router();
 // GET Routes
 router.get("/", isAuthenticatedLineant, getClubs);
 router.get("/add", isAuthenticated, isAdmin, getAddClub);
+router.get("/:id/edit", isAuthenticated, isClubModerator, getEditClub);
 router.get("/:id/:subPage", isAuthenticatedLineant, getClubTab);
 
 // POST Routes
 router.post("/add", isAuthenticated, isAdmin, createClub);
+router.post("/:id/edit", isAuthenticated, isClubModerator, postEditClub);
 
 // POST: Upload image to club gallery
 router.post(

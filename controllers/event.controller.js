@@ -3,6 +3,7 @@ import Event from "../models/event.model.js";
 import Club from "../models/club.model.js";
 import EventRegistration from "../models/eventRegistration.model.js";
 import Log from "../models/log.model.js";
+import sendEmail from "../utils/sendEmail.js";
 
 export const getEvents = async (req, res) => {
   try {
@@ -260,6 +261,17 @@ export const registerEvent = async (req, res) => {
 
     // Increment registeredUsers count in the Event model
     await Event.findByIdAndUpdate(event._id, { $inc: { registeredUsers: 1 } });
+
+    // Send confirmation email
+    try {
+      await sendEmail(
+        email.trim().toLowerCase(),
+        `Registration Confirmation for ${event.title}`,
+        `Hello ${name},\n\nYou have successfully registered for the event: ${event.title}.\n\nEvent Details:\nDate: ${event.startDate}\nTime: ${event.startTime} - ${event.endTime}\nLocation: ${event.location}\n\nThank you for registering!\n\nEvent Management Portal`
+      );
+    } catch (emailError) {
+      console.error("Failed to send confirmation email:", emailError);
+    }
 
     req.flash("success", "Successfully registered for the event!");
     res.redirect(`/event/${event._id}`);

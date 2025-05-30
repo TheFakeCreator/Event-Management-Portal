@@ -121,3 +121,54 @@ export const createClub = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getEditClub = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const club = await Club.findById(req.params.id);
+    if (!club) {
+      req.flash("error", "Club not found.");
+      return res.redirect("/club");
+    }
+    // Only allow admin or moderator
+    if (!(user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
+      return res.status(403).render('unauthorized', { title: 'Unauthorized', user, isAuthenticated: req.isAuthenticated });
+    }
+    res.render("editClub", {
+      title: "Edit Club",
+      club,
+      user,
+      isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const postEditClub = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const club = await Club.findById(req.params.id);
+    if (!club) {
+      req.flash("error", "Club not found.");
+      return res.redirect("/club");
+    }
+    // Only allow admin or moderator
+    if (!(user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
+      return res.status(403).render('unauthorized', { title: 'Unauthorized', user, isAuthenticated: req.isAuthenticated });
+    }
+    // Update fields
+    club.name = req.body.name;
+    club.description = req.body.description;
+    club.about = req.body.about;
+    club.image = req.body.image;
+    club.banner = req.body.banner;
+    await club.save();
+    req.flash("success", "Club details updated successfully!");
+    res.redirect(`/club/${club._id}/about`);
+  } catch (err) {
+    next(err);
+  }
+};
