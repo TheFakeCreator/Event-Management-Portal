@@ -69,7 +69,8 @@ export const getManageClubs = async (req, res, next) => {
 
 export const getEditClub = async (req, res, next) => {
   try {
-    const club = await Club.findById(req.params.id);
+    const club = await Club.findById(req.params.id).populate('moderators', 'name email');
+    const users = await User.find({}, 'name email');
     if (!club) {
       const err = new Error("Club not found");
       err.status = 404;
@@ -80,6 +81,7 @@ export const getEditClub = async (req, res, next) => {
       isAuthenticated: req.isAuthenticated,
       user: req.user,
       club,
+      users, // Pass all users for moderator selection
       success: req.flash("success"),
       error: req.flash("error"),
     });
@@ -476,5 +478,64 @@ export const editEvent = async (req, res) => {
   } catch (error) {
     req.flash("error", "An error occurred while updating the event");
     res.redirect("/admin/mevents");
+  }
+};
+
+// Add Moderator to Club
+export const addModeratorToClub = async (req, res) => {
+  try {
+    const { id } = req.params; // club id
+    const { userId } = req.body;
+    const club = await Club.findById(id);
+    const user = await User.findById(userId);
+    if (!club || !user) {
+      req.flash("error", "Club or user not found");
+      return res.redirect(`/admin/clubs/edit/${id}`);
+    }
+    // Add user to moderators if not already
+    if (!club.moderators.map(m => m.toString()).includes(userId)) {
+      club.moderators.push(userId);
+      await club.save();
+    }
+    // Add club to user's moderatorClubs if not already
+    if (!user.moderatorClubs.map(c => c.toString()).includes(id)) {
+      user.moderatorClubs.push(id);
+      user.role = 'moderator'; // Optionally set role
+      await user.save();
+    }
+    req.flash("success", "Moderator added to club successfully");
+    res.redirect(`/admin/clubs/edit/${id}`);
+  } catch (error) {
+    req.flash("error", "Server error");
+    res.redirect(`/admin/clubs/edit/${req.params.id}`);
+  }
+};
+
+// Remove Moderator from Club
+export const removeModeratorFromClub = async (req, res) => {
+  try {
+    const { id } = req.params; // club id
+    const { userId } = req.body;
+    const club = await Club.findById(id);
+    const user = await User.findById(userId);
+    if (!club || !user) {
+      req.flash("error", "Club or user not found");
+      return res.redirect(`/admin/clubs/edit/${id}`);
+    }
+    // Remove user from moderators
+    club.moderators = club.moderators.filter(m => m.toString() !== userId);
+    await club.save();
+    // Remove club from user's moderatorClubs
+    user.moderatorClubs = user.moderatorClubs.filter(c => c.toString() !== id);
+    // Optionally downgrade role if not moderator of any club
+    if (user.moderatorClubs.length === 0 && user.role === 'moderator') {
+      user.role = 'user';
+    }
+    await user.save();
+    req.flash("success", "Moderator removed from club successfully");
+    res.redirect(`/admin/clubs/edit/${id}`);
+  } catch (error) {
+    req.flash("error", "Server error");
+    res.redirect(`/admin/clubs/edit/${req.params.id}`);
   }
 };

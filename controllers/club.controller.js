@@ -82,6 +82,12 @@ export const getClubTab = async (req, res, next) => {
       }).sort({ endDate: -1 });
     }
 
+    // Determine if user is moderator for this club
+    let isClubMod = false;
+    if (user && (user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
+      isClubMod = true;
+    }
+
     res.render(view, {
       title: club.name,
       club: {
@@ -96,6 +102,7 @@ export const getClubTab = async (req, res, next) => {
       success: req.flash("success"),
       error: req.flash("error"),
       aboutHtml,
+      isClubMod, // Pass to view
     });
   } catch (err) {
     next(err);

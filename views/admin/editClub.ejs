@@ -206,6 +206,36 @@
       </div>
     </div>
   </div>
+
+  <!-- Add Moderator Section -->
+  <div class="bg-white shadow-lg rounded-lg p-6 mt-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Add Moderator to this Club</h2>
+    <form action="/admin/clubs/<%= club._id %>/add-moderator" method="POST" class="flex flex-col md:flex-row gap-4 items-center">
+      <select name="userId" class="p-2 border border-gray-300 rounded-lg flex-1" required>
+        <option value="" disabled selected>Select a user</option>
+        <% users && users.forEach(function(user) { %>
+          <option value="<%= user._id %>"><%= user.name %> (<%= user.email %>)</option>
+        <% }) %>
+      </select>
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Add as Moderator</button>
+    </form>
+    <% if (club.moderators && club.moderators.length > 0) { %>
+    <div class="mt-4">
+      <h3 class="font-semibold mb-2">Current Moderators:</h3>
+      <ul class="list-disc ml-6">
+        <% club.moderators.forEach(function(mod) { %>
+          <li>
+            <%= mod.name || mod.email || mod.toString() %>
+            <form action="/admin/clubs/<%= club._id %>/remove-moderator" method="POST" style="display:inline">
+              <input type="hidden" name="userId" value="<%= mod._id %>" />
+              <button type="submit" class="ml-2 text-red-600 hover:underline text-xs">Remove</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
+  </div>
 </div>
 
 <script>

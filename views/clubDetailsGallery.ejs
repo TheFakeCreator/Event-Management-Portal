@@ -4,7 +4,7 @@ currentTab: "gallery" }) %>
 <div class="container mx-auto">
   <div class="mt-8">
     <h2 class="text-xl font-semibold mb-2 text-blue-700">Gallery</h2>
-    <% if (user && (user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) { %>
+    <% if (isClubMod) { %>
     <div class="mb-8">
       <form
         action="/club/<%= club._id %>/gallery/upload"
@@ -70,6 +70,13 @@ currentTab: "gallery" }) %>
           </div>
         </div>
       </form>
+      <% if (club.image) { %>
+      <form action="/club/<%= club._id %>/image/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the club display image?');" class="mt-2">
+        <button type="submit" class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+          <i class="fas fa-trash-alt"></i> Delete Club Display Image
+        </button>
+      </form>
+      <% } %>
     </div>
     <% } %>
     <% if (club.gallery && club.gallery.length > 0) { %>
@@ -87,9 +94,15 @@ currentTab: "gallery" }) %>
         </p>
         <% } %>
         <div class="text-xs text-gray-400 mt-1">
-          Uploaded <%= item.uploadedAt ? new
-          Date(item.uploadedAt).toLocaleDateString() : '' %>
+          Uploaded <%= item.uploadedAt ? new Date(item.uploadedAt).toLocaleDateString() : '' %>
         </div>
+        <% if (isClubMod) { %>
+        <form action="/club/<%= club._id %>/gallery/<%= item._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this image?');" class="mt-2">
+          <button type="submit" class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </form>
+        <% } %>
       </div>
       <% }) %>
     </div>

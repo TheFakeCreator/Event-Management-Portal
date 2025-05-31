@@ -92,6 +92,65 @@ router.post(
   }
 );
 
+// POST: Delete image from club gallery
+router.post(
+  "/:id/gallery/:imageId/delete",
+  isAuthenticated,
+  isClubModerator,
+  async (req, res, next) => {
+    try {
+      const clubId = req.params.id;
+      const imageId = req.params.imageId;
+      const Club = (await import("../models/club.model.js")).default;
+      const club = await Club.findById(clubId);
+      if (!club) {
+        req.flash("error_msg", "Club not found.");
+        return res.redirect("/club/" + clubId + "/gallery");
+      }
+      // Remove image from gallery array
+      const initialLength = club.gallery.length;
+      club.gallery = club.gallery.filter(img => img._id.toString() !== imageId);
+      if (club.gallery.length === initialLength) {
+        req.flash("error_msg", "Image not found in gallery.");
+        return res.redirect("/club/" + clubId + "/gallery");
+      }
+      await club.save();
+      req.flash("success_msg", "Image deleted from gallery.");
+      res.redirect("/club/" + clubId + "/gallery");
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// POST: Delete club display image
+router.post(
+  "/:id/image/delete",
+  isAuthenticated,
+  isClubModerator,
+  async (req, res, next) => {
+    try {
+      const clubId = req.params.id;
+      const Club = (await import("../models/club.model.js")).default;
+      const club = await Club.findById(clubId);
+      if (!club) {
+        req.flash("error_msg", "Club not found.");
+        return res.redirect("/club/" + clubId + "/gallery");
+      }
+      if (!club.image) {
+        req.flash("error_msg", "No display image to delete.");
+        return res.redirect("/club/" + clubId + "/gallery");
+      }
+      club.image = undefined;
+      await club.save();
+      req.flash("success_msg", "Club display image deleted.");
+      res.redirect("/club/" + clubId + "/gallery");
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // Test route for moderator middleware
 router.get("/:id/mod-section", isAuthenticated, isClubModerator, (req, res) => {
   res.send(

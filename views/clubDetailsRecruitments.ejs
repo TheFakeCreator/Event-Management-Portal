@@ -7,9 +7,7 @@ currentTab: "recruitments" }) %>
       <h2 class="text-xl font-semibold mb-2 text-blue-700">
         Active Recruitments
       </h2>
-      <% if ( user && ( user.role === 'admin' || (club.moderators &&
-      club.moderators.some(function(m) { return m.toString() ===
-      user._id.toString(); })) ) ) { %>
+      <% if (isClubMod) { %>
       <div class="flex gap-3">
         <a
           href="/recruitment/new?club=<%= club._id %>"

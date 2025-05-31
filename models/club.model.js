@@ -18,7 +18,7 @@ const clubSchema = new Schema(
     },
     image: {
       type: String,
-      required: true,
+      required: false, // Made optional to allow deleting display image
     },
     banner: {
       type: String,

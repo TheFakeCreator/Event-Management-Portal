@@ -20,6 +20,8 @@ import {
   getEditEvent,
   deleteEvent,
   editEvent,
+  addModeratorToClub,
+  removeModeratorFromClub,
 } from "../controllers/admin.controller.js";
 import { isAdmin } from "../middlewares/adminMiddleware.js";
 
@@ -51,6 +53,8 @@ router.post("/roles/deny/:userId", rejectRoleRequest);
 router.post("/users/delete/:userId", deleteUser);
 router.post("/events/delete/:id", deleteEvent);
 router.post("/events/edit/:id", editEvent);
+router.post("/clubs/:id/add-moderator", addModeratorToClub);
+router.post("/clubs/:id/remove-moderator", removeModeratorFromClub);
 
 // Manage Users
 router.get("/users", getManageUsers);
