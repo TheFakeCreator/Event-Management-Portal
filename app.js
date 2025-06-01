@@ -76,6 +76,11 @@ app.use("/api/events", eventRouter);
 // Centralized error handler (must be after all routes)
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
+
+export default app;

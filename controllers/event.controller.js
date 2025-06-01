@@ -5,6 +5,41 @@ import EventRegistration from "../models/eventRegistration.model.js";
 import Log from "../models/log.model.js";
 import sendEmail from "../utils/sendEmail.js";
 import User from "../models/user.model.js";
+import cloudinary from "../configs/cloudinary.js";
+
+// Helper function to extract public_id from Cloudinary URL
+const extractPublicId = (cloudinaryUrl) => {
+  try {
+    if (!cloudinaryUrl || typeof cloudinaryUrl !== "string") {
+      return null;
+    }
+
+    // Handle different Cloudinary URL formats
+    const urlParts = cloudinaryUrl.split("/");
+    const uploadIndex = urlParts.indexOf("upload");
+
+    if (uploadIndex === -1) {
+      return null;
+    }
+
+    // Get everything after 'upload', skipping version if present
+    let pathAfterUpload = urlParts.slice(uploadIndex + 1);
+
+    // Remove version if it starts with 'v' followed by numbers
+    if (pathAfterUpload.length > 0 && /^v\d+$/.test(pathAfterUpload[0])) {
+      pathAfterUpload = pathAfterUpload.slice(1);
+    }
+
+    // Join the remaining parts and remove file extension
+    const fullPath = pathAfterUpload.join("/");
+    const publicId = fullPath.replace(/\.[^.]+$/, ""); // Remove file extension
+
+    return publicId || null;
+  } catch (error) {
+    console.error("Error extracting public_id from Cloudinary URL:", error);
+    return null;
+  }
+};
 
 export const getEvents = async (req, res) => {
   try {
@@ -245,6 +280,17 @@ export const deleteEvent = async (req, res) => {
     ) {
       req.flash("error", "You are not authorized to delete this event.");
       return res.redirect(`/event/${id}`);
+    }
+
+    // Extract public_id from the image URL for Cloudinary
+    const publicId = extractPublicId(event.image);
+    if (publicId) {
+      try {
+        // Delete the image from Cloudinary
+        await cloudinary.uploader.destroy(publicId);
+      } catch (error) {
+        console.error("Error deleting image from Cloudinary:", error);
+      }
     }
 
     await Event.findByIdAndDelete(event._id);

@@ -1,5 +1,40 @@
 import User from "../models/user.model.js";
 import Club from "../models/club.model.js";
+import cloudinary from "../configs/cloudinary.js";
+
+// Helper function to extract public_id from Cloudinary URL
+const extractPublicId = (cloudinaryUrl) => {
+  try {
+    if (!cloudinaryUrl || typeof cloudinaryUrl !== "string") {
+      return null;
+    }
+
+    // Handle different Cloudinary URL formats
+    const urlParts = cloudinaryUrl.split("/");
+    const uploadIndex = urlParts.indexOf("upload");
+
+    if (uploadIndex === -1) {
+      return null;
+    }
+
+    // Get everything after 'upload', skipping version if present
+    let pathAfterUpload = urlParts.slice(uploadIndex + 1);
+
+    // Remove version if it starts with 'v' followed by numbers
+    if (pathAfterUpload.length > 0 && /^v\d+$/.test(pathAfterUpload[0])) {
+      pathAfterUpload = pathAfterUpload.slice(1);
+    }
+
+    // Join the remaining parts and remove file extension
+    const fullPath = pathAfterUpload.join("/");
+    const publicId = fullPath.replace(/\.[^.]+$/, ""); // Remove file extension
+
+    return publicId || null;
+  } catch (error) {
+    console.error("Error extracting public_id from Cloudinary URL:", error);
+    return null;
+  }
+};
 
 export const getUser = (req, res, next) => {
   try {
@@ -75,6 +110,15 @@ export const postUserEdit = async (req, res, next) => {
       socials,
     };
     if (req.file && req.file.path) {
+      // Remove the old avatar if it exists
+      const user = await User.findById(userId);
+      if (user && user.avatar) {
+        const publicId = extractPublicId(user.avatar);
+        if (publicId) {
+          await cloudinary.v2.uploader.destroy(publicId);
+        }
+      }
+
       updateData.avatar = req.file.path;
     }
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {

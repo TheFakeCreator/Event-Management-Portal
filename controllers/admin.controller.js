@@ -2,6 +2,41 @@ import Club from "../models/club.model.js";
 import User from "../models/user.model.js";
 import Event from "../models/event.model.js";
 import Log from "../models/log.model.js";
+import cloudinary from "../configs/cloudinary.js";
+
+// Helper function to extract public_id from Cloudinary URL (copied from club.routes.js)
+const extractPublicId = (cloudinaryUrl) => {
+  try {
+    if (!cloudinaryUrl || typeof cloudinaryUrl !== "string") {
+      return null;
+    }
+
+    // Handle different Cloudinary URL formats
+    const urlParts = cloudinaryUrl.split("/");
+    const uploadIndex = urlParts.indexOf("upload");
+
+    if (uploadIndex === -1) {
+      return null;
+    }
+
+    // Get everything after 'upload', skipping version if present
+    let pathAfterUpload = urlParts.slice(uploadIndex + 1);
+
+    // Remove version if it starts with 'v' followed by numbers
+    if (pathAfterUpload.length > 0 && /^v\d+$/.test(pathAfterUpload[0])) {
+      pathAfterUpload = pathAfterUpload.slice(1);
+    }
+
+    // Join the remaining parts and remove file extension
+    const fullPath = pathAfterUpload.join("/");
+    const publicId = fullPath.replace(/\.[^.]+$/, ""); // Remove file extension
+
+    return publicId || null;
+  } catch (error) {
+    console.error("Error extracting public_id from Cloudinary URL:", error);
+    return null;
+  }
+};
 
 // GET Routes
 export const getAdminDashboard = (req, res) => {
@@ -69,8 +104,11 @@ export const getManageClubs = async (req, res, next) => {
 
 export const getEditClub = async (req, res, next) => {
   try {
-    const club = await Club.findById(req.params.id).populate('moderators', 'name email');
-    const users = await User.find({}, 'name email');
+    const club = await Club.findById(req.params.id).populate(
+      "moderators",
+      "name email"
+    );
+    const users = await User.find({}, "name email");
     if (!club) {
       const err = new Error("Club not found");
       err.status = 404;
@@ -351,21 +389,76 @@ export const editClub = async (req, res) => {
 export const deleteClub = async (req, res) => {
   try {
     const { id } = req.params;
-    const club = await Club.findByIdAndDelete(id);
+    const club = await Club.findById(id);
     if (!club) {
       req.flash("error", "Club not found");
       return res.redirect("/admin/clubs");
     }
+
+    // Clean up Cloudinary images before deleting from database
+    const imagesToDelete = [];
+
+    // Add club display image
+    if (club.image) {
+      const displayImagePublicId = extractPublicId(club.image);
+      if (displayImagePublicId) imagesToDelete.push(displayImagePublicId);
+    }
+
+    // Add club banner image
+    if (club.banner) {
+      const bannerPublicId = extractPublicId(club.banner);
+      if (bannerPublicId) imagesToDelete.push(bannerPublicId);
+    }
+
+    // Add all gallery images
+    if (club.gallery && club.gallery.length > 0) {
+      club.gallery.forEach((galleryItem) => {
+        if (galleryItem.url) {
+          const galleryPublicId = extractPublicId(galleryItem.url);
+          if (galleryPublicId) imagesToDelete.push(galleryPublicId);
+        }
+      });
+    }
+
+    // Delete all images from Cloudinary
+    if (imagesToDelete.length > 0) {
+      console.log(
+        `Attempting to delete ${imagesToDelete.length} images from Cloudinary for club: ${club.name}`
+      );
+
+      for (const publicId of imagesToDelete) {
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(
+            `Successfully deleted image from Cloudinary: ${publicId}`
+          );
+        } catch (cloudinaryError) {
+          console.error(
+            `Error deleting image ${publicId} from Cloudinary:`,
+            cloudinaryError
+          );
+          // Continue with other deletions
+        }
+      }
+    }
+
+    // Delete club from database
+    await Club.findByIdAndDelete(id);
+
     await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "CLUB",
       targetId: id,
-      details: `Club ${club.name} deleted by ${req.user.name}`,
+      details: `Club ${club.name} deleted by ${req.user.name} (${imagesToDelete.length} images cleaned from Cloudinary)`,
     });
-    req.flash("success", "Club deleted successfully");
+    req.flash(
+      "success",
+      `Club deleted successfully. ${imagesToDelete.length} images cleaned from storage.`
+    );
     res.redirect("/admin/clubs");
   } catch (error) {
+    console.error("Error in deleteClub:", error);
     req.flash("error", "Server error");
     res.redirect("/admin/clubs");
   }
@@ -374,17 +467,40 @@ export const deleteClub = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findById(userId);
     if (!user) {
       req.flash("error", "User not found");
       return res.redirect("/admin/users");
     }
+
+    // Clean up user avatar from Cloudinary before deleting from database
+    if (user.avatar) {
+      const avatarPublicId = extractPublicId(user.avatar);
+      if (avatarPublicId) {
+        try {
+          await cloudinary.uploader.destroy(avatarPublicId);
+          console.log(
+            `Successfully deleted user avatar from Cloudinary: ${avatarPublicId}`
+          );
+        } catch (cloudinaryError) {
+          console.error(
+            `Error deleting user avatar from Cloudinary:`,
+            cloudinaryError
+          );
+          // Continue with database deletion even if Cloudinary deletion fails
+        }
+      }
+    }
+
+    // Delete user from database
+    await User.findByIdAndDelete(userId);
+
     await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "USER",
       targetId: userId,
-      details: `User ${user.name} deleted by ${req.user.name}`,
+      details: `User ${user.name} deleted by ${req.user.name} (avatar cleaned from Cloudinary)`,
     });
     req.flash("success", "User deleted successfully");
     res.redirect("/admin/users");
@@ -398,17 +514,40 @@ export const deleteUser = async (req, res) => {
 export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const event = await Event.findByIdAndDelete(id);
+    const event = await Event.findById(id);
     if (!event) {
       req.flash("error", "Event not found");
       return res.redirect("/admin/events");
     }
+
+    // Clean up Cloudinary image before deleting from database
+    if (event.image) {
+      const eventImagePublicId = extractPublicId(event.image);
+      if (eventImagePublicId) {
+        try {
+          await cloudinary.uploader.destroy(eventImagePublicId);
+          console.log(
+            `Successfully deleted event image from Cloudinary: ${eventImagePublicId}`
+          );
+        } catch (cloudinaryError) {
+          console.error(
+            `Error deleting event image from Cloudinary:`,
+            cloudinaryError
+          );
+          // Continue with database deletion even if Cloudinary deletion fails
+        }
+      }
+    }
+
+    // Delete event from database
+    await Event.findByIdAndDelete(id);
+
     await Log.create({
       user: req.user._id,
       action: "DELETE",
       targetType: "EVENT",
       targetId: id,
-      details: `Event ${event.title} deleted by ${req.user.name}`,
+      details: `Event ${event.title} deleted by ${req.user.name} (image cleaned from Cloudinary)`,
     });
     req.flash("success", "Event deleted successfully");
     res.redirect("/admin/events");
@@ -493,14 +632,14 @@ export const addModeratorToClub = async (req, res) => {
       return res.redirect(`/admin/clubs/edit/${id}`);
     }
     // Add user to moderators if not already
-    if (!club.moderators.map(m => m.toString()).includes(userId)) {
+    if (!club.moderators.map((m) => m.toString()).includes(userId)) {
       club.moderators.push(userId);
       await club.save();
     }
     // Add club to user's moderatorClubs if not already
-    if (!user.moderatorClubs.map(c => c.toString()).includes(id)) {
+    if (!user.moderatorClubs.map((c) => c.toString()).includes(id)) {
       user.moderatorClubs.push(id);
-      user.role = 'moderator'; // Optionally set role
+      user.role = "moderator"; // Optionally set role
       await user.save();
     }
     req.flash("success", "Moderator added to club successfully");
@@ -523,13 +662,15 @@ export const removeModeratorFromClub = async (req, res) => {
       return res.redirect(`/admin/clubs/edit/${id}`);
     }
     // Remove user from moderators
-    club.moderators = club.moderators.filter(m => m.toString() !== userId);
+    club.moderators = club.moderators.filter((m) => m.toString() !== userId);
     await club.save();
     // Remove club from user's moderatorClubs
-    user.moderatorClubs = user.moderatorClubs.filter(c => c.toString() !== id);
+    user.moderatorClubs = user.moderatorClubs.filter(
+      (c) => c.toString() !== id
+    );
     // Optionally downgrade role if not moderator of any club
-    if (user.moderatorClubs.length === 0 && user.role === 'moderator') {
-      user.role = 'user';
+    if (user.moderatorClubs.length === 0 && user.role === "moderator") {
+      user.role = "user";
     }
     await user.save();
     req.flash("success", "Moderator removed from club successfully");
