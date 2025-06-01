@@ -77,11 +77,19 @@
           <% if (recruitment.applicationForm && recruitment.applicationForm.length > 0) { %>
             <% recruitment.applicationForm.forEach(function(field) { %>
               <div>
-                <label class="block text-gray-700 font-semibold mb-2"><%= field.label %><% if(field.required){ %> <span class="text-red-500">*</span><% } %></label>
-                <% if(field.type === 'text' || field.type === 'email' || field.type === 'number' || field.type === 'date') { %>
+                <label class="block text-gray-700 font-semibold mb-2"><%= field.label %><% if(field.required){ %> <span class="text-red-500">*</span><% } %></label>                <% if(field.type === 'text' || field.type === 'email' || field.type === 'number' || field.type === 'date') { %>
                   <input type="<%= field.type %>" name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 <% } else if(field.type === 'textarea') { %>
                   <textarea name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" rows="4" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                <% } else if(field.type === 'select') { %>
+                  <select name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="" disabled selected>Choose an option</option>
+                    <% if(field.options && field.options.length > 0) { %>
+                      <% field.options.forEach(function(option) { %>
+                        <option value="<%= option %>"><%= option %></option>
+                      <% }) %>
+                    <% } %>
+                  </select>
                 <% } %>
               </div>
             <% }) %>

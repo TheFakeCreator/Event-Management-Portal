@@ -95,31 +95,59 @@
             </h4>
             <!-- Dynamic preview fields will be rendered here -->
           </div>
-          <div class="flex space-x-2 mb-4">
-            <select id="fieldType" class="px-2 py-1 border rounded">
-              <option value="text">Text</option>
-              <option value="textarea">Paragraph</option>
-              <option value="date">Date</option>
-              <option value="email">Email</option>
-              <option value="number">Number</option>
-            </select>
-            <input
-              type="text"
-              id="fieldLabel"
-              class="px-2 py-1 border rounded"
-              placeholder="Field label"
-            />
-            <label class="flex items-center space-x-1">
-              <input type="checkbox" id="fieldRequired" />
-              <span class="text-sm">Required</span>
-            </label>
-            <button
-              type="button"
-              id="addFieldBtn"
-              class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+          <div class="space-y-3 mb-4">
+            <div class="flex space-x-2">
+              <select id="fieldType" class="px-2 py-1 border rounded">
+                <option value="text">Text</option>
+                <option value="textarea">Paragraph</option>
+                <option value="date">Date</option>
+                <option value="email">Email</option>
+                <option value="number">Number</option>
+                <option value="select">Dropdown</option>
+              </select>
+              <input
+                type="text"
+                id="fieldLabel"
+                class="px-2 py-1 border rounded"
+                placeholder="Field label"
+              />
+              <label class="flex items-center space-x-1">
+                <input type="checkbox" id="fieldRequired" />
+                <span class="text-sm">Required</span>
+              </label>
+              <button
+                type="button"
+                id="addFieldBtn"
+                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Add Field
+              </button>
+            </div>
+            <!-- Options for dropdown fields -->
+            <div
+              id="selectOptions"
+              class="hidden bg-gray-50 p-3 rounded border"
             >
-              Add Field
-            </button>
+              <h5 class="text-sm font-semibold mb-2 text-gray-700">
+                Dropdown Options:
+              </h5>
+              <div id="optionsList" class="space-y-2 mb-2"></div>
+              <div class="flex space-x-2">
+                <input
+                  type="text"
+                  id="optionText"
+                  class="px-2 py-1 border rounded flex-1"
+                  placeholder="Option text"
+                />
+                <button
+                  type="button"
+                  id="addOptionBtn"
+                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                >
+                  Add Option
+                </button>
+              </div>
+            </div>
           </div>
           <input
             type="hidden"
@@ -167,13 +195,71 @@
   document
     .querySelector('.nav-link[data-section="about"]')
     .classList.add("bg-blue-100", "font-bold", "text-blue-700");
-
   // Form builder logic
   const formFields = [];
   const formFieldsDiv = document.getElementById("formFields");
   const applicationFormInput = document.getElementById("applicationFormInput");
   const formPreview = document.getElementById("formPreview");
+  const selectOptionsDiv = document.getElementById("selectOptions");
+  const optionsList = document.getElementById("optionsList");
+  let currentOptions = [];
 
+  // Show/hide dropdown options based on field type
+  document.getElementById("fieldType").addEventListener("change", function () {
+    if (this.value === "select") {
+      selectOptionsDiv.classList.remove("hidden");
+    } else {
+      selectOptionsDiv.classList.add("hidden");
+      currentOptions = [];
+      optionsList.innerHTML = "";
+    }
+  });
+
+  // Add option to dropdown
+  document
+    .getElementById("addOptionBtn")
+    .addEventListener("click", function () {
+      const optionText = document.getElementById("optionText").value.trim();
+      if (!optionText) return alert("Please enter option text.");
+      if (currentOptions.includes(optionText))
+        return alert("Option already exists.");
+
+      currentOptions.push(optionText);
+      renderOptions();
+      document.getElementById("optionText").value = "";
+    });
+
+  // Handle enter key in option input
+  document
+    .getElementById("optionText")
+    .addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("addOptionBtn").click();
+      }
+    });
+
+  function renderOptions() {
+    optionsList.innerHTML = "";
+    currentOptions.forEach((option, idx) => {
+      const optionDiv = document.createElement("div");
+      optionDiv.className = "flex items-center space-x-2";
+      optionDiv.innerHTML = `
+        <span class="text-sm bg-white px-2 py-1 rounded border flex-1">${option}</span>
+        <button type="button" class="removeOptionBtn text-red-500 hover:underline text-sm" data-idx="${idx}">Remove</button>
+      `;
+      optionsList.appendChild(optionDiv);
+    });
+  }
+
+  // Remove option
+  optionsList.addEventListener("click", function (e) {
+    if (e.target.classList.contains("removeOptionBtn")) {
+      const idx = parseInt(e.target.getAttribute("data-idx"));
+      currentOptions.splice(idx, 1);
+      renderOptions();
+    }
+  });
   function renderFields() {
     formFieldsDiv.innerHTML = "";
     formPreview.innerHTML =
@@ -182,6 +268,12 @@
       // Editable label input
       const fieldDiv = document.createElement("div");
       fieldDiv.className = "flex items-center space-x-2 mb-2";
+
+      let optionsInfo = "";
+      if (field.type === "select" && field.options) {
+        optionsInfo = `<span class="text-xs text-blue-600">(${field.options.length} options)</span>`;
+      }
+
       fieldDiv.innerHTML = `
         <span class="px-2 py-1 bg-gray-100 rounded">${field.type}</span>
         <input type="text" value="${
@@ -190,6 +282,12 @@
         <span class="text-xs text-gray-500">${
           field.required ? "Required" : "Optional"
         }</span>
+        ${optionsInfo}
+        ${
+          field.type === "select"
+            ? `<button type="button" class="editOptionsBtn text-blue-500 hover:underline text-xs" data-idx="${idx}">Edit Options</button>`
+            : ""
+        }
         <button type="button" class="removeFieldBtn text-red-500 hover:underline" data-idx="${idx}">Remove</button>
       `;
       formFieldsDiv.appendChild(fieldDiv);
@@ -205,32 +303,102 @@
         inputHtml = `<input type='${field.type}' disabled class='w-full px-4 py-2 border rounded-lg bg-gray-100 preview-input' placeholder='${field.label}' />`;
       } else if (field.type === "textarea") {
         inputHtml = `<textarea disabled class='w-full px-4 py-2 border rounded-lg bg-gray-100 preview-input' rows='3' placeholder='${field.label}'></textarea>`;
+      } else if (field.type === "select") {
+        let optionsHtml =
+          "<option value='' disabled selected>Choose an option</option>";
+        if (field.options && field.options.length > 0) {
+          field.options.forEach((option) => {
+            optionsHtml += `<option value='${option}'>${option}</option>`;
+          });
+        }
+        inputHtml = `<select disabled class='w-full px-4 py-2 border rounded-lg bg-gray-100 preview-input'>${optionsHtml}</select>`;
       }
       previewDiv.innerHTML = labelHtml + inputHtml;
       formPreview.appendChild(previewDiv);
     });
     applicationFormInput.value = JSON.stringify(formFields);
   }
-
   document.getElementById("addFieldBtn").onclick = function () {
     const type = document.getElementById("fieldType").value;
     const label = document.getElementById("fieldLabel").value.trim();
     const required = document.getElementById("fieldRequired").checked;
     if (!label) return alert("Please enter a field label.");
-    formFields.push({ type, label, required });
+
+    const fieldData = { type, label, required };
+
+    // If it's a select field, add options
+    if (type === "select") {
+      if (currentOptions.length === 0) {
+        return alert("Please add at least one option for the dropdown.");
+      }
+      fieldData.options = [...currentOptions];
+    }
+
+    formFields.push(fieldData);
     renderFields();
+
+    // Reset form
     document.getElementById("fieldLabel").value = "";
     document.getElementById("fieldRequired").checked = false;
+    document.getElementById("fieldType").value = "text";
+    selectOptionsDiv.classList.add("hidden");
+    currentOptions = [];
+    optionsList.innerHTML = "";
   };
-
   formFieldsDiv.addEventListener("click", function (e) {
     if (e.target.classList.contains("removeFieldBtn")) {
       const idx = e.target.getAttribute("data-idx");
       formFields.splice(idx, 1);
       renderFields();
+    } else if (e.target.classList.contains("editOptionsBtn")) {
+      const idx = parseInt(e.target.getAttribute("data-idx"));
+      const field = formFields[idx];
+      if (field.type === "select") {
+        // Load existing options into the editor
+        currentOptions = field.options ? [...field.options] : [];
+        renderOptions();
+
+        // Show the options editor
+        selectOptionsDiv.classList.remove("hidden");
+        document.getElementById("fieldType").value = "select";
+        document.getElementById("fieldLabel").value = field.label;
+        document.getElementById("fieldRequired").checked = field.required;
+
+        // Change the Add Field button to Update Field
+        const addBtn = document.getElementById("addFieldBtn");
+        addBtn.textContent = "Update Field";
+        addBtn.onclick = function () {
+          if (currentOptions.length === 0) {
+            return alert("Please add at least one option for the dropdown.");
+          }
+
+          // Update the field
+          formFields[idx] = {
+            type: "select",
+            label: document.getElementById("fieldLabel").value.trim(),
+            required: document.getElementById("fieldRequired").checked,
+            options: [...currentOptions],
+          };
+
+          renderFields();
+
+          // Reset form and button
+          document.getElementById("fieldLabel").value = "";
+          document.getElementById("fieldRequired").checked = false;
+          document.getElementById("fieldType").value = "text";
+          selectOptionsDiv.classList.add("hidden");
+          currentOptions = [];
+          optionsList.innerHTML = "";
+          addBtn.textContent = "Add Field";
+          addBtn.onclick = originalAddFieldHandler;
+        };
+      }
     }
   });
 
+  // Store the original add field handler
+  const originalAddFieldHandler =
+    document.getElementById("addFieldBtn").onclick;
   formFieldsDiv.addEventListener("input", function (e) {
     if (e.target.classList.contains("editLabelInput")) {
       const idx = e.target.getAttribute("data-idx");
@@ -245,10 +413,14 @@
           formFields[idx].required ? " <span class='text-red-500'>*</span>" : ""
         }`;
       }
-      // Update the placeholder of the preview input/textarea
+      // Update the placeholder of the preview input/textarea or select
       const previewInputs = formPreview.querySelectorAll(".preview-input");
       if (previewInputs[idx]) {
-        previewInputs[idx].setAttribute("placeholder", formFields[idx].label);
+        if (formFields[idx].type === "select") {
+          // For select fields, we don't update placeholder but keep the options
+        } else {
+          previewInputs[idx].setAttribute("placeholder", formFields[idx].label);
+        }
       }
     }
   });
