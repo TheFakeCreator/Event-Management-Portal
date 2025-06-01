@@ -9,9 +9,14 @@ export const getLoginUser = (req, res, next) => {
     if (req.isAuthenticated) {
       return res.redirect(`/user/${req.user.username}`);
     }
+
+    // Get the redirect URL from query parameters
+    const redirectUrl = req.query.redirect || "";
+
     res.render("login", {
       success: req.flash("success"),
       error: req.flash("error"),
+      redirectUrl: redirectUrl, // Pass redirect URL to the login form
     });
   } catch (err) {
     next(err);
@@ -122,20 +127,29 @@ export const registerUser = async (req, res, next) => {
 
 export const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, redirectUrl } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       req.flash("error", "Invalid credentials.");
-      return res.redirect("/auth/login");
+      const redirect = redirectUrl
+        ? `?redirect=${encodeURIComponent(redirectUrl)}`
+        : "";
+      return res.redirect(`/auth/login${redirect}`);
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       req.flash("error", "Invalid credentials.");
-      return res.redirect("/auth/login");
+      const redirect = redirectUrl
+        ? `?redirect=${encodeURIComponent(redirectUrl)}`
+        : "";
+      return res.redirect(`/auth/login${redirect}`);
     }
     if (!user.isVerified) {
       req.flash("error", "Email not verified.");
-      return res.redirect("/auth/login");
+      const redirect = redirectUrl
+        ? `?redirect=${encodeURIComponent(redirectUrl)}`
+        : "";
+      return res.redirect(`/auth/login${redirect}`);
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
@@ -145,6 +159,16 @@ export const loginUser = async (req, res, next) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 1000, // 1 day
     });
+
+    // Redirect to the previous page or default to user profile
+    if (redirectUrl && redirectUrl.trim() !== "") {
+      // Ensure the redirect URL is safe (doesn't redirect to external sites)
+      if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+        return res.redirect(redirectUrl);
+      }
+    }
+
+    // Default redirect to user profile
     res.redirect(`/user/${user.username}`);
   } catch (error) {
     next(error);
