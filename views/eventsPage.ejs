@@ -1,23 +1,23 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto py-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-4xl font-extrabold text-primary">Events</h1>
-    <div class="flex items-center gap-0">
-      <div class="relative flex flex-row items-center w-2/3">
+<div class="w-full px-0 sm:px-4 py-6 sm:py-8 mx-auto">
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-primary">Events</h1>
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 w-full sm:w-auto">
+      <div class="relative flex flex-row items-center w-full sm:w-2/3 mb-2 sm:mb-0">
         <input
           type="text"
           placeholder="Search events..."
-          class="w-full py-3 px-5 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+          class="w-full py-2 sm:py-3 px-4 sm:px-5 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
         />
         <button
-          class="bg-primary text-white translate-x-[-55%] rounded-full p-3 shadow-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center"
-          style="height: 40px; width: 40px;"
+          class="bg-primary text-white translate-x-[-55%] rounded-full p-2 sm:p-3 shadow-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center"
+          style="height: 36px; width: 36px;"
         >
           <i class="fas fa-search text-regular"></i>
         </button>
       </div>
-      <div class="w-1/4">
+      <div class="w-full sm:w-1/4">
         <select
           id="clubFilter"
           class="w-full py-2 px-4 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
@@ -32,14 +32,14 @@
     </div>
     <a
       href="/event/create"
-      class="bg-green-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center gap-2"
+      class="bg-green-600 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto justify-center"
     >
-      <i class="fas fa-plus-circle"></i> Create Event
+      <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Create Event</span>
     </a>
   </div>
 
   <!-- Event Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+  <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
     <% events.filter(event => new Date(event.endDate) >= new Date()).forEach(event => { 
       const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
     %>
@@ -51,17 +51,17 @@
       <img
         src="<%= event.image %>"
         alt="<%= event.title %>"
-        class="w-full h-56 object-cover"
+        class="w-full h-40 sm:h-56 object-cover"
       />
 
       <!-- Event Details -->
-      <div class="p-5 flex flex-col justify-between flex-grow">
+      <div class="p-4 sm:p-5 flex flex-col justify-between flex-grow">
         <div>
-          <h2 class="text-2xl font-semibold text-gray-900 mb-1">
+          <h2 class="text-lg sm:text-2xl font-semibold text-gray-900 mb-1">
             <%= event.title %>
           </h2>
           <% if (event.club && event.club.name) { %>
-          <div class="text-sm font-regular text-gray-500 mb-2 flex items-center gap-1">
+          <div class="text-xs sm:text-sm font-regular text-gray-500 mb-2 flex items-center gap-1">
             <a href="/club/<%= event.club.id %>/about" class=" hover:underline">
               <%= event.club.name %>
             </a>
@@ -72,7 +72,7 @@
           </div>
           <% } %>
           <div class="w-20 h-[2px] bg-gray-200 my-2 mx-0"></div>
-          <div class="flex items-center flex-wrap gap-x-1 gap-y-1 mt-3 text-[11px] text-black font-medium">
+          <div class="flex items-center flex-wrap gap-x-1 gap-y-1 mt-3 text-[10px] sm:text-[11px] text-black font-medium">
             <span class="flex items-center gap-1">
               <i class="far fa-calendar-alt text-[13px]"></i>
               <%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
@@ -94,10 +94,10 @@
           <% if (event.registeredUsers && event.registeredUsers.length > 0) { %>
           <div class="flex items-center mt-3">
             <% event.registeredUsers.forEach(function(user, idx) { %>
-              <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>" class="w-8 h-8 rounded-full border-2 border-white -ml-2 first:ml-0 shadow" />
+              <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white -ml-2 first:ml-0 shadow" />
             <% }) %>
             <% if (event.registeredUsersCount > 5) { %>
-              <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700 -ml-2 border-2 border-white shadow">
+              <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700 -ml-2 border-2 border-white shadow">
                 +<%= event.registeredUsersCount - 5 %>
               </span>
             <% } %>
