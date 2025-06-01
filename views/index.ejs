@@ -1,11 +1,11 @@
 <% layout('layouts/main') %>
-
-<!-- Hero Section: Featured Ongoing Event -->
+<!-- Hero Section: Featured Ongoing Event Slider -->
 <div class="w-full min-h-screen flex flex-col justify-between px-0 py-0">
-  <section class="w-full flex flex-col items-center pt-8 pb-4">
-    <% if(ongoingEvents.length > 0) { const event = ongoingEvents[0]; %>
+  <section class="w-full flex flex-col items-start pt-8 pb-4">
+    <% if(ongoingEvents.length > 0) { %>
     <div
-      class="flex flex-col md:flex-row items-start justify-center w-full max-w-none gap-8 relative px-0"
+      class="flex flex-col md:flex-row items-start w-full max-w-none gap-8 relative px-0"
+      id="live-slider-container"
     >
       <!-- Event Image with Badge -->
       <div
@@ -13,7 +13,8 @@
         style="max-width: 700px"
       >
         <img
-          src="<%= event.image %>"
+          id="live-slider-image"
+          src="<%= ongoingEvents[0].image %>"
           alt="Event Image"
           class="rounded-2xl w-full h-[450px] object-cover border border-gray-200 shadow-none"
           style="margin-left: 0"
@@ -28,19 +29,41 @@
         >
           <i
             class="fa-solid fa-circle animate-pulse text-xs mr-1 text-primary"
-          ></i
-          >Live Now
+          ></i>
+          Live Now
         </span>
+        <!-- Slider Dots -->
+        <div
+          class="flex justify-center items-center gap-2 mt-4 w-full absolute left-0 right-0 bottom-[-32px] overflow-x-auto scrollbar-hide px-2"
+          id="live-slider-dots"
+          style="max-width: 100vw; white-space: nowrap"
+        >
+          <% ongoingEvents.forEach((event, idx) => { %>
+          <button
+            type="button"
+            class="slider-dot transition-all duration-300<%= idx === 0 ? ' active' : '' %>"
+            data-slider-idx="<%= idx %>"
+            style="display: inline-block"
+            aria-label="Go to slide <%= idx + 1 %>"
+          ></button>
+          <% }) %>
+        </div>
       </div>
       <!-- Event Details -->
       <div
         class="w-full md:w-[45%] flex flex-col gap-0 mt-0 h-[450px] pr-2 pt-2"
+        id="live-slider-details"
       >
-        <h2 class="text-4xl font-regular text-primary-900 mb-0 mt-2 pt-0">
-          <%= event.title %>
+        <h2
+          class="text-4xl font-regular text-primary mb-0 mt-2 pt-0"
+          id="live-slider-title"
+        >
+          <%= ongoingEvents[0].title %>
         </h2>
         <div class="flex items-center gap-2 text-gray-500 text-sm mb-0 mt-3">
-          <span><%= event.club.name || 'Sanskriti' %></span>
+          <span id="live-slider-club"
+            ><%= ongoingEvents[0].club.name || 'Sanskriti' %></span
+          >
           <svg
             class="inline-block ml-1"
             width="18"
@@ -60,94 +83,180 @@
             />
           </svg>
           <span class="mx-1">|</span>
-          <i class="fa-solid fa-location-dot mr-0"></i> <%= event.venue ||
-          'Sports Ground' %>
+          <i class="fa-solid fa-location-dot mr-0"></i>
+          <span id="live-slider-venue"
+            ><%= ongoingEvents[0].venue || 'Sports Ground' %></span
+          >
         </div>
         <p
-          class="text-gray-500 mb-8 font-light whitespace-pre-line overflow-hidden"
+          class="text-gray-500 mb-8 font-light whitespace-pre-line overflow-hidden mt-4"
           style="
             display: -webkit-box;
             -webkit-line-clamp: 7;
             -webkit-box-orient: vertical;
+            white-space: pre-line;
           "
+          id="live-slider-description"
         >
-          <%= event.description %> <% if (event.description &&
-          event.description.split('\n').length > 7 || event.description.length >
-          500) { %> ... <% } %>
+          <%- ongoingEvents[0].description.replace(/\n/g, '<br />') %> <% if
+          (ongoingEvents[0].description &&
+          ongoingEvents[0].description.split('\n').length > 7 ||
+          ongoingEvents[0].description.length > 500) { %> ... <% } %>
         </p>
         <a
-          href="/event/<%= event.id %>"
+          id="live-slider-link"
+          href="/event/<%= ongoingEvents[0].id %>"
           class="inline-block bg-primary hover:bg-primary/90 text-white font-regular px-6 py-2 rounded-lg shadow transition w-auto min-w-[120px] text-center ml-0 mb-10 mt-0"
           style="align-self: flex-start; margin-top: 0"
           >Watch Live</a
         >
       </div>
       <!-- Decorative SVGs (optional, add your SVGs here) -->
-      <!-- <img src="/images/wave.svg" class="absolute bottom-0 left-0 w-full opacity-30 -z-10" /> -->
     </div>
+    <script type="application/json" id="ongoingEventsData">
+      <%- JSON.stringify(ongoingEvents) %>
+    </script>
+    <link rel="stylesheet" href="/css/slider.css" />
+    <script src="/javascript/slider.js"></script>
     <% } %>
   </section>
 
   <!-- Upcoming Events Section -->
-  <section class="flex flex-col items-center w-full mt-8">
-    <h1
-      class="text-3xl md:text-4xl font-bold text-primary mb-8 w-full max-w-6xl"
-    >
-      Upcoming Events
-    </h1>
+  <section class="flex flex-col items-start w-full" style="margin-top: 120px">
     <% if(upcomingEvents.length === 0){ %>
     <div class="flex flex-col items-center justify-center w-full">
       <p class="text-2xl text-gray-500 text-center">No upcoming events</p>
     </div>
-    <% } else { %> <% upcomingEvents.forEach((event, idx) => { %>
+    <% } else { %>
     <div
-      class="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-8 mb-12 relative"
+      class="flex flex-col md:flex-row items-center justify-start w-full gap-8 mb-12 relative px-0"
+      id="upcoming-slider-container"
+      style="margin-left: 0"
     >
-      <!-- Event Details -->
-      <div class="w-full md:w-1/2 flex flex-col gap-2 order-2 md:order-1">
-        <h2 class="text-2xl font-bold text-primary-900 mb-2">
-          <%= event.title %>
+      <!-- Event Details (left) -->
+      <div
+        class="w-full md:w-[70%] flex flex-col gap-0 mt-0 h-[400px] pr-2 pt-2 order-2 md:order-1"
+        id="upcoming-slider-details"
+      >
+        <h2
+          class="text-4xl font-regular text-primary mb-0 mt-2 pt-0"
+          id="upcoming-slider-title"
+        >
+          <%= upcomingEvents[0].title %>
         </h2>
-        <div class="flex items-center gap-3 text-gray-500 text-sm mb-2">
-          <span><%= event.club.name || 'Sanskriti' %></span>
+        <div class="flex items-center gap-2 text-gray-500 text-sm mb-0 mt-3">
+          <span id="upcoming-slider-club"
+            ><%= upcomingEvents[0].club.name || 'Sanskriti' %></span
+          >
+          <svg
+            class="inline-block ml-1"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="var(--color-primary)"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="12" fill="var(--color-primary)" />
+            <path
+              d="M17 9l-5.2 5.2-2.8-2.8"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
           <span class="mx-1">|</span>
-          <i class="fa-solid fa-calendar-days mr-1"></i>
-          <%= event.startDate ? new Date(event.startDate).toLocaleDateString() :
-          '' %>
+          <i class="fa-solid fa-location-dot mr-0"></i>
+          <span id="upcoming-slider-venue"
+            ><%= upcomingEvents[0].venue || 'Sports Ground' %></span
+          >
           <span class="mx-1">|</span>
-          <i class="fa-solid fa-clock mr-1"></i> <%= event.time || '6PM Onwards'
-          %>
-          <span class="mx-1">|</span>
-          <i class="fa-solid fa-location-dot mr-1"></i> <%= event.venue ||
-          'Sports Ground' %>
+          <i class="fa-regular fa-calendar mr-1"></i>
+          <span id="upcoming-slider-date">
+            <%= new
+            Date(upcomingEvents[0].startDate).toLocaleDateString('en-IN', { day:
+            'numeric', month: 'short', year: 'numeric' }) %>
+          </span>
+          <i class="fa-regular fa-clock ml-3 mr-1"></i>
+          <span id="upcoming-slider-time">
+            <%= new
+            Date(upcomingEvents[0].startDate).toLocaleTimeString('en-IN', {
+            hour: '2-digit', minute: '2-digit' }) %>
+          </span>
         </div>
-        <p class="text-gray-700 mb-4 whitespace-pre-line">
-          <%= event.description %>
+        <p
+          class="text-gray-500 mb-8 font-light whitespace-pre-line overflow-hidden mt-4"
+          style="
+            display: -webkit-box;
+            -webkit-line-clamp: 7;
+            -webkit-box-orient: vertical;
+            white-space: pre-line;
+          "
+          id="upcoming-slider-description"
+        >
+          <%- upcomingEvents[0].description.replace(/\n/g, '<br />') %> <% if
+          (upcomingEvents[0].description &&
+          upcomingEvents[0].description.split('\n').length > 7 ||
+          upcomingEvents[0].description.length > 500) { %> ... <% } %>
         </p>
         <a
-          href="/event/<%= event.id %>"
-          class="inline-block bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-2 rounded-lg shadow transition"
+          href="/event/<%= upcomingEvents[0].id %>"
+          id="upcoming-slider-link"
+          class="inline-block bg-primary hover:bg-primary/90 text-white font-regular px-6 py-2 rounded-lg shadow transition w-auto min-w-[120px] text-center ml-0 mb-10 mt-0"
+          style="align-self: flex-start; margin-top: 0"
           >Register</a
         >
       </div>
-      <!-- Event Image with Badge -->
-      <div class="relative w-full md:w-2/3 order-1 md:order-2">
+      <!-- Event Image with Badge (right) -->
+      <div
+        class="relative w-full md:w-[55%] flex-shrink-0 order-1 md:order-2"
+        style="max-width: 700px"
+      >
         <img
-          src="<%= event.image %>"
+          id="upcoming-slider-image"
+          src="<%= upcomingEvents[0].image %>"
           alt="Event Image"
-          class="rounded-2xl shadow-xl w-full h-[350px] object-cover border border-gray-200"
+          class="rounded-2xl w-full h-[450px] object-cover border border-gray-200 shadow-none"
         />
         <span
-          class="absolute top-4 left-4 bg-primary/10 text-primary text-xs px-4 py-1 rounded-full font-semibold shadow"
-          ><i class="fa-solid fa-clock mr-1"></i> <%= Math.ceil((new
-          Date(event.startDate) - Date.now()) / (1000 * 60 * 60 * 24)) %> Days
-          to go</span
+          class="absolute top-4 left-4 bg-white text-primary text-sm font-normal px-4 py-2 rounded-xl shadow border border-primary"
+          style="
+            border-width: 1px;
+            border-radius: 20px;
+            border-color: var(--color-primary);
+          "
+          id="upcoming-slider-badge"
         >
+          <i class="fa-solid fa-clock mr-1 text-primary"></i>
+          <span id="upcoming-slider-days">
+            <%= Math.ceil((new Date(upcomingEvents[0].startDate) - Date.now()) /
+            (1000 * 60 * 60 * 24)) %> Days to go</span
+          >
+        </span>
+        <!-- Slider Dots -->
+        <div
+          class="flex justify-center items-center gap-2 mt-4 w-full absolute left-0 right-0 bottom-[-32px] overflow-x-auto scrollbar-hide px-2"
+          id="upcoming-slider-dots"
+          style="max-width: 100vw; white-space: nowrap"
+        >
+          <% upcomingEvents.forEach((event, idx) => { %>
+          <button
+            type="button"
+            class="slider-dot transition-all duration-300<%= idx === 0 ? ' active' : '' %>"
+            data-slider-idx="<%= idx %>"
+            style="display: inline-block"
+          ></button>
+          <% }) %>
+        </div>
       </div>
-      <!-- Decorative SVGs (optional, add your SVGs here) -->
-      <!-- <img src="/images/dots.svg" class="absolute top-0 right-0 w-1/3 opacity-20 -z-10" /> -->
     </div>
-    <% }) %> <% } %>
+    <script type="application/json" id="upcomingEventsData">
+      <%- JSON.stringify(upcomingEvents) %>
+    </script>
+    <% } %>
+    <link rel="stylesheet" href="/css/slider.css" />
+    <script src="/javascript/slider.js"></script>
   </section>
 
   <!-- Footer (optional, for full match add your footer here) -->

@@ -328,6 +328,9 @@ export const editEvent = async (req, res) => {
       collaborators,
     } = req.body;
 
+    let normalizedDescription = description
+      ? description.replace(/\r\n|\r/g, "\n")
+      : "";
     // Only allow the creator or admin to edit
     const event = await Event.findById(id);
     if (!event) {
@@ -361,7 +364,7 @@ export const editEvent = async (req, res) => {
       id,
       {
         title,
-        description,
+        description: normalizedDescription,
         type,
         startDate,
         endDate,

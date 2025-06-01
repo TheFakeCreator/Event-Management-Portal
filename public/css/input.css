@@ -3,8 +3,38 @@
 
 :root {
   --color-primary: #3762ec;
+  --color-primary-light: #5c85f2;
+  --color-primary-dark: #101947;
 }
 
 body {
   font-family: "Poppins", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
+}
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+.border-primary {
+  border-color: var(--color-primary) !important;
+}
+.text-primary-light {
+  color: var(--color-primary-light) !important;
+}
+.bg-primary-light {
+  background-color: var(--color-primary-light) !important;
+}
+.border-primary-light {
+  border-color: var(--color-primary-light) !important;
+}
+.text-primary-dark {
+  color: var(--color-primary-dark) !important;
+}
+.bg-primary-dark {
+  background-color: var(--color-primary-dark) !important;
+}
+.border-primary-dark {
+  border-color: var(--color-primary-dark) !important;
 }

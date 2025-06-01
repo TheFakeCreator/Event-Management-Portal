@@ -27,7 +27,9 @@
         </span>
         <% } %>
       </div>
-      <p class="text-gray-700 text-lg mb-6"><%= event.description %></p>
+      <p class="text-gray-700 text-lg mb-6" style="white-space: pre-line">
+        <%- event.description.replace(/\n/g, '<br />') %>
+      </p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
         <p>
