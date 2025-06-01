@@ -309,55 +309,109 @@
 
     <!-- Dynamic Content -->
     <div class="container mx-auto mt-20 px-6 flex-grow"><%- body %></div>
-
     <!-- Footer -->
-    <footer class="bg-white shadow-md mt-10">
-      <div
-        class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center"
-      >
-        <!-- Logo & Name -->
-        <a href="/" class="text-xl font-bold text-blue-600 flex items-center">
-          <i class="fas fa-calendar-alt mr-2"></i> EventX
-        </a>
+    <footer class="bg-gray-50 mt-10 drop-shadow-2xl">
+      <div class="container mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- About Section -->
+          <div class="space-y-4">
+            <h3 class="text-2xl font-bold text-blue-600">EventX</h3>
+            <div class="flex items-center space-x-2 mb-4"></div>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="/about"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/privacy"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/contact"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  Contact Us
+                </a>
+              </li>
+            </ul>
+          </div>
 
-        <!-- Footer Links -->
-        <div class="mt-4 md:mt-0 flex space-x-6">
-          <a href="/about" class="text-gray-600 hover:text-blue-500 transition"
-            >About</a
-          >
-          <a
-            href="/contact"
-            class="text-gray-600 hover:text-blue-500 transition"
-            >Contact</a
-          >
-          <a
-            href="/privacy"
-            class="text-gray-600 hover:text-blue-500 transition"
-            >Privacy Policy</a
-          >
-        </div>
+          <!-- Contributors Section -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-black mb-4">Contributors</h3>
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="https://github.com/TheFakeCreator"
+                  target="_blank"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  <i class="fab fa-github mr-2 text-sm"></i>
+                  @TheFakeCreator
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/shijha19"
+                  target="_blank"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  <i class="fab fa-github mr-2 text-sm"></i>
+                  @shijha19
+                </a>
+              </li>
+            </ul>
+          </div>
 
-        <!-- Social Media Links -->
-        <div class="mt-4 md:mt-0 flex space-x-4">
-          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
-            ><i class="fab fa-facebook-f"></i
-          ></a>
-          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
-            ><i class="fab fa-twitter"></i
-          ></a>
-          <a href="#" class="text-gray-600 hover:text-blue-500 transition"
-            ><i class="fab fa-instagram"></i
-          ></a>
+          <!-- GitHub & Sponsor Section -->
+          <div class="space-y-4">
+            <ul class="space-y-3">
+              <li>
+                <a
+                  href="https://github.com/TheFakeCreator/Event-Management-Portal"
+                  target="_blank"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  <i class="fab fa-github mr-2 text-lg"></i>
+                  GitHub Repository
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#sponsor"
+                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                >
+                  <i class="fas fa-heart mr-2 text-sm"></i>
+                  Sponsor Us
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <!-- Copyright -->
-      <div class="bg-gray-100 text-center py-3 text-gray-500 text-sm">
-        &copy;
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        EventX. All rights reserved.
+      <!-- Copyright Bar -->
+      <div
+        class="bg-blue-600 text-white text-center font-light py-2 relative z-10"
+      >
+        <div class="container mx-auto px-3">
+          <p class="text-sm">
+            © Copyright
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            | EventX | All rights reserved
+          </p>
+        </div>
       </div>
     </footer>
 

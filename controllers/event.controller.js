@@ -55,6 +55,8 @@ export const getEvents = async (req, res) => {
       events: eventsWithUsers,
       user,
       isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
     });
   } catch (error) {
     res.status(500).send("Error fetching events");
@@ -195,7 +197,6 @@ export const createEvent = async (req, res) => {
           .json({ message: "Invalid collaborators format." });
       }
     }
-    console.log(req.body);
     const event = await Event.create({
       title,
       description,
