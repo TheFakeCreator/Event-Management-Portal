@@ -11,6 +11,7 @@ import {
   getClubTab,
   getEditClub,
   postEditClub,
+  editAboutClub,
 } from "../controllers/club.controller.js";
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 import upload from "../middlewares/upload.js";
@@ -63,6 +64,7 @@ router.get("/:id/:subPage", isAuthenticatedLineant, getClubTab);
 // POST Routes
 router.post("/add", isAuthenticated, isAdmin, createClub);
 router.post("/:id/edit", isAuthenticated, isClubModerator, postEditClub);
+router.post("/:id/edit-about", isAuthenticated, isClubModerator, editAboutClub);
 
 // POST: Upload image to club gallery
 router.post(
@@ -261,13 +263,11 @@ router.get(
     // Check permissions
     const club = await Club.findById(clubId);
     if (!club)
-      return res
-        .status(404)
-        .render("404", {
-          title: "404",
-          user,
-          isAuthenticated: req.isAuthenticated,
-        });
+      return res.status(404).render("404", {
+        title: "404",
+        user,
+        isAuthenticated: req.isAuthenticated,
+      });
     const isMod =
       user &&
       (user.role === "admin" ||
@@ -276,13 +276,11 @@ router.get(
             .map((m) => m.toString())
             .includes(user._id.toString())));
     if (!isMod)
-      return res
-        .status(403)
-        .render("unauthorized", {
-          title: "Unauthorized",
-          user,
-          isAuthenticated: req.isAuthenticated,
-        });
+      return res.status(403).render("unauthorized", {
+        title: "Unauthorized",
+        user,
+        isAuthenticated: req.isAuthenticated,
+      });
 
     // Get all recruitments for this club
     const recruitments = await Recruitment.find({ club: clubId });

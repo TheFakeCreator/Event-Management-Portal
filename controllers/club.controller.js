@@ -84,7 +84,14 @@ export const getClubTab = async (req, res, next) => {
 
     // Determine if user is moderator for this club
     let isClubMod = false;
-    if (user && (user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
+    if (
+      user &&
+      (user.role === "admin" ||
+        (club.moderators &&
+          club.moderators
+            .map((m) => m.toString())
+            .includes(user._id.toString())))
+    ) {
       isClubMod = true;
     }
 
@@ -138,8 +145,22 @@ export const getEditClub = async (req, res, next) => {
       return res.redirect("/club");
     }
     // Only allow admin or moderator
-    if (!(user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
-      return res.status(403).render('unauthorized', { title: 'Unauthorized', user, isAuthenticated: req.isAuthenticated });
+    if (
+      !(
+        user.role === "admin" ||
+        (club.moderators &&
+          club.moderators
+            .map((m) => m.toString())
+            .includes(user._id.toString()))
+      )
+    ) {
+      return res
+        .status(403)
+        .render("unauthorized", {
+          title: "Unauthorized",
+          user,
+          isAuthenticated: req.isAuthenticated,
+        });
     }
     res.render("editClub", {
       title: "Edit Club",
@@ -163,8 +184,22 @@ export const postEditClub = async (req, res, next) => {
       return res.redirect("/club");
     }
     // Only allow admin or moderator
-    if (!(user.role === 'admin' || (club.moderators && club.moderators.map(m=>m.toString()).includes(user._id.toString())))) {
-      return res.status(403).render('unauthorized', { title: 'Unauthorized', user, isAuthenticated: req.isAuthenticated });
+    if (
+      !(
+        user.role === "admin" ||
+        (club.moderators &&
+          club.moderators
+            .map((m) => m.toString())
+            .includes(user._id.toString()))
+      )
+    ) {
+      return res
+        .status(403)
+        .render("unauthorized", {
+          title: "Unauthorized",
+          user,
+          isAuthenticated: req.isAuthenticated,
+        });
     }
     // Update fields
     club.name = req.body.name;
@@ -177,5 +212,46 @@ export const postEditClub = async (req, res, next) => {
     res.redirect(`/club/${club._id}/about`);
   } catch (err) {
     next(err);
+  }
+};
+
+export const editAboutClub = async (req, res) => {
+  try {
+    const user = req.user;
+    const clubId = req.params.id;
+    const { about } = req.body;
+
+    const club = await Club.findById(clubId);
+    if (!club) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Club not found" });
+    }
+
+    // Check permission - only admin or club moderator can edit
+    const isClubMod =
+      user.role === "admin" ||
+      (club.moderators &&
+        club.moderators.map((m) => m.toString()).includes(user._id.toString()));
+
+    if (!isClubMod) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Update the about field
+    club.about = about;
+    await club.save();
+
+    // Return the updated content rendered as HTML for immediate preview
+    const htmlContent = marked.parse(about || "");
+
+    res.json({
+      success: true,
+      message: "About section updated successfully",
+      htmlContent,
+    });
+  } catch (error) {
+    console.error("Error updating club about:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

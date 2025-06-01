@@ -4,18 +4,292 @@ currentTab: "about" }) %>
 <div class="container mx-auto">
   <div id="tabContent">
     <div class="tab-pane" id="about">
-      <div
-        class="text-gray-700 text-base leading-relaxed prose prose-blue max-w-none"
-      >
-        <%- aboutHtml %>
+      <!-- Edit/View Toggle Buttons (only visible to moderators/admins) -->
+      <% if (isClubMod) { %>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex gap-2">
+          <button
+            id="viewModeBtn"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors active-tab"
+          >
+            <i class="fas fa-eye mr-2"></i>Preview
+          </button>
+          <button
+            id="editModeBtn"
+            class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            <i class="fas fa-edit mr-2"></i>Edit
+          </button>
+        </div>
+        <div id="editActions" class="flex gap-2" style="display: none">
+          <button
+            id="saveBtn"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            disabled
+          >
+            <i class="fas fa-save mr-2"></i>Save
+          </button>
+          <button
+            id="cancelBtn"
+            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            <i class="fas fa-times mr-2"></i>Cancel
+          </button>
+        </div>
       </div>
+      <% } %>
+
+      <!-- View Mode (Default) -->
+      <div id="viewMode" class="view-mode">
+        <div
+          class="text-gray-700 text-base leading-relaxed prose prose-blue max-w-none"
+        >
+          <%- aboutHtml %>
+        </div>
+      </div>
+
+      <!-- Edit Mode (Hidden by default) -->
+      <% if (isClubMod) { %>
+      <div id="editMode" class="edit-mode" style="display: none">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Editor Panel -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-800">
+                <i class="fas fa-edit mr-2"></i>Edit Content
+              </h3>
+              <div class="text-sm text-gray-500">
+                <i class="fab fa-markdown mr-1"></i>Markdown supported
+              </div>
+            </div>
+            <textarea
+              id="markdownEditor"
+              class="w-full h-96 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+              placeholder="Write your club's about section using Markdown..."
+            >
+<%= club.about || club.description || '' %></textarea
+            >
+
+            <!-- Markdown Help -->
+            <div class="text-xs text-gray-500 space-y-1">
+              <div><strong>Quick Reference:</strong></div>
+              <div>
+                <code># Heading 1</code> • <code>## Heading 2</code> •
+                <code>**bold**</code> • <code>*italic*</code>
+              </div>
+              <div>
+                <code>- List item</code> • <code>[Link](url)</code> •
+                <code>`code`</code> • <code>> Quote</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Panel -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-800">
+              <i class="fas fa-eye mr-2"></i>Live Preview
+            </h3>
+            <div
+              id="markdownPreview"
+              class="h-96 p-4 border border-gray-200 rounded-lg overflow-y-auto bg-gray-50 text-gray-700 text-base leading-relaxed prose prose-blue max-w-none"
+            >
+              <!-- Live preview will be rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
     </div>
   </div>
-
   <a href="/club" class="inline-block mt-4 text-blue-600 hover:underline"
     >&larr; Back to Clubs</a
   >
 </div>
+
+<% if (isClubMod) { %>
+<!-- Markdown Parser -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const viewModeBtn = document.getElementById("viewModeBtn");
+    const editModeBtn = document.getElementById("editModeBtn");
+    const viewMode = document.getElementById("viewMode");
+    const editMode = document.getElementById("editMode");
+    const editActions = document.getElementById("editActions");
+    const markdownEditor = document.getElementById("markdownEditor");
+    const markdownPreview = document.getElementById("markdownPreview");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    let originalContent = markdownEditor.value;
+    let hasChanges = false;
+
+    // Initialize preview
+    updatePreview();
+
+    // Tab switching
+    viewModeBtn.addEventListener("click", function () {
+      if (
+        hasChanges &&
+        !confirm(
+          "You have unsaved changes. Are you sure you want to switch to preview mode?"
+        )
+      ) {
+        return;
+      }
+      switchToViewMode();
+    });
+
+    editModeBtn.addEventListener("click", function () {
+      switchToEditMode();
+    });
+
+    // Editor change detection
+    markdownEditor.addEventListener("input", function () {
+      hasChanges = markdownEditor.value !== originalContent;
+      saveBtn.disabled = !hasChanges;
+      updatePreview();
+    });
+
+    // Save functionality
+    saveBtn.addEventListener("click", function () {
+      if (!hasChanges) return;
+
+      const newContent = markdownEditor.value;
+      saveBtn.disabled = true;
+      saveBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+
+      fetch(`/club/<%= club._id %>/edit-about`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ about: newContent }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            originalContent = newContent;
+            hasChanges = false;
+            // Update the view mode content
+            document.querySelector("#viewMode .prose").innerHTML =
+              data.htmlContent;
+            // Show success message
+            showMessage("Changes saved successfully!", "success");
+            switchToViewMode();
+          } else {
+            throw new Error(data.message || "Failed to save changes");
+          }
+        })
+        .catch((error) => {
+          console.error("Error saving content:", error);
+          showMessage("Failed to save changes. Please try again.", "error");
+        })
+        .finally(() => {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Save';
+        });
+    });
+
+    // Cancel functionality
+    cancelBtn.addEventListener("click", function () {
+      if (
+        hasChanges &&
+        !confirm("You have unsaved changes. Are you sure you want to cancel?")
+      ) {
+        return;
+      }
+      markdownEditor.value = originalContent;
+      hasChanges = false;
+      saveBtn.disabled = true;
+      updatePreview();
+      switchToViewMode();
+    });
+
+    function switchToViewMode() {
+      viewMode.style.display = "block";
+      editMode.style.display = "none";
+      editActions.style.display = "none";
+      viewModeBtn.classList.add("active-tab", "bg-gray-200", "text-gray-700");
+      viewModeBtn.classList.remove("bg-gray-100", "text-gray-600");
+      editModeBtn.classList.remove(
+        "active-tab",
+        "bg-gray-200",
+        "text-gray-700"
+      );
+      editModeBtn.classList.add("bg-gray-100", "text-gray-600");
+    }
+
+    function switchToEditMode() {
+      viewMode.style.display = "none";
+      editMode.style.display = "block";
+      editActions.style.display = "flex";
+      editModeBtn.classList.add("active-tab", "bg-gray-200", "text-gray-700");
+      editModeBtn.classList.remove("bg-gray-100", "text-gray-600");
+      viewModeBtn.classList.remove(
+        "active-tab",
+        "bg-gray-200",
+        "text-gray-700"
+      );
+      viewModeBtn.classList.add("bg-gray-100", "text-gray-600");
+      markdownEditor.focus();
+    }
+
+    function updatePreview() {
+      const content =
+        markdownEditor.value ||
+        "*No content yet. Start typing to see a preview...*";
+      try {
+        markdownPreview.innerHTML = marked.parse(content);
+      } catch (error) {
+        markdownPreview.innerHTML =
+          '<p class="text-red-500">Error parsing markdown</p>';
+      }
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `fixed top-20 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+      }`;
+      messageDiv.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas ${
+          type === "success" ? "fa-check" : "fa-exclamation-triangle"
+        } mr-2"></i>
+        ${message}
+      </div>
+    `;
+      document.body.appendChild(messageDiv);
+
+      setTimeout(() => {
+        messageDiv.style.opacity = "0";
+        messageDiv.style.transition = "opacity 0.3s";
+        setTimeout(() => {
+          document.body.removeChild(messageDiv);
+        }, 300);
+      }, 3000);
+    }
+
+    // Keyboard shortcuts
+    markdownEditor.addEventListener("keydown", function (e) {
+      // Ctrl+S / Cmd+S to save
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        if (hasChanges && !saveBtn.disabled) {
+          saveBtn.click();
+        }
+      }
+      // Escape to cancel
+      if (e.key === "Escape") {
+        cancelBtn.click();
+      }
+    });
+  });
+</script>
+<% } %>
 
 <style>
   /* Headings */
