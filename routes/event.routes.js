@@ -4,6 +4,7 @@ import {
   isAuthenticated,
   isAuthenticatedLineant,
 } from "../middlewares/authMiddleware.js";
+import { isModeratorOrAdmin } from "../middlewares/moderatorMiddleware.js";
 import {
   getCreateEvent,
   createEvent,
@@ -20,15 +21,15 @@ const router = express.Router();
 
 // GET Routes
 router.get("/", isAuthenticatedLineant, getEvents);
-router.get("/create", isAuthenticated, getCreateEvent);
+router.get("/create", isAuthenticated, isModeratorOrAdmin, getCreateEvent);
 router.get("/:id", isAuthenticated, getEventDetails);
 router.get("/:id/register", isAuthenticated, getEventRegister);
 router.get("/:id/edit", isAuthenticated, getEditEvent);
 
 // POST Routes
-router.post("/create", isAuthenticated, createEvent);
+router.post("/create", isAuthenticated, isModeratorOrAdmin, createEvent);
 router.post("/:id/register", isAuthenticated, registerEvent);
-router.post("/:id/delete", isAuthenticated, deleteEvent);
-router.post("/:id/edit", isAuthenticated, editEvent);
+router.post("/:id/delete", isAuthenticated, isModeratorOrAdmin, deleteEvent);
+router.post("/:id/edit", isAuthenticated, isModeratorOrAdmin, editEvent);
 
 export default router;

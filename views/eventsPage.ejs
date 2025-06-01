@@ -1,15 +1,41 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto py-8">
   <div class="flex justify-between items-center mb-8">
-    <h1 class="text-4xl font-extrabold text-blue-600">Events</h1>
+    <h1 class="text-4xl font-extrabold text-primary">Events</h1>
+    <div class="flex items-center gap-0">
+      <div class="relative flex flex-row items-center w-2/3">
+        <input
+          type="text"
+          placeholder="Search events..."
+          class="w-full py-3 px-5 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+        />
+        <button
+          class="bg-primary text-white translate-x-[-55%] rounded-full p-3 shadow-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center"
+          style="height: 40px; width: 40px;"
+        >
+          <i class="fas fa-search text-regular"></i>
+        </button>
+      </div>
+      <div class="w-1/4">
+        <select
+          id="clubFilter"
+          class="w-full py-2 px-4 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+        >
+          <option value="">All Clubs</option>
+          <% const eventClubs = new Set(events.map(event => event.club?.name).filter(Boolean)); %>
+          <% eventClubs.forEach(clubName => { %>
+            <option value="<%= clubName %>"><%= clubName %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
     <a
-  href="/event/create"
-  class="bg-green-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center gap-2"
->
-  <i class="fas fa-plus-circle"></i> Create Event
-</a>
-
+      href="/event/create"
+      class="bg-green-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center gap-2"
+    >
+      <i class="fas fa-plus-circle"></i> Create Event
+    </a>
   </div>
 
   <!-- Event Grid -->
@@ -31,31 +57,64 @@
       <!-- Event Details -->
       <div class="p-5 flex flex-col justify-between flex-grow">
         <div>
-          <h2 class="text-2xl font-semibold text-gray-900 mb-2">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-1">
             <%= event.title %>
           </h2>
-          <p class="text-gray-600 text-sm mt-1 line-clamp-2">
-            <%= event.description %>
-          </p>
-
-          <div class="flex flex-col justify-between mt-3 text-sm text-gray-500">
-            <p>
-              <i class="far fa-calendar-alt"></i>
-              <%= new Date(event.startDate).toLocaleDateString('en-US', {
-              weekday: 'short', day: 'numeric', month: 'long' }) %>
-            </p>
-            <p>
-              <i class="fas fa-map-marker-alt"></i>
-              <%= event.location %>
-            </p>
+          <% if (event.club && event.club.name) { %>
+          <div class="text-sm font-regular text-gray-500 mb-2 flex items-center gap-1">
+            <a href="/club/<%= event.club.id %>/about" class=" hover:underline">
+              <%= event.club.name %>
+            </a>
+            <svg class="inline-block ml-1" width="14" height="14" viewBox="0 0 24 24" fill="var(--color-primary)" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="12" fill="var(--color-primary)" />
+              <path d="M17 9l-5.2 5.2-2.8-2.8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
           </div>
+          <% } %>
+          <div class="w-20 h-[2px] bg-gray-200 my-2 mx-0"></div>
+          <div class="flex items-center flex-wrap gap-x-1 gap-y-1 mt-3 text-[11px] text-black font-medium">
+            <span class="flex items-center gap-1">
+              <i class="far fa-calendar-alt text-[13px]"></i>
+              <%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+              <% if (event.endDate && new Date(event.endDate).toDateString() !== new Date(event.startDate).toDateString()) { %>
+                - <%= new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+              <% } %>
+            </span>
+            <span class="mx-1">|</span>
+            <span class="flex items-center gap-1">
+              <i class="far fa-clock text-[13px]"></i>
+              <%= event.startTime ? (new Date('1970-01-01T' + event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })) : 'Time TBA' %> Onwards
+            </span>
+            <span class="mx-1">|</span>
+            <span class="flex items-center gap-1">
+              <i class="fas fa-map-marker-alt text-[13px]"></i>
+              <%= event.location %>
+            </span>
+          </div>
+          <% if (event.registeredUsers && event.registeredUsers.length > 0) { %>
+          <div class="flex items-center mt-3">
+            <% event.registeredUsers.forEach(function(user, idx) { %>
+              <img src="<%= user.avatar || '/images/default-avatar.png' %>" alt="<%= user.name %>" class="w-8 h-8 rounded-full border-2 border-white -ml-2 first:ml-0 shadow" />
+            <% }) %>
+            <% if (event.registeredUsersCount > 5) { %>
+              <span class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-700 -ml-2 border-2 border-white shadow">
+                +<%= event.registeredUsersCount - 5 %>
+              </span>
+            <% } %>
+            <span class="ml-3 text-xs text-gray-400">Already Registered</span>
+          </div>
+          <% } else { %>
+          <div class="flex items-center mt-3">
+            <span class="text-xs text-gray-400 italic">Be the first to register!</span>
+          </div>
+          <% } %>
         </div>
 
         <!-- View More Button (Disabled for expired events) -->
         <a
           href="/event/<%= event.id %>"
           class="mt-4 w-full text-center py-2 rounded-lg transition-all
-          <%= isExpired ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600' %>"
+          <%= isExpired ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary-dark' %>"
           <%= isExpired ? 'onclick="return false;"' : '' %>
         >
           View Details
@@ -65,3 +124,33 @@
     <% }) %>
   </div>
 </div>
+
+<script>
+      document.querySelector('input').addEventListener('input', function () {
+        filterEvents();
+      });
+
+      document.querySelector('#clubFilter').addEventListener('change', function () {
+        filterEvents();
+      });
+
+      function filterEvents() {
+        const searchQuery = document.querySelector('input').value.toLowerCase();
+        const selectedClub = document.querySelector('#clubFilter').value.toLowerCase();
+        const eventCards = document.querySelectorAll('.grid > div');
+
+        eventCards.forEach(card => {
+          const title = card.querySelector('h2').textContent.toLowerCase();
+          const clubName = card.querySelector('a')?.textContent.toLowerCase() || '';
+
+          if (
+            (!searchQuery || title.includes(searchQuery)) &&
+            (!selectedClub || clubName.includes(selectedClub))
+          ) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+    </script>

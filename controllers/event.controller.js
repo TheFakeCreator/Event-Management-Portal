@@ -4,18 +4,56 @@ import Club from "../models/club.model.js";
 import EventRegistration from "../models/eventRegistration.model.js";
 import Log from "../models/log.model.js";
 import sendEmail from "../utils/sendEmail.js";
+import User from "../models/user.model.js";
 
 export const getEvents = async (req, res) => {
   try {
     const user = req.user;
-    const clubs = await Club.find({});
 
-    const events = await Event.find({});
+    // Only populate the club name field
+    const events = await Event.find({}).populate({
+      path: "club",
+      select: "name",
+    });
+
+    // Fetch registered users for each event (limit 5 for avatars, count total)
+    const eventIds = events.map((e) => e._id);
+    const registrations = await EventRegistration.find({
+      event: { $in: eventIds },
+    }).populate("user", "name avatar");
+
+    // Map eventId to users
+    const regMap = {};
+    registrations.forEach((reg) => {
+      if (!regMap[reg.event]) regMap[reg.event] = [];
+      if (reg.user)
+        regMap[reg.event].push({
+          name: reg.user.name,
+          avatar: reg.user.avatar,
+        });
+    });
+
+    // Attach to events (send only required fields for the event card)
+    const eventsWithUsers = events.map((e) => {
+      const users = regMap[e._id] || [];
+      return {
+        id: e._id,
+        title: e.title,
+        image: e.image,
+        startDate: e.startDate,
+        endDate: e.endDate,
+        startTime: e.startTime,
+        location: e.location,
+        club: e.club ? { id: e.club._id, name: e.club.name } : undefined,
+        registeredUsers: users.slice(0, 5),
+        registeredUsersCount: users.length,
+      };
+    });
+
     res.render("eventsPage", {
       title: "Event Management Portal",
-      events,
+      events: eventsWithUsers,
       user,
-      clubs,
       isAuthenticated: req.isAuthenticated,
     });
   } catch (error) {

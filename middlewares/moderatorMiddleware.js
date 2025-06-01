@@ -41,9 +41,7 @@ export const isClubModerator = async (req, res, next) => {
     // Check if user has moderatorClubs (already stored in User document)
     if (
       user.moderatorClubs &&
-      user.moderatorClubs.some(
-        (id) => id.toString() === clubId.toString()
-      )
+      user.moderatorClubs.some((id) => id.toString() === clubId.toString())
     ) {
       req.isClubMod = true;
       return next();
@@ -54,9 +52,7 @@ export const isClubModerator = async (req, res, next) => {
     if (
       club &&
       club.moderators &&
-      club.moderators.some(
-        (modId) => modId.toString() === user._id.toString()
-      )
+      club.moderators.some((modId) => modId.toString() === user._id.toString())
     ) {
       req.isClubMod = true;
       return next();
@@ -79,3 +75,19 @@ export const isClubModerator = async (req, res, next) => {
     });
   }
 };
+
+// Simple middleware to allow only admins and moderators
+export function isModeratorOrAdmin(req, res, next) {
+  if (
+    !req.user ||
+    (req.user.role !== "admin" && req.user.role !== "moderator")
+  ) {
+    return res.status(403).render("unauthorized", {
+      title: "Unauthorized",
+      message: "You do not have permission to access this page.",
+      user: req.user,
+      isAuthenticated: req.isAuthenticated,
+    });
+  }
+  next();
+}
