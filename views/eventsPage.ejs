@@ -1,7 +1,7 @@
 <% layout("layouts/main") %>
 
 <div class="w-full px-0 sm:px-4 py-6 sm:py-8 mx-auto">  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 lg:gap-6 mb-8">
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-primary dark:text-primary-400 transition-colors duration-300">Events</h1>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-primary dark:text-primary-500 transition-colors duration-300">Events</h1>
     
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
       <!-- Search Input Container -->
@@ -39,7 +39,7 @@
     </div>    <!-- Create Event Button -->
     <a
       href="/event/create"
-      class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto justify-center min-w-[140px]"
+      class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto justify-center min-w-[140px]"
     >
       <i class="fas fa-plus-circle"></i> 
       <span class="create-event-text">Create Event</span>
@@ -63,7 +63,7 @@
     sortedEvents.forEach(event => { 
       const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
     %>    <div
-      class="bg-white dark:bg-dark-surface shadow-md shadow-gray-100/60 dark:shadow-dark-border/30 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-gray-200/70 dark:hover:shadow-dark-border/40 transition-all duration-300 flex flex-col border border-gray-100 dark:border-dark-border
+      class="bg-white dark:bg-dark-surface shadow-md shadow-gray-100/60 dark:shadow-gray-400/5 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-gray-200/70 dark:hover:shadow-gray-400/10 transition-all duration-300 flex flex-col border border-gray-100 dark:border-gray-900
       <%= isExpired ? 'grayscale opacity-50' : '' %>"
     >
       <!-- Event Image -->
@@ -156,7 +156,68 @@
   border-radius: 9999px;
   padding: 0.625rem 3rem 0.625rem 1.25rem;
   font-size: 0.875rem;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Enhanced dropdown when opened */
+#clubFilter:focus {
+  border-radius: 1rem 1rem 0.375rem 0.375rem !important;
+  border-bottom-color: transparent !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  z-index: 100;
+  position: relative;
+}
+
+/* Style the dropdown options */
+#clubFilter option {
+  background-color: white;
+  color: #1f2937;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  transition: all 0.15s ease-in-out;
+  line-height: 1.5;
+  border-radius: 0;
+}
+
+/* First option styling */
+#clubFilter option:first-child {
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0.375rem 0.375rem 0 0;
+  margin-top: -1px;
+}
+
+/* Last option styling */
+#clubFilter option:last-child {
+  border-radius: 0 0 0.375rem 0.375rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Option hover and selected states */
+#clubFilter option:hover {
+  background-color: #f8fafc;
+  color: #3762EC;
+  transform: translateX(2px);
+}
+
+#clubFilter option:checked,
+#clubFilter option:selected {
+  background-color: #3762EC !important;
+  color: white !important;
+  font-weight: 600;
+  position: relative;
+}
+
+/* Add subtle animation to options */
+#clubFilter option {
+  background: linear-gradient(90deg, transparent 0%, rgba(55, 98, 236, 0.02) 50%, transparent 100%);
+}
+
+#clubFilter option:hover {
+  background: linear-gradient(90deg, rgba(55, 98, 236, 0.05) 0%, rgba(55, 98, 236, 0.1) 50%, rgba(55, 98, 236, 0.05) 100%);
 }
 
 /* Hide default dropdown arrow in WebKit browsers */
@@ -171,27 +232,111 @@
   border: 0;
 }
 
-/* Dark mode styling */
+/* Dark mode styling for select */
 .dark #clubFilter {
   background-color: #334155 !important;
   border-color: #475569 !important;
   color: #f8fafc !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode focus state */
+.dark #clubFilter:focus {
+  border-radius: 1rem 1rem 0.375rem 0.375rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dark mode styling for options */
+.dark #clubFilter option {
+  background-color: #334155;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+/* Dark mode first option */
+.dark #clubFilter option:first-child {
+  border-top: 1px solid #475569;
+}
+
+/* Dark mode last option */
+.dark #clubFilter option:last-child {
+  border-bottom: 1px solid #475569;
+}
+
+.dark #clubFilter option:hover {
+  background-color: #475569;
+  color: #5c85f2;
+  background: linear-gradient(90deg, rgba(92, 133, 242, 0.05) 0%, rgba(92, 133, 242, 0.15) 50%, rgba(92, 133, 242, 0.05) 100%);
+}
+
+.dark #clubFilter option:checked,
+.dark #clubFilter option:selected {
+  background-color: #5c85f2 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Dark mode option gradient */
+.dark #clubFilter option {
+  background: linear-gradient(90deg, transparent 0%, rgba(92, 133, 242, 0.03) 50%, transparent 100%);
 }
 
 /* Focus states */
 #clubFilter:focus {
   outline: none !important;
   border-color: #3762EC !important;
-  box-shadow: 0 0 0 2px rgba(55, 98, 236, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(55, 98, 236, 0.15) !important;
 }
 
 /* Hover states */
 #clubFilter:hover {
-  border-color: rgba(55, 98, 236, 0.5) !important;
+  border-color: rgba(55, 98, 236, 0.6) !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 .dark #clubFilter:hover {
-  border-color: rgba(87, 133, 242, 0.5) !important;
+  border-color: rgba(92, 133, 242, 0.6) !important;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode focus */
+.dark #clubFilter:focus {
+  border-color: #5c85f2 !important;
+  box-shadow: 0 0 0 3px rgba(92, 133, 242, 0.2) !important;
+}
+
+/* Enhanced dropdown container styling */
+#clubFilter:focus option {
+  border-radius: 0;
+  margin: 0;
+}
+
+/* Seamless dropdown transition */
+#clubFilter {
+  transform-origin: top;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.15s ease-out;
+}
+
+/* Webkit specific option styling for better seamlessness */
+@supports (-webkit-appearance: none) {
+  #clubFilter option {
+    background: white;
+    color: #1f2937;
+    border: none;
+    outline: none;
+  }
+  
+  .dark #clubFilter option {
+    background: #334155;
+    color: #f8fafc;
+  }
+  
+  /* Better option container in webkit */
+  #clubFilter:focus {
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+  }
 }
 
 /* Ensure Create Event button text is visible on all screen sizes */

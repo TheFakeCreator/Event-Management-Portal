@@ -30,15 +30,14 @@ export default {
           700: "#223d99",
           800: "#192b70",
           900: "#101947",
-        },
-        // Dark theme color palette
+        }, // Dark theme color palette
         dark: {
           bg: "#04050A", // Dark background
           surface: "#04050A", // Card/surface backgrounds
           card: "#13172b", // Elevated surfaces
-          border: "#475569", // Borders and dividers
+          border: "#0d0d0f", // Borders and dividers (fixed missing #)
           text: {
-            primary: "#f8fafc", // Primary text
+            primary: "#ffffff", // Primary text - white for dark mode
             secondary: "#cbd5e1", // Secondary text
             muted: "#94a3b8", // Muted text
           },

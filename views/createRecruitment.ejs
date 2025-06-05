@@ -215,35 +215,41 @@
         .forEach((sec) => sec.classList.add("hidden"));
       const section = this.getAttribute("data-section");
       document.getElementById("section-" + section).classList.remove("hidden");
-      document
-        .querySelectorAll(".nav-link")
-        .forEach((l) =>
-          l.classList.remove(
-            "bg-blue-100",
-            "dark:bg-dark-card",
-            "font-bold",
-            "text-blue-700",
-            "dark:text-blue-400"
-          )
+
+      // Remove active classes from all nav links
+      document.querySelectorAll(".nav-link").forEach((l) => {
+        l.classList.remove(
+          "bg-blue-100",
+          "dark:bg-blue-900",
+          "font-bold",
+          "text-blue-700",
+          "dark:text-blue-300"
         );
+        l.classList.add("text-gray-700", "dark:text-dark-text-primary");
+      });
+
+      // Add active classes to current nav link
+      this.classList.remove("text-gray-700", "dark:text-dark-text-primary");
       this.classList.add(
         "bg-blue-100",
-        "dark:bg-dark-card",
+        "dark:bg-blue-900",
         "font-bold",
         "text-blue-700",
-        "dark:text-blue-400"
+        "dark:text-blue-300"
       );
     });
-  }); // Show About by default
-  document
-    .querySelector('.nav-link[data-section="about"]')
-    .classList.add(
-      "bg-blue-100",
-      "dark:bg-dark-card",
-      "font-bold",
-      "text-blue-700",
-      "dark:text-blue-400"
-    );
+  });
+
+  // Show About by default and set active state
+  const aboutLink = document.querySelector('.nav-link[data-section="about"]');
+  aboutLink.classList.remove("text-gray-700", "dark:text-dark-text-primary");
+  aboutLink.classList.add(
+    "bg-blue-100",
+    "dark:bg-blue-900",
+    "font-bold",
+    "text-blue-700",
+    "dark:text-blue-300"
+  );
   // Form builder logic
   const formFields = [];
   const formFieldsDiv = document.getElementById("formFields");

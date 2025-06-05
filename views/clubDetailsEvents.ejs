@@ -3,19 +3,25 @@ currentTab: "events" }) %>
 
 <div class="container mx-auto">
   <div class="mt-8">
-    <h2 class="text-xl font-semibold mb-2 text-blue-700">Active Events</h2>
+    <h2 class="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-400">
+      Active Events
+    </h2>
     <% if (club.activeEvents && club.activeEvents.length > 0) { %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
       <% club.activeEvents.forEach(function(event) { %>
       <a
         href="/event/<%= event._id %>"
-        class="block bg-white/90 border border-blue-200 rounded-xl shadow-lg p-5 transition-transform hover:scale-105 hover:shadow-2xl"
+        class="block bg-white/90 dark:bg-dark-surface/90 border border-blue-200 dark:border-blue-600/50 rounded-xl shadow-lg p-5 transition-transform hover:scale-105 hover:shadow-2xl dark:hover:shadow-dark-border/20"
       >
-        <h3 class="text-lg font-semibold text-blue-700 mb-1">
+        <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-400 mb-1">
           <%= event.title %>
         </h3>
-        <p class="text-gray-700 mb-2 line-clamp-2"><%= event.description %></p>
-        <div class="text-sm text-gray-500">
+        <p
+          class="text-gray-700 dark:text-dark-text-secondary mb-2 line-clamp-2"
+        >
+          <%= event.description %>
+        </p>
+        <div class="text-sm text-gray-500 dark:text-dark-text-muted">
           From: <%= new Date(event.startDate).toLocaleDateString() %> To: <%=
           new Date(event.endDate).toLocaleDateString() %>
         </div>
@@ -23,42 +29,47 @@ currentTab: "events" }) %>
       <% }) %>
     </div>
     <% } else { %>
-    <div class="text-gray-500 italic">No active events at the moment.</div>
+    <div class="text-gray-500 dark:text-dark-text-secondary italic">
+      No active events at the moment.
+    </div>
     <% } %>
   </div>
-
   <div class="mt-12">
-    <h2 class="text-xl font-semibold mb-2 text-gray-500">Past Events</h2>
+    <h2 class="text-xl font-semibold mb-2 text-gray-500 dark:text-gray-400">
+      Past Events
+    </h2>
     <% if (club.pastEvents && club.pastEvents.length > 0) { %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-      <% club.pastEvents.filter(function(event) {
-        // Only show if less than 48 hours (172800000 ms) have passed since endDate
-        return (new Date() - new Date(event.endDate)) <= 172800000;
-      }).forEach(function(event) { %>
+      <% club.pastEvents.filter(function(event) { // Only show if less than 48
+      hours (172800000 ms) have passed since endDate return (new Date() - new
+      Date(event.endDate)) <= 172800000; }).forEach(function(event) { %>
       <div
-        class="bg-gray-100 border border-gray-300 rounded-xl p-5 opacity-60 cursor-not-allowed"
+        class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-5 opacity-60 cursor-not-allowed"
       >
-        <h3 class="text-lg font-semibold text-gray-400 mb-1">
+        <h3 class="text-lg font-semibold text-gray-400 dark:text-gray-500 mb-1">
           <%= event.title %>
         </h3>
-        <p class="text-gray-400 mb-2 line-clamp-2"><%= event.description %></p>
-        <div class="text-sm text-gray-400">
+        <p class="text-gray-400 dark:text-gray-500 mb-2 line-clamp-2">
+          <%= event.description %>
+        </p>
+        <div class="text-sm text-gray-400 dark:text-gray-500">
           From: <%= new Date(event.startDate).toLocaleDateString() %> To: <%=
           new Date(event.endDate).toLocaleDateString() %>
         </div>
         <span
-          class="inline-block mt-2 px-4 py-1 bg-gray-300 text-gray-500 rounded-full text-xs"
+          class="inline-block mt-2 px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full text-xs"
           >Ended</span
         >
       </div>
       <% }) %>
     </div>
     <% } else { %>
-    <div class="text-gray-400 italic">No past events.</div>
+    <div class="text-gray-400 dark:text-gray-500 italic">No past events.</div>
     <% } %>
   </div>
-
-  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+  <a
+    href="/club"
+    class="inline-block mt-8 text-blue-600 dark:text-blue-400 hover:underline"
     >&larr; Back to Clubs</a
   >
 </div>

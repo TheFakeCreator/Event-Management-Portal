@@ -3,20 +3,22 @@ currentTab: "socials" }) %>
 
 <div class="container mx-auto">
   <div class="mt-8">
-    <h2 class="text-xl font-semibold mb-5 text-blue-700">Social Links</h2>
+    <h2 class="text-xl font-semibold mb-5 text-blue-700 dark:text-blue-400">
+      Social Links
+    </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
       <% if (club.social && (club.social.email || club.social.instagram ||
       club.social.facebook || club.social.linkedin || club.social.discord)) { %>
       <% if (club.social.email) { %>
       <a
         href="mailto:<%= club.social.email %>"
-        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-5 border border-blue-200 cursor-pointer animated-shadow-blue transition-transform hover:scale-105"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/30 rounded-xl p-5 border border-blue-200 dark:border-blue-600/50 cursor-pointer animated-shadow-blue transition-transform hover:scale-105"
       >
         <i
-          class="fas fa-envelope text-blue-600 text-2xl group-hover:text-blue-800 transition"
+          class="fas fa-envelope text-blue-600 dark:text-blue-400 text-2xl group-hover:text-blue-800 dark:group-hover:text-blue-300 transition"
         ></i>
         <span
-          class="text-blue-700 font-semibold group-hover:underline break-all"
+          class="text-blue-700 dark:text-blue-300 font-semibold group-hover:underline break-all"
           >Email: <%= club.social.email %></span
         >
       </a>
@@ -25,13 +27,13 @@ currentTab: "socials" }) %>
         href="<%= club.social.instagram %>"
         target="_blank"
         rel="noopener"
-        class="group flex items-center gap-3 bg-gradient-to-r from-pink-100 to-pink-50 rounded-xl p-5 border border-pink-200 cursor-pointer animated-shadow-pink transition-transform hover:scale-105"
+        class="group flex items-center gap-3 bg-gradient-to-r from-pink-100 to-pink-50 dark:from-pink-900/40 dark:to-pink-800/30 rounded-xl p-5 border border-pink-200 dark:border-pink-600/50 cursor-pointer animated-shadow-pink transition-transform hover:scale-105"
       >
         <i
-          class="fab fa-instagram text-pink-500 text-2xl group-hover:text-pink-700 transition"
+          class="fab fa-instagram text-pink-500 dark:text-pink-400 text-2xl group-hover:text-pink-700 dark:group-hover:text-pink-300 transition"
         ></i>
         <span
-          class="text-pink-600 font-semibold group-hover:underline break-all"
+          class="text-pink-600 dark:text-pink-300 font-semibold group-hover:underline break-all"
           >Instagram</span
         >
       </a>
@@ -40,13 +42,13 @@ currentTab: "socials" }) %>
         href="<%= club.social.facebook %>"
         target="_blank"
         rel="noopener"
-        class="group flex items-center gap-3 bg-gradient-to-r from-blue-200 to-blue-50 rounded-xl p-5 border border-blue-300 cursor-pointer animated-shadow-facebook transition-transform hover:scale-105"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-200 to-blue-50 dark:from-blue-900/50 dark:to-blue-800/40 rounded-xl p-5 border border-blue-300 dark:border-blue-600/60 cursor-pointer animated-shadow-facebook transition-transform hover:scale-105"
       >
         <i
-          class="fab fa-facebook text-blue-800 text-2xl group-hover:text-blue-900 transition"
+          class="fab fa-facebook text-blue-800 dark:text-blue-400 text-2xl group-hover:text-blue-900 dark:group-hover:text-blue-300 transition"
         ></i>
         <span
-          class="text-blue-800 font-semibold group-hover:underline break-all"
+          class="text-blue-800 dark:text-blue-300 font-semibold group-hover:underline break-all"
           >Facebook</span
         >
       </a>
@@ -55,13 +57,13 @@ currentTab: "socials" }) %>
         href="<%= club.social.linkedin %>"
         target="_blank"
         rel="noopener"
-        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-5 border border-blue-400 cursor-pointer animated-shadow-linkedin transition-transform hover:scale-105"
+        class="group flex items-center gap-3 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-800/30 rounded-xl p-5 border border-blue-400 dark:border-blue-500/60 cursor-pointer animated-shadow-linkedin transition-transform hover:scale-105"
       >
         <i
-          class="fab fa-linkedin text-blue-500 text-2xl group-hover:text-blue-700 transition"
+          class="fab fa-linkedin text-blue-500 dark:text-blue-400 text-2xl group-hover:text-blue-700 dark:group-hover:text-blue-300 transition"
         ></i>
         <span
-          class="text-blue-500 font-semibold group-hover:underline break-all"
+          class="text-blue-500 dark:text-blue-300 font-semibold group-hover:underline break-all"
           >LinkedIn</span
         >
       </a>
@@ -70,25 +72,26 @@ currentTab: "socials" }) %>
         href="<%= club.social.discord %>"
         target="_blank"
         rel="noopener"
-        class="group flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-indigo-50 rounded-xl p-5 border border-indigo-300 cursor-pointer animated-shadow-discord transition-transform hover:scale-105"
+        class="group flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-indigo-50 dark:from-indigo-900/40 dark:to-indigo-800/30 rounded-xl p-5 border border-indigo-300 dark:border-indigo-600/50 cursor-pointer animated-shadow-discord transition-transform hover:scale-105"
       >
         <i
-          class="fab fa-discord text-indigo-600 text-2xl group-hover:text-indigo-800 transition"
+          class="fab fa-discord text-indigo-600 dark:text-indigo-400 text-2xl group-hover:text-indigo-800 dark:group-hover:text-indigo-300 transition"
         ></i>
         <span
-          class="text-indigo-600 font-semibold group-hover:underline break-all"
+          class="text-indigo-600 dark:text-indigo-300 font-semibold group-hover:underline break-all"
           >Discord</span
         >
       </a>
       <% } %> <% } else { %>
-      <div class="text-gray-500 italic col-span-full">
+      <div class="text-gray-500 dark:text-gray-400 italic col-span-full">
         No social links available for this club.
       </div>
       <% } %>
     </div>
   </div>
-
-  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+  <a
+    href="/club"
+    class="inline-block mt-8 text-blue-600 dark:text-blue-400 hover:underline"
     >&larr; Back to Clubs</a
   >
 </div>

@@ -5,79 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind CSS Configuration -->
-    <!-- <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                DEFAULT: "#3b82f6",
-                50: "#eff6ff",
-                100: "#dbeafe",
-                200: "#bfdbfe",
-                300: "#93c5fd",
-                400: "#60a5fa",
-                500: "#3b82f6",
-                600: "#2563eb",
-                700: "#1d4ed8",
-                800: "#1e40af",
-                900: "#1e3a8a",
-              },
-              "dark-bg": "#0f172a",
-              "dark-surface": "#1e293b",
-              "dark-card": "#334155",
-              "dark-border": "#475569",
-              "dark-text-primary": "#f1f5f9",
-              "dark-text-secondary": "#cbd5e1",
-            },
-            fontFamily: {
-              sans: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
-            },
-            animation: {
-              "fade-in": "fadeIn 0.5s ease-in-out",
-              "slide-down": "slideDown 0.3s ease-out",
-              pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-            },
-            keyframes: {
-              fadeIn: {
-                "0%": { opacity: "0", transform: "translateY(-10px)" },
-                "100%": { opacity: "1", transform: "translateY(0)" },
-              },
-              slideDown: {
-                "0%": { opacity: "0", transform: "translateY(-10px)" },
-                "100%": { opacity: "1", transform: "translateY(0)" },
-              },
-            },
-            screens: {
-              xs: "475px",
-            },
-            spacing: {
-              18: "4.5rem",
-              88: "22rem",
-            },
-            borderRadius: {
-              xl: "0.75rem",
-              "2xl": "1rem",
-              "3xl": "1.5rem",
-            },
-            boxShadow: {
-              soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
-              medium:
-                "0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 25px -5px rgba(0, 0, 0, 0.04)",
-              strong:
-                "0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-            },
-          },
-        },
-        plugins: [],
-      };
-    </script> -->
-
     <!-- Custom CSS (Built version) -->
     <link rel="stylesheet" href="/css/style.css" />
 
@@ -96,102 +23,6 @@
     />
     <!-- Theme Toggle Script (load early to prevent flash) -->
     <script src="/javascript/theme-toggle.js"></script>
-
-    <!-- Additional CSS Utilities -->
-    <!-- <style>
-      /* Scrollbar Styles */
-      .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-      }
-
-      /* Custom transitions */
-      .transition-all {
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-      }
-
-      /* Glass morphism effect */
-      .glass {
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        background-color: rgba(255, 255, 255, 0.75);
-        border: 1px solid rgba(209, 213, 219, 0.3);
-      }
-
-      .glass-dark {
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        background-color: rgba(30, 41, 59, 0.75);
-        border: 1px solid rgba(71, 85, 105, 0.3);
-      }
-
-      /* Gradient text */
-      .gradient-text {
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      /* Loading spinner */
-      .spinner {
-        border: 2px solid #f3f4f6;
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Custom focus styles */
-      .focus-ring {
-        @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
-      }
-
-      /* Custom scrollbar for webkit browsers */
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-      }
-
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-
-      /* Dark mode scrollbar */
-      .dark .custom-scrollbar::-webkit-scrollbar-track {
-        background: #334155;
-      }
-
-      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #475569;
-      }
-
-      .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #64748b;
-      }
-    </style> -->
   </head>
 
   <body
@@ -199,7 +30,7 @@
   >
     <!-- Navbar -->
     <nav
-      class="bg-white dark:bg-dark-surface shadow-md fixed top-0 left-0 w-full z-50 transition-colors duration-300"
+      class="bg-white/80 dark:bg-dark-surface/80 backdrop-blur-md border-b border-gray-200/20 dark:border-white/10 fixed top-0 left-0 w-full z-50 transition-colors duration-300"
     >
       <div
         class="container mx-auto flex justify-between items-center py-4 px-6"
@@ -207,7 +38,7 @@
         <!-- Logo -->
         <a
           href="/"
-          class="text-2xl font-bold text-blue-600 dark:text-primary-400 flex items-center transition-colors duration-300"
+          class="text-2xl font-bold text-blue-600 dark:text-primary-500 flex items-center transition-colors duration-300"
         >
           EventX
         </a>
@@ -355,7 +186,7 @@
 
           <a
             href="/auth/login"
-            class="px-4 py-2 border border-blue-500 dark:border-primary-400 text-blue-500 dark:text-primary-400 rounded-lg hover:bg-blue-500 dark:hover:bg-primary-500 hover:text-white transition-colors duration-300"
+            class="px-4 py-2 border border-blue-500 dark:border-primary-400 text-blue-500 dark:text-primary-500 rounded-lg hover:bg-blue-500 dark:hover:bg-primary-500 hover:text-white transition-colors duration-300"
           >
             Login
           </a>
@@ -371,7 +202,7 @@
       <!-- Mobile Menu -->
       <div
         id="mobile-menu"
-        class="hidden md:hidden bg-white dark:bg-dark-surface shadow-md py-4 transition-colors duration-300"
+        class="hidden md:hidden bg-white/90 dark:bg-dark-surface/90 backdrop-blur-md border-t border-gray-200/20 dark:border-white/10 py-4 transition-colors duration-300"
       >
         <a
           href="/"
@@ -434,7 +265,7 @@
         <% if (!isAuthenticated) { %>
         <a
           href="/auth/login"
-          class="block px-6 py-2 text-blue-500 dark:text-primary-400 hover:bg-blue-100 dark:hover:bg-dark-card transition-colors duration-300"
+          class="block px-6 py-2 text-blue-500 dark:text-primary-500 hover:bg-blue-100 dark:hover:bg-dark-card transition-colors duration-300"
           >Login</a
         >
         <a
@@ -606,7 +437,7 @@
           <!-- About Section -->
           <div class="space-y-4">
             <h3
-              class="text-2xl font-bold text-blue-600 dark:text-primary-400 transition-colors duration-300"
+              class="text-2xl font-bold text-blue-600 dark:text-primary-500 transition-colors duration-300"
             >
               EventX
             </h3>
@@ -615,7 +446,7 @@
               <li>
                 <a
                   href="/about"
-                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   About
                 </a>
@@ -623,7 +454,7 @@
               <li>
                 <a
                   href="/privacy"
-                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   Privacy Policy
                 </a>
@@ -631,7 +462,7 @@
               <li>
                 <a
                   href="/contact"
-                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   Contact Us
                 </a>
@@ -642,7 +473,7 @@
           <!-- Contributors Section -->
           <div class="space-y-4">
             <h3
-              class="text-lg font-semibold text-black dark:text-dark-text-primary mb-4 transition-colors duration-300"
+              class="text-lg font-semibold text-black dark:text-white mb-4 transition-colors duration-300"
             >
               Contributors
             </h3>
@@ -651,7 +482,7 @@
                 <a
                   href="https://github.com/TheFakeCreator"
                   target="_blank"
-                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fab fa-github mr-2 text-sm"></i>
                   @TheFakeCreator
@@ -661,7 +492,7 @@
                 <a
                   href="https://github.com/shijha19"
                   target="_blank"
-                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fab fa-github mr-2 text-sm"></i>
                   @shijha19
@@ -677,7 +508,7 @@
                 <a
                   href="https://github.com/TheFakeCreator/Event-Management-Portal"
                   target="_blank"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fab fa-github mr-2 text-lg"></i>
                   GitHub Repository
@@ -686,7 +517,7 @@
               <li>
                 <a
                   href="#sponsor"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fas fa-heart mr-2 text-sm"></i>
                   Sponsor Us
