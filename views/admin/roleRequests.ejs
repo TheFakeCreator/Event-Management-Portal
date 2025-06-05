@@ -1,34 +1,76 @@
 <% layout('layouts/main') %>
 
 <div class="container mx-auto p-10">
-  <h1 class="text-4xl font-bold text-center text-red-600 mb-8">
+  <h1
+    class="text-4xl font-bold text-center text-red-600 dark:text-red-400 mb-8 transition-colors duration-300"
+  >
     Role Change Requests
   </h1>
 
   <!-- Role Requests Table -->
-  <div class="bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pending Requests</h2>
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+    >
+      Pending Requests
+    </h2>
 
-    <table class="w-full border-collapse border border-gray-300">
+    <table
+      class="w-full border-collapse border border-gray-300 dark:border-dark-border"
+    >
       <thead>
-        <tr class="bg-gray-100">
-          <th class="border p-3">User</th>
-          <th class="border p-3">Current Role</th>
-          <th class="border p-3">Requested Role</th>
-          <th class="border p-3">Actions</th>
+        <tr class="bg-gray-100 dark:bg-dark-card">
+          <th
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            User
+          </th>
+          <th
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            Current Role
+          </th>
+          <th
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            Requested Role
+          </th>
+          <th
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody>
         <% users.forEach(e => { %>
-        <tr>
-          <td class="border p-3"><%= e.name %> (<%= e.email %>)</td>
-          <td class="border p-3"><%= e.role %></td>
-          <td class="border p-3"><%= e.roleRequest %></td>
-          <td class="border p-3 flex justify-center space-x-3">
+        <tr
+          class="hover:bg-gray-50 dark:hover:bg-dark-card transition-colors duration-300"
+        >
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            <%= e.name %> (<%= e.email %>)
+          </td>
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            <%= e.role %>
+          </td>
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
+            <%= e.roleRequest %>
+          </td>
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 flex justify-center space-x-3"
+          >
             <form action="/admin/roles/approve/<%= e.id %>" method="POST">
               <button
                 type="submit"
-                class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-700"
+                class="bg-green-500 dark:bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-colors duration-300"
               >
                 Approve
               </button>
@@ -36,7 +78,7 @@
             <form action="/admin/roles/deny/<%= e.id %>" method="POST">
               <button
                 type="submit"
-                class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-700"
+                class="bg-red-500 dark:bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300"
               >
                 Deny
               </button>

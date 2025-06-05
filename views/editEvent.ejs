@@ -1,39 +1,38 @@
 <% layout("layouts/main") %>
 
-<div class="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded-xl mt-10">
-  <h1 class="text-4xl font-extrabold text-blue-600 mb-8 text-center">
+<div class="max-w-3xl mx-auto bg-white dark:bg-dark-surface p-8 shadow-lg rounded-xl mt-10 border border-gray-200 dark:border-dark-border transition-colors duration-300">
+  <h1 class="text-4xl font-extrabold text-blue-600 dark:text-primary-400 mb-8 text-center transition-colors duration-300">
     Edit Event
   </h1>
 
   <form action="/event/<%= event._id %>/edit" method="POST" class="space-y-6">
-    <div class="grid grid-cols-1 gap-4">
-      <div>
-        <label for="title" class="block text-lg font-medium text-gray-700">Event Title</label>
+    <div class="grid grid-cols-1 gap-4">      <div>
+        <label for="title" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Title</label>
         <input
           type="text"
           value="<%= event.title %>"
           name="title"
           id="title"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Enter event title"
           required
         />
       </div>
       <div>
-        <label for="description" class="block text-lg font-medium text-gray-700">Event Description</label>
+        <label for="description" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Description</label>
         <textarea
           name="description"
           id="description"
           rows="4"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
         ><%= event.description %></textarea>
       </div>
       <div>
-        <label for="type" class="block text-lg font-medium text-gray-700">Type</label>
+        <label for="type" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Type</label>
         <select
           name="type"
           id="type"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
         >
           <option value="Workshops" <%= event.type === "Workshops" ? "selected" : "" %>>Workshops</option>
           <option value="Talks" <%= event.type === "Talks" ? "selected" : "" %>>Talks</option>
@@ -46,87 +45,81 @@
         </select>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="startDate" class="block text-lg font-medium text-gray-700">Start Date</label>
-          <input
+      <div class="grid grid-cols-2 gap-4">        <div>
+          <label for="startDate" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Start Date</label>          <input
             type="date"
             name="startDate"
             id="startDate"
             value="<%= event.startDate ? (event.startDate.toISOString ? event.startDate.toISOString().slice(0,10) : event.startDate.slice(0,10)) : '' %>"
-            class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
             required
           />
         </div>
         <div>
-          <label for="endDate" class="block text-lg font-medium text-gray-700">End Date</label>
+          <label for="endDate" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">End Date</label>
           <input
             type="date"
             name="endDate"
             id="endDate"
             value="<%= event.endDate ? (event.endDate.toISOString ? event.endDate.toISOString().slice(0,10) : event.endDate.slice(0,10)) : '' %>"
-            class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
             required
           />
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="startTime" class="block text-lg font-medium text-gray-700">Start Time</label>
+      <div class="grid grid-cols-2 gap-4">        <div>
+          <label for="startTime" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Start Time</label>
           <input
             type="time"
             name="startTime"
             id="startTime"
             value="<%= event.startTime %>"
-            class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
             required
           />
         </div>
         <div>
-          <label for="endTime" class="block text-lg font-medium text-gray-700">End Time</label>
+          <label for="endTime" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">End Time</label>
           <input
             type="time"
             name="endTime"
             id="endTime"
             value="<%= event.endTime %>"
-            class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
             required
           />
         </div>
-      </div>
-
-      <div>
-        <label for="location" class="block text-lg font-medium text-gray-700">Location</label>
+      </div>      <div>
+        <label for="location" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Location</label>
         <input
           type="text"
-          name="location"
-          id="location"
+          name="location"          id="location"
           value="<%= event.location %>"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Enter event location"
           required
         />
       </div>
 
       <div>
-        <label for="image" class="block text-lg font-medium text-gray-700">Event Image URL</label>
+        <label for="image" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Image URL</label>
         <input
           type="text"
           name="image"
           id="image"
           value="<%= event.image %>"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Paste image URL"
         />
       </div>
 
       <div>
-        <label for="club" class="block text-lg font-medium text-gray-700">Club</label>
+        <label for="club" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Club</label>
         <select
           name="club"
           id="club"
-          class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
         >
           <% clubs.forEach(club => { %>
           <option value="<%= club._id %>" <%= event.club === club._id ? "selected" : "" %>><%= club.name %></option>

@@ -1,15 +1,28 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto px-4 py-8 text-center">
-  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-8">
-    <h1 class="text-3xl font-bold text-red-600 mb-4">Registration Closed</h1>
-    <p class="text-gray-700 text-lg mb-6">
-      Sorry, the registration for <strong><%= event.title %></strong> is now closed.
-      The event has already started.
+<div
+  class="container mx-auto px-4 py-8 text-center dark:bg-dark-bg transition-colors duration-300"
+>
+  <div
+    class="max-w-2xl mx-auto bg-white dark:bg-dark-surface shadow-lg rounded-xl p-8 border border-gray-200 dark:border-dark-border transition-colors duration-300"
+  >
+    <h1
+      class="text-3xl font-bold text-red-600 dark:text-red-400 mb-4 transition-colors duration-300"
+    >
+      Registration Closed
+    </h1>
+    <p
+      class="text-gray-700 dark:text-dark-text-primary text-lg mb-6 transition-colors duration-300"
+    >
+      Sorry, the registration for <strong><%= event.title %></strong> is now
+      closed. The event has already started.
     </p>
-    
+
     <div class="flex justify-center mt-6">
-      <a href="/event" class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition">
+      <a
+        href="/event"
+        class="bg-blue-500 dark:bg-primary-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-primary-600 transition-colors duration-300"
+      >
         View Other Events
       </a>
     </div>

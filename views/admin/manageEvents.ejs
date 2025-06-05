@@ -2,57 +2,127 @@
 
 <div class="container mx-auto p-4 sm:p-6 lg:p-10">
   <h1
-    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-red-600 mb-6 sm:mb-8"
+    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-red-600 dark:text-red-400 mb-6 sm:mb-8 transition-colors duration-300"
   >
     Manage Events
   </h1>
 
   <!-- Events List -->
-  <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
-    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-4 sm:p-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+    >
       All Events
     </h2>
 
     <div class="overflow-x-auto">
       <table
-        class="w-full border-collapse border border-gray-300 text-sm sm:text-base"
+        class="w-full border-collapse border border-gray-300 dark:border-dark-border text-sm sm:text-base"
       >
         <thead>
-          <tr class="bg-gray-100">
-            <th class="border p-2 sm:p-3">Event Name</th>
-            <th class="border p-2 sm:p-3">Type</th>
-            <th class="border p-2 sm:p-3">Start Date</th>
-            <th class="border p-2 sm:p-3">End Date</th>
-            <th class="border p-2 sm:p-3">Time</th>
-            <th class="border p-2 sm:p-3">Location</th>
-            <th class="border p-2 sm:p-3">Registered</th>
-            <th class="border p-2 sm:p-3">Created By</th>
-            <th class="border p-2 sm:p-3">Image</th>
-            <th class="border p-2 sm:p-3">Actions</th>
+          <tr class="bg-gray-100 dark:bg-dark-card">
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Event Name
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Type
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Start Date
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              End Date
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Time
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Location
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Registered
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Created By
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Image
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           <% events.forEach(event => { %>
-          <tr>
-            <td class="border p-2 sm:p-3"><%= event.title %></td>
-            <td class="border p-2 sm:p-3"><%= event.Type %></td>
-            <td class="border p-2 sm:p-3">
+          <tr
+            class="hover:bg-gray-50 dark:hover:bg-dark-card transition-colors duration-300"
+          >
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= event.title %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= event.Type %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
               <%= new Date(event.startDate).toLocaleDateString() %>
             </td>
-            <td class="border p-2 sm:p-3">
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
               <%= new Date(event.endDate).toLocaleDateString() %>
             </td>
-            <td class="border p-2 sm:p-3">
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
               <%= event.startTime %> - <%= event.endTime %>
             </td>
-            <td class="border p-2 sm:p-3"><%= event.location %></td>
-            <td class="border p-2 sm:p-3 text-center">
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= event.location %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-center text-gray-900 dark:text-dark-text-primary"
+            >
               <%= event.registeredUsers %>
             </td>
-            <td class="border p-2 sm:p-3">
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
               <%= event.createdBy ? event.createdBy.name : "Unknown" %>
             </td>
-            <td class="border p-2 sm:p-3 text-center">
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-center"
+            >
               <img
                 src="<%= event.image %>"
                 alt="Event Image"
@@ -60,11 +130,11 @@
               />
             </td>
             <td
-              class="border p-2 sm:p-3 flex justify-center space-x-2 sm:space-x-3"
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 flex justify-center space-x-2 sm:space-x-3"
             >
               <a
                 href="/admin/events/edit/<%= event._id %>"
-                class="text-blue-500 hover:underline"
+                class="text-blue-500 dark:text-blue-400 hover:underline transition-colors duration-300"
               >
                 Edit
               </a>
@@ -72,7 +142,10 @@
                 action="/admin/events/delete/<%= event._id %>"
                 method="POST"
               >
-                <button type="submit" class="text-red-500 hover:underline">
+                <button
+                  type="submit"
+                  class="text-red-500 dark:text-red-400 hover:underline transition-colors duration-300"
+                >
                   Delete
                 </button>
               </form>

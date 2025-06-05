@@ -1,23 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Upload Image</title>
+    <link href="/css/tailwind.css" rel="stylesheet" />
+    <script src="/javascript/theme-toggle.js" defer></script>
   </head>
-  <body>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <input type="file" id="imageInput" name="image" required />
-      <button type="submit">Upload</button>
-    </form>
-
-    <img
-      id="previewImage"
-      src=""
-      alt="Uploaded Image"
-      style="display: none; width: 200px"
-    />
-
+  <body
+    class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg transition-colors duration-300"
+  >
+    <div
+      class="bg-white dark:bg-dark-surface shadow-xl rounded-2xl border border-gray-200 dark:border-dark-border p-8 max-w-md w-full transition-colors duration-300"
+    >
+      <h1
+        class="text-2xl font-bold text-blue-600 dark:text-primary-400 mb-6 transition-colors duration-300"
+      >
+        Upload Image
+      </h1>
+      <form
+        id="uploadForm"
+        enctype="multipart/form-data"
+        class="flex flex-col gap-4"
+      >
+        <input
+          type="file"
+          id="imageInput"
+          name="image"
+          required
+          class="block w-full text-gray-700 dark:text-dark-text-primary bg-white dark:bg-dark-card border border-gray-300 dark:border-dark-border rounded-lg p-2 transition-colors duration-300"
+        />
+        <button
+          type="submit"
+          class="bg-blue-500 dark:bg-primary-500 text-white py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-primary-600 transition-colors duration-300"
+        >
+          Upload
+        </button>
+      </form>
+      <img
+        id="previewImage"
+        src=""
+        alt="Uploaded Image"
+        class="mt-6 rounded-lg border border-gray-200 dark:border-dark-border shadow w-52 mx-auto hidden transition-colors duration-300"
+      />
+    </div>
     <script>
       document
         .getElementById("uploadForm")
@@ -38,8 +64,9 @@
           const data = await response.json();
 
           if (data.imageUrl) {
-            document.getElementById("previewImage").src = data.imageUrl;
-            document.getElementById("previewImage").style.display = "block";
+            const img = document.getElementById("previewImage");
+            img.src = data.imageUrl;
+            img.style.display = "block";
           } else {
             alert("Image upload failed!");
           }

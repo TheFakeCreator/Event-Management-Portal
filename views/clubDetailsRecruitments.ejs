@@ -4,19 +4,19 @@ currentTab: "recruitments" }) %>
 <div class="container mx-auto">
   <div class="mt-8">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">
+      <h2 class="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-400">
         Active Recruitments
       </h2>
       <% if (isClubMod) { %>
       <div class="flex gap-3">
         <a
           href="/recruitment/new?club=<%= club._id %>"
-          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          class="px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-300"
           >Add Recruitment</a
         >
         <a
           href="/club/<%= club._id %>/recruitments/responses"
-          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+          class="px-6 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-800 transition-colors duration-300"
           >View Responses</a
         >
       </div>
@@ -26,27 +26,31 @@ currentTab: "recruitments" }) %>
     <div class="space-y-6">
       <% club.activeRecruitments.forEach(function(recruitment) { %>
       <div
-        class="border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 shadow"
+        class="border border-gray-200 dark:border-dark-border rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between bg-white/80 dark:bg-dark-surface/80 shadow dark:shadow-2xl transition-colors duration-300"
       >
         <div>
-          <h3 class="text-xl font-semibold text-gray-800">
+          <h3
+            class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary"
+          >
             <%= recruitment.title %>
           </h3>
-          <p class="text-gray-600 mt-1 mb-2"><%= recruitment.description %></p>
-          <p class="text-sm text-gray-500">
+          <p class="text-gray-600 dark:text-dark-text-secondary mt-1 mb-2">
+            <%= recruitment.description %>
+          </p>
+          <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
             Deadline: <%= new Date(recruitment.deadline).toLocaleDateString() %>
           </p>
         </div>
         <a
           href="/recruitment/<%= recruitment._id %>"
-          class="mt-4 md:mt-0 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          class="mt-4 md:mt-0 px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-300"
           >View / Apply</a
         >
       </div>
       <% }) %>
     </div>
     <% } else { %>
-    <div class="text-gray-500 italic">
+    <div class="text-gray-500 dark:text-dark-text-secondary italic">
       No active recruitments at the moment.
     </div>
     <% } %>

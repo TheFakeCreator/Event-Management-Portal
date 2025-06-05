@@ -1,7 +1,9 @@
 <% layout("layouts/main") %>
 
 <div class="container mx-auto px-4 py-8">
-  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+  <div
+    class="max-w-4xl mx-auto bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-xl overflow-hidden border dark:border-dark-border transition-colors duration-300"
+  >
     <!-- Event Image -->
     <img
       src="<%= event.image %>"
@@ -12,7 +14,9 @@
     <!-- Event Content -->
     <div class="p-6">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-4xl font-bold text-blue-600 flex items-center gap-3">
+        <h1
+          class="text-4xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-3"
+        >
           <%= event.title %>
         </h1>
         <% if (new Date() >= new Date(event.startDate) && new Date() <= new
@@ -27,11 +31,16 @@
         </span>
         <% } %>
       </div>
-      <p class="text-gray-700 text-lg mb-6" style="white-space: pre-line">
+      <p
+        class="text-gray-700 dark:text-dark-text-primary text-lg mb-6"
+        style="white-space: pre-line"
+      >
         <%- event.description.replace(/\n/g, '<br />') %>
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600 dark:text-dark-text-secondary"
+      >
         <p>
           <i class="far fa-calendar-alt"></i> <strong>Date:</strong>
           <%= new Date(event.startDate).toLocaleDateString('en-US', { weekday:
@@ -59,10 +68,14 @@
 
       <% if (event.collaborators.length > 0) { %>
       <div class="mt-6">
-        <h2 class="text-xl font-semibold text-gray-800">
+        <h2
+          class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary"
+        >
           Collaborating Clubs:
         </h2>
-        <ul class="list-disc list-inside text-gray-600">
+        <ul
+          class="list-disc list-inside text-gray-600 dark:text-dark-text-secondary"
+        >
           <% event.collaborators.forEach(collab => { %>
           <li><%= collab.name %></li>
           <% }); %>
@@ -75,7 +88,7 @@
       >
         <a
           href="/event"
-          class="inline-block text-blue-600 hover:underline order-3 md:order-1"
+          class="inline-block text-blue-600 dark:text-blue-400 hover:underline order-3 md:order-1"
         >
           &larr; Back to Events
         </a>
@@ -85,7 +98,7 @@
           <% if(creator){ %>
           <a
             href="/event/<%= event._id %>/edit"
-            class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2 w-full sm:w-auto justify-center"
+            class="bg-blue-500 dark:bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition flex items-center gap-2 w-full sm:w-auto justify-center"
           >
             <i class="fas fa-edit"></i> Edit Event
           </a>
@@ -106,17 +119,18 @@
           <% } %> <% if (new Date() < new Date(event.startDate)) { %> <% if
           (alreadyRegistered) { %>
           <span
-            class="text-green-600 font-semibold w-full sm:w-auto text-center"
+            class="text-green-600 dark:text-green-400 font-semibold w-full sm:w-auto text-center"
             >Registered</span
           >
           <% } else { %>
           <a
             href="/event/<%= event._id %>/register"
-            class="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition w-full sm:w-auto text-center"
+            class="bg-blue-500 dark:bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition w-full sm:w-auto text-center"
             >Register Now</a
           >
           <% } %> <% } else { %>
-          <span class="text-red-500 font-semibold w-full sm:w-auto text-center"
+          <span
+            class="text-red-500 dark:text-red-400 font-semibold w-full sm:w-auto text-center"
             >Registration Closed</span
           >
           <% } %>

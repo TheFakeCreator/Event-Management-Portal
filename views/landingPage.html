@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EventX - Event Management Portal</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../public/css/landingPage.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-logo">EventX</div>
+      <div class="hero-content">
+        <h1>Revolutionizing Event Management</h1>
+        <h1>
+          Manage your
+          <span class="event-highlight" id="dynamicText">Events</span>
+        </h1>
+        <p class="hero-subtitle">And it's all Open-Source</p>
+
+        <a href="/event" class="cta-button">Go to app</a>
+
+        <div class="secondary-buttons">
+          <a href="#" class="secondary-button">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+              />
+            </svg>
+            GitHub Repository
+          </a>
+          <a href="#" class="secondary-button">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.576-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"
+              />
+            </svg>
+            Sponsor Us
+          </a>
+        </div>
+      </div>
+    </section>
+    <!-- Wave Separator -->
+    <div class="wave-separator hero-transition">
+      <svg
+        class="wave-1"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-300,60 Q-225,20 -150,60 Q-75,100 0,60 Q75,20 150,60 Q225,100 300,60 Q375,20 450,60 Q525,100 600,60 Q675,20 750,60 Q825,100 900,60 Q975,20 1050,60 Q1125,100 1200,60 Q1275,20 1350,60 Q1425,100 1500,60 Q1575,20 1650,60 Q1725,100 1800,60 Q1875,20 1950,60 Q2025,100 2100,60 Q2175,20 2250,60 Q2325,100 2400,60 Q2475,20 2550,60 Q2625,100 2700,60"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="2"
+        />
+      </svg>
+      <svg
+        class="wave-2"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-240,40 Q-180,80 -120,40 Q-60,0 0,40 Q60,80 120,40 Q180,0 240,40 Q300,80 360,40 Q420,0 480,40 Q540,80 600,40 Q660,0 720,40 Q780,80 840,40 Q900,0 960,40 Q1020,80 1080,40 Q1140,0 1200,40 Q1260,80 1320,40 Q1380,0 1440,40 Q1500,80 1560,40 Q1620,0 1680,40 Q1740,80 1800,40 Q1860,0 1920,40 Q1980,80 2040,40 Q2100,0 2160,40 Q2220,80 2280,40 Q2340,0 2400,40 Q2460,80 2520,40"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1.5"
+          opacity="0.7"
+        />
+      </svg>
+      <svg
+        class="wave-3"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-400,80 Q-300,30 -200,80 Q-100,130 0,80 Q100,30 200,80 Q300,130 400,80 Q500,30 600,80 Q700,130 800,80 Q900,30 1000,80 Q1100,130 1200,80 Q1300,30 1400,80 Q1500,130 1600,80 Q1700,30 1800,80 Q1900,130 2000,80 Q2100,30 2200,80 Q2300,130 2400,80 Q2500,30 2600,80 Q2700,130 2800,80"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1"
+          opacity="0.5"
+        />
+      </svg>
+    </div>
+    <!-- Features Section -->
+    <section class="section">
+      <h2 class="section-title">Features</h2>
+      <div class="features-grid" id="featuresContainer">
+        <div class="feature-card" data-feature="0">
+          <div class="feature-icon">📅</div>
+          <h3 class="feature-title">Event Management</h3>
+          <p class="feature-description">
+            Create, manage, and organize events with powerful tools and
+            real-time tracking capabilities.
+          </p>
+        </div>
+        <div class="feature-card center" data-feature="1">
+          <div class="feature-icon">👥</div>
+          <h3 class="feature-title">Participant Tracking</h3>
+          <p class="feature-description">
+            Track participants, manage registrations, and monitor engagement
+            throughout your events.
+          </p>
+        </div>
+        <div class="feature-card" data-feature="2">
+          <div class="feature-icon">🏆</div>
+          <h3 class="feature-title">Leaderboards & Analytics</h3>
+          <p class="feature-description">
+            View performance metrics, generate leaderboards, and gain insights
+            with detailed analytics.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- Wave Separator -->
+    <div class="wave-separator">
+      <svg
+        class="wave-1"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-400,80 Q-325,40 -250,80 Q-175,120 -100,80 Q-25,40 50,80 Q125,120 200,80 Q275,40 350,80 Q425,120 500,80 Q575,40 650,80 Q725,120 800,80 Q875,40 950,80 Q1025,120 1100,80 Q1175,40 1250,80 Q1325,120 1400,80 Q1475,40 1550,80 Q1625,120 1700,80 Q1775,40 1850,80 Q1925,120 2000,80 Q2075,40 2150,80 Q2225,120 2300,80 Q2375,40 2450,80 Q2525,120 2600,80 Q2675,40 2750,80"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="2"
+        />
+      </svg>
+      <svg
+        class="wave-2"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-360,100 Q-300,50 -240,100 Q-180,150 -120,100 Q-60,50 0,100 Q60,150 120,100 Q180,50 240,100 Q300,150 360,100 Q420,50 480,100 Q540,150 600,100 Q660,50 720,100 Q780,150 840,100 Q900,50 960,100 Q1020,150 1080,100 Q1140,50 1200,100 Q1260,150 1320,100 Q1380,50 1440,100 Q1500,150 1560,100 Q1620,50 1680,100 Q1740,150 1800,100 Q1860,50 1920,100 Q1980,150 2040,100 Q2100,50 2160,100 Q2220,150 2280,100 Q2340,50 2400,100 Q2460,150 2520,100 Q2580,50 2640,100"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1.5"
+          opacity="0.7"
+        />
+      </svg>
+      <svg
+        class="wave-3"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-500,60 Q-400,110 -300,60 Q-200,10 -100,60 Q0,110 100,60 Q200,10 300,60 Q400,110 500,60 Q600,10 700,60 Q800,110 900,60 Q1000,10 1100,60 Q1200,110 1300,60 Q1400,10 1500,60 Q1600,110 1700,60 Q1800,10 1900,60 Q2000,110 2100,60 Q2200,10 2300,60 Q2400,110 2500,60 Q2600,10 2700,60 Q2800,110 2900,60 Q3000,10 3100,60"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1"
+          opacity="0.5"
+        />
+      </svg>
+    </div>
+    <!-- Sponsors Section -->
+    <section class="section sponsors-section">
+      <h2 class="section-title">Sponsors</h2>
+      <div class="sponsors-grid">
+        <div class="sponsor-placeholder"></div>
+        <div class="sponsor-placeholder"></div>
+        <div class="sponsor-placeholder"></div>
+        <div class="sponsor-placeholder"></div>
+        <div class="sponsor-placeholder"></div>
+      </div>
+    </section>
+    <!-- Wave Separator -->
+    <div class="wave-separator">
+      <svg
+        class="wave-1"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-400,50 Q-325,90 -250,50 Q-175,10 -100,50 Q-25,90 50,50 Q125,10 200,50 Q275,90 350,50 Q425,10 500,50 Q575,90 650,50 Q725,10 800,50 Q875,90 950,50 Q1025,10 1100,50 Q1175,90 1250,50 Q1325,10 1400,50 Q1475,90 1550,50 Q1625,10 1700,50 Q1775,90 1850,50 Q1925,10 2000,50 Q2075,90 2150,50 Q2225,10 2300,50 Q2375,90 2450,50 Q2525,10 2600,50 Q2675,90 2750,50"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="2"
+        />
+      </svg>
+      <svg
+        class="wave-2"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-360,70 Q-300,20 -240,70 Q-180,120 -120,70 Q-60,20 0,70 Q60,120 120,70 Q180,20 240,70 Q300,120 360,70 Q420,20 480,70 Q540,120 600,70 Q660,20 720,70 Q780,120 840,70 Q900,20 960,70 Q1020,120 1080,70 Q1140,20 1200,70 Q1260,120 1320,70 Q1380,20 1440,70 Q1500,120 1560,70 Q1620,20 1680,70 Q1740,120 1800,70 Q1860,20 1920,70 Q1980,120 2040,70 Q2100,20 2160,70 Q2220,120 2280,70 Q2340,20 2400,70 Q2460,120 2520,70 Q2580,20 2640,70"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1.5"
+          opacity="0.7"
+        />
+      </svg>
+      <svg
+        class="wave-3"
+        width="100%"
+        height="120"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          d="M-500,30 Q-400,100 -300,30 Q-200,100 -100,30 Q0,100 100,30 Q200,100 300,30 Q400,100 500,30 Q600,100 700,30 Q800,100 900,30 Q1000,100 1100,30 Q1200,100 1300,30 Q1400,100 1500,30 Q1600,100 1700,30 Q1800,100 1900,30 Q2000,100 2100,30 Q2200,100 2300,30 Q2400,100 2500,30 Q2600,100 2700,30 Q2800,100 2900,30 Q3000,100 3100,30"
+          fill="none"
+          stroke="#3B82F6"
+          stroke-width="1"
+          opacity="0.5"
+        />
+      </svg>
+    </div>
+
+    <!-- Contributors Section -->
+    <section class="section">
+      <h2 class="section-title">Contributors</h2>
+      <div class="contributors-grid">
+        <div class="contributor-card">
+          <div class="contributor-header">
+            <div class="contributor-avatar"></div>
+            <div class="contributor-info">
+              <div class="contributor-name"></div>
+              <div class="contributor-role"></div>
+            </div>
+          </div>
+          <div class="contributor-content"></div>
+        </div>
+        <div class="contributor-card">
+          <div class="contributor-header">
+            <div class="contributor-avatar"></div>
+            <div class="contributor-info">
+              <div class="contributor-name"></div>
+              <div class="contributor-role"></div>
+            </div>
+          </div>
+          <div class="contributor-content"></div>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="footer">
+      <h2 class="footer-title">FOOTER</h2>
+      <p class="footer-subtitle">EventX - Event Management Portal</p>
+    </footer>
+    <script src="../public/javascript/landingPage.js"></script>
+  </body>
+</html>

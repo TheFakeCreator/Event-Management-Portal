@@ -1,14 +1,20 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto p-10 flex justify-center">
-  <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl text-center">
-    <h1 class="text-3xl font-bold text-red-600 mb-4">Access Denied</h1>
-    <p class="text-lg text-gray-700 mb-6">
+<div
+  class="container mx-auto p-10 flex justify-center bg-white dark:bg-dark-bg transition-colors duration-300"
+>
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg p-8 w-full max-w-2xl text-center border dark:border-dark-border transition-colors duration-300"
+  >
+    <h1 class="text-3xl font-bold text-red-600 dark:text-red-400 mb-4">
+      Access Denied
+    </h1>
+    <p class="text-lg text-gray-700 dark:text-dark-text-secondary mb-6">
       You do not have permission to access this page.
     </p>
     <a
       href="/"
-      class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      class="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-300"
     >
       Return to Home
     </a>

@@ -1,15 +1,15 @@
 <% layout("layouts/main") %>
-<div class="flex min-h-screen bg-gradient-to-r from-blue-50 to-white">
+<div class="flex min-h-screen bg-gradient-to-r from-blue-50 to-white dark:from-dark-bg dark:to-dark-surface transition-colors duration-300">
   <!-- Left Navigation Pane -->
-  <nav class="w-64 bg-white border-r flex flex-col py-10 px-6 shadow-lg">
-    <h2 class="text-2xl font-extrabold mb-10 text-blue-700 tracking-tight">
+  <nav class="w-64 bg-white dark:bg-dark-surface border-r dark:border-dark-border flex flex-col py-10 px-6 shadow-lg dark:shadow-2xl transition-colors duration-300">
+    <h2 class="text-2xl font-extrabold mb-10 text-blue-700 dark:text-blue-400 tracking-tight">
       <%= recruitment.title %>
     </h2>
     <ul class="space-y-3">
       <li>
         <a
           href="#about"
-          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 dark:hover:bg-dark-card text-gray-700 dark:text-dark-text-primary font-medium"
           data-section="about"
           >About</a
         >
@@ -17,7 +17,7 @@
       <li>
         <a
           href="#form"
-          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 text-gray-700 font-medium"
+          class="nav-link block py-2 px-4 rounded-lg transition hover:bg-blue-100 dark:hover:bg-dark-card text-gray-700 dark:text-dark-text-primary font-medium"
           data-section="form"
           >Application Form</a
         >
@@ -28,13 +28,13 @@
   <!-- Right Content Pane -->
   <div class="flex-1 p-10">
     <div id="section-about" class="section">
-      <h3 class="text-2xl font-bold mb-4 text-blue-700">
+      <h3 class="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">
         About this Recruitment
       </h3>
-      <div class="bg-white rounded-xl shadow p-6 mb-6">
-        <p class="mb-4 text-lg text-gray-800"><%= recruitment.description %></p>
+      <div class="bg-white dark:bg-dark-surface rounded-xl shadow dark:shadow-2xl border dark:border-dark-border p-6 mb-6 transition-colors duration-300">
+        <p class="mb-4 text-lg text-gray-800 dark:text-dark-text-primary"><%= recruitment.description %></p>
         <div
-          class="flex flex-col md:flex-row md:items-center md:space-x-8 text-gray-600"
+          class="flex flex-col md:flex-row md:items-center md:space-x-8 text-gray-600 dark:text-dark-text-secondary"
         >
           <span class="mb-2 md:mb-0"
             ><strong>Deadline:</strong> <%= new
@@ -45,44 +45,43 @@
       </div>
     </div>
     <div id="section-form" class="section hidden">
-      <h3 class="text-2xl font-bold mb-4 text-blue-700">Application Form</h3>
-      <div class="bg-white rounded-xl shadow p-6">
+      <h3 class="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">Application Form</h3>
+      <div class="bg-white dark:bg-dark-surface rounded-xl shadow dark:shadow-2xl border dark:border-dark-border p-6 transition-colors duration-300">
         <form
           action="/recruitment/<%= recruitment._id %>"
           method="POST"
           class="space-y-6"
         >
           <div>
-            <label for="name" class="block text-gray-700 font-semibold mb-2">Name <span class="text-red-500">*</span></label>
+            <label for="name" class="block text-gray-700 dark:text-dark-text-primary font-semibold mb-2">Name <span class="text-red-500">*</span></label>
             <input
               type="text"
               id="name"
               name="name"
               required
-              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
               value="<%= user?.name || '' %>"
             />
           </div>
           <div>
-            <label for="email" class="block text-gray-700 font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+            <label for="email" class="block text-gray-700 dark:text-dark-text-primary font-semibold mb-2">Email <span class="text-red-500">*</span></label>
             <input
               type="email"
               id="email"
               name="email"
               required
-              class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
               value="<%= user?.email || '' %>"
             />
-          </div>
-          <% if (recruitment.applicationForm && recruitment.applicationForm.length > 0) { %>
+          </div>          <% if (recruitment.applicationForm && recruitment.applicationForm.length > 0) { %>
             <% recruitment.applicationForm.forEach(function(field) { %>
               <div>
-                <label class="block text-gray-700 font-semibold mb-2"><%= field.label %><% if(field.required){ %> <span class="text-red-500">*</span><% } %></label>                <% if(field.type === 'text' || field.type === 'email' || field.type === 'number' || field.type === 'date') { %>
-                  <input type="<%= field.type %>" name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <label class="block text-gray-700 dark:text-dark-text-primary font-semibold mb-2"><%= field.label %><% if(field.required){ %> <span class="text-red-500">*</span><% } %></label>                <% if(field.type === 'text' || field.type === 'email' || field.type === 'number' || field.type === 'date') { %>
+                  <input type="<%= field.type %>" name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300" />
                 <% } else if(field.type === 'textarea') { %>
-                  <textarea name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" rows="4" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                  <textarea name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" rows="4" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"></textarea>
                 <% } else if(field.type === 'select') { %>
-                  <select name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                  <select name="custom_<%= field.label.replace(/\s+/g, '_').toLowerCase() %>" <%= field.required ? 'required' : '' %> class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300">
                     <option value="" disabled selected>Choose an option</option>
                     <% if(field.options && field.options.length > 0) { %>
                       <% field.options.forEach(function(option) { %>
@@ -94,12 +93,12 @@
               </div>
             <% }) %>
           <% } else { %>
-            <div class="text-gray-500">No custom application fields defined for this recruitment.</div>
+            <div class="text-gray-500 dark:text-dark-text-secondary">No custom application fields defined for this recruitment.</div>
           <% } %>
           <div>
             <button
               type="submit"
-              class="w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
+              class="w-full px-8 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg font-semibold text-lg shadow hover:bg-blue-700 dark:hover:bg-blue-800 transition"
             >
               Submit
             </button>

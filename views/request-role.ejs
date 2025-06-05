@@ -1,10 +1,14 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto p-10 flex justify-center">
+<div
+  class="container mx-auto p-10 flex justify-center bg-gray-50 dark:bg-dark-bg transition-colors duration-300"
+>
   <div
-    class="bg-white shadow-xl rounded-lg p-8 w-full max-w-2xl border border-gray-200"
+    class="bg-white dark:bg-dark-surface shadow-xl rounded-lg p-8 w-full max-w-2xl border border-gray-200 dark:border-dark-border transition-colors duration-300"
   >
-    <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">
+    <h1
+      class="text-3xl font-extrabold text-gray-900 dark:text-dark-text-primary mb-6 text-center transition-colors duration-300"
+    >
       Request a Role
     </h1>
 
@@ -14,14 +18,15 @@
       class="space-y-4"
     >
       <div>
-        <label class="block text-lg font-semibold text-gray-700 mb-2"
+        <label
+          class="block text-lg font-semibold text-gray-700 dark:text-dark-text-primary mb-2 transition-colors duration-300"
           >Select Role:</label
         >
         <select
           name="requestedRole"
           id="requestedRole"
           required
-          class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+          class="w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring focus:ring-blue-300 dark:focus:ring-primary-400 transition-colors duration-300"
         >
           <option value="" disabled selected>Choose a role</option>
           <option value="admin">Admin</option>
@@ -31,13 +36,14 @@
       </div>
 
       <div id="clubDropdownContainer" style="display: none">
-        <label class="block text-lg font-semibold text-gray-700 mb-2"
+        <label
+          class="block text-lg font-semibold text-gray-700 dark:text-dark-text-primary mb-2 transition-colors duration-300"
           >Select Club:</label
         >
         <select
           name="clubId"
           id="clubId"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+          class="w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring focus:ring-blue-300 dark:focus:ring-primary-400 transition-colors duration-300"
         >
           <option value="" disabled selected>Choose a club</option>
           <% if (clubs && clubs.length > 0) { clubs.forEach(function(club) { %>
@@ -45,11 +51,10 @@
           <% }) } %>
         </select>
       </div>
-
       <div class="mt-6">
         <button
           type="submit"
-          class="w-full px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-shadow shadow-md hover:shadow-lg"
+          class="w-full px-5 py-3 bg-blue-600 dark:bg-primary-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-primary-600 transition-colors duration-300 shadow-md hover:shadow-lg"
         >
           Submit Request
         </button>
@@ -57,7 +62,9 @@
     </form>
 
     <div class="mt-4 text-center">
-      <a href="/user/<%= user.username %>" class="text-blue-600 hover:underline"
+      <a
+        href="/user/<%= user.username %>"
+        class="text-blue-600 dark:text-primary-400 hover:underline transition-colors duration-300"
         >Back to Profile</a
       >
     </div>

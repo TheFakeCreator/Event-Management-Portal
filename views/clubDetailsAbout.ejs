@@ -304,6 +304,14 @@ currentTab: "about" }) %>
     margin-top: 1.25em;
     margin-bottom: 0.5em;
   }
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6 {
+    color: #60a5fa;
+  }
   .prose h1 {
     font-size: 2.25rem;
   }
@@ -322,12 +330,14 @@ currentTab: "about" }) %>
   .prose h6 {
     font-size: 0.95rem;
   }
-
   /* Paragraphs */
   .prose p {
     margin: 0.5em 0 1em 0;
     color: #374151;
     line-height: 1.7;
+  }
+  .dark .prose p {
+    color: #d1d5db;
   }
 
   /* Lists */
@@ -345,7 +355,6 @@ currentTab: "about" }) %>
   .prose li {
     margin-bottom: 0.3em;
   }
-
   /* Blockquotes */
   .prose blockquote {
     border-left: 4px solid #3b82f6;
@@ -355,7 +364,11 @@ currentTab: "about" }) %>
     margin: 1em 0;
     font-style: italic;
   }
-
+  .dark .prose blockquote {
+    border-left-color: #60a5fa;
+    background: #1e293b;
+    color: #cbd5e1;
+  }
   /* Code */
   .prose code {
     background: #f3f4f6;
@@ -363,6 +376,10 @@ currentTab: "about" }) %>
     padding: 0.2em 0.4em;
     border-radius: 4px;
     font-size: 0.95em;
+  }
+  .dark .prose code {
+    background: #374151;
+    color: #f472b6;
   }
   .prose pre {
     background: #f3f4f6;
@@ -372,6 +389,10 @@ currentTab: "about" }) %>
     overflow-x: auto;
     margin: 1em 0;
   }
+  .dark .prose pre {
+    background: #1f2937;
+    color: #e5e7eb;
+  }
   .prose pre code {
     background: none;
     color: inherit;
@@ -379,7 +400,6 @@ currentTab: "about" }) %>
     border-radius: 0;
     font-size: inherit;
   }
-
   /* Links */
   .prose a {
     color: #2563eb;
@@ -389,7 +409,12 @@ currentTab: "about" }) %>
   .prose a:hover {
     color: #1e40af;
   }
-
+  .dark .prose a {
+    color: #60a5fa;
+  }
+  .dark .prose a:hover {
+    color: #93c5fd;
+  }
   /* Tables */
   .prose table {
     width: 100%;
@@ -409,6 +434,17 @@ currentTab: "about" }) %>
   }
   .prose tr:nth-child(even) td {
     background: #f9fafb;
+  }
+  .dark .prose th,
+  .dark .prose td {
+    border-color: #4b5563;
+  }
+  .dark .prose th {
+    background: #374151;
+    color: #f3f4f6;
+  }
+  .dark .prose tr:nth-child(even) td {
+    background: #1f2937;
   }
 
   /* Images */

@@ -1,29 +1,43 @@
 <% layout('layouts/main') %>
 
 <div class="container mx-auto p-10">
-  <h1 class="text-4xl font-bold text-center text-red-600 mb-8">
+  <h1
+    class="text-4xl font-bold text-center text-red-600 dark:text-red-400 mb-8 transition-colors duration-300"
+  >
     Admin Settings
   </h1>
 
   <!-- Site Information -->
-  <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Site Information</h2>
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-6 mb-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+    >
+      Site Information
+    </h2>
     <form action="/admin/settings/updateSite" method="POST">
       <div class="mb-4">
-        <label class="block text-gray-700">Site Name</label>
+        <label
+          class="block text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Site Name</label
+        >
         <input
           type="text"
           name="siteName"
           value="<%= settings.siteName %>"
-          class="w-full p-2 border rounded-lg"
+          class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         />
       </div>
       <div class="mb-4">
-        <label class="block text-gray-700">Site Description</label>
+        <label
+          class="block text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Site Description</label
+        >
         <textarea
           name="siteDescription"
-          class="w-full p-2 border rounded-lg"
+          class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         >
           <%= settings.siteDescription %>
@@ -31,7 +45,7 @@
       </div>
       <button
         type="submit"
-        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        class="bg-blue-500 dark:bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors duration-300"
       >
         Save Changes
       </button>
@@ -39,22 +53,34 @@
   </div>
 
   <!-- Feature Toggles -->
-  <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Feature Toggles</h2>
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-6 mb-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+    >
+      Feature Toggles
+    </h2>
     <form action="/admin/settings/updateFeatures" method="POST">
       <div class="mb-4 flex items-center">
         <input type="checkbox" name="userRegistration" <%=
         settings.userRegistration ? "checked" : "" %> class="w-5 h-5">
-        <label class="ml-2 text-gray-700">Enable User Registration</label>
+        <label
+          class="ml-2 text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Enable User Registration</label
+        >
       </div>
       <div class="mb-4 flex items-center">
         <input type="checkbox" name="maintenanceMode" <%=
         settings.maintenanceMode ? "checked" : "" %> class="w-5 h-5">
-        <label class="ml-2 text-gray-700">Enable Maintenance Mode</label>
+        <label
+          class="ml-2 text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Enable Maintenance Mode</label
+        >
       </div>
       <button
         type="submit"
-        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+        class="bg-red-500 dark:bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300"
       >
         Save Settings
       </button>
@@ -62,34 +88,44 @@
   </div>
 
   <!-- Contact Information -->
-  <div class="bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+    >
       Contact Information
     </h2>
     <form action="/admin/settings/updateContact" method="POST">
       <div class="mb-4">
-        <label class="block text-gray-700">Support Email</label>
+        <label
+          class="block text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Support Email</label
+        >
         <input
           type="email"
           name="supportEmail"
           value="<%= settings.supportEmail %>"
-          class="w-full p-2 border rounded-lg"
+          class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         />
       </div>
       <div class="mb-4">
-        <label class="block text-gray-700">Support Phone</label>
+        <label
+          class="block text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+          >Support Phone</label
+        >
         <input
           type="text"
           name="supportPhone"
           value="<%= settings.supportPhone %>"
-          class="w-full p-2 border rounded-lg"
+          class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         />
       </div>
       <button
         type="submit"
-        class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        class="bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-700 transition-colors duration-300"
       >
         Save Contact Info
       </button>

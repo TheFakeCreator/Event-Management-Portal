@@ -1,4 +1,6 @@
-<div class="container mx-auto p-0">
+<div
+  class="container mx-auto p-0 bg-gray-50 dark:bg-dark-bg transition-colors duration-300"
+>
   <div
     class="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-8 flex items-end"
   >
@@ -50,14 +52,16 @@
   </div>
 
   <!-- Tabs -->
-  <div class="mb-6 border-b border-gray-200">
+  <div
+    class="mb-6 border-b border-gray-200 dark:border-dark-border transition-colors duration-300"
+  >
     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
       <% const tabs = ["about", "recruitments", "gallery", "socials", "events",
       "members"]; %> <% tabs.forEach(tab => { %>
       <li class="mr-2">
         <a
           href="/club/<%= club._id %>/<%= tab %>"
-          class="tab-link inline-block p-4 border-b-2 rounded-t-lg <%= currentTab === tab ? 'border-blue-600 text-blue-600 font-semibold' : 'border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-300' %>"
+          class="tab-link inline-block p-4 border-b-2 rounded-t-lg <%= currentTab === tab ? 'border-blue-600 dark:border-primary-400 text-blue-600 dark:text-primary-400 font-semibold' : 'border-transparent text-gray-500 dark:text-dark-text-secondary hover:text-blue-600 dark:hover:text-primary-400 hover:border-blue-300 dark:hover:border-primary-300' %> transition-colors duration-300"
         >
           <%= tab.charAt(0).toUpperCase() + tab.slice(1) %>
         </a>

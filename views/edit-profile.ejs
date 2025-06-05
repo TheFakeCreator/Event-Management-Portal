@@ -6,15 +6,15 @@
   href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
 />
 
-<div class="min-h-screen w-full bg-gray-100 flex">
+<div class="min-h-screen w-full bg-gray-100 dark:bg-dark-bg flex">
   <!-- Sidebar -->
   <aside
-    class="w-64 bg-white border-r border-gray-200 flex flex-col items-center py-8 px-4 shadow z-10 h-screen fixed top-16 left-0"
+    class="w-64 bg-white dark:bg-dark-surface border-r border-gray-200 dark:border-dark-border flex flex-col items-center py-8 px-4 shadow z-10 h-screen fixed top-16 left-0"
     style="height: calc(100vh - 4rem)"
   >
     <div class="flex flex-col items-center w-full mb-8">
       <div
-        class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 mb-2"
+        class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 dark:border-dark-border mb-2"
       >
         <img
           src="<%= user.avatarUrl || '/images/male.jpg' %>"
@@ -22,8 +22,8 @@
           class="object-cover w-full h-full"
         />
       </div>
-      <div class="text-lg font-semibold text-gray-800"><%= user.name %></div>
-      <div class="text-sm text-gray-500">@<%= user.username %></div>
+      <div class="text-lg font-semibold text-gray-800 dark:text-dark-text-primary"><%= user.name %></div>
+      <div class="text-sm text-gray-500 dark:text-dark-text-secondary">@<%= user.username %></div>
     </div>
     <nav class="flex flex-col gap-3 w-full">
       <a href="#profile-info" class="sidebar-link">
@@ -32,37 +32,34 @@
       <a href="#social-links" class="sidebar-link">
         <i class="fab fa-linkedin mr-2"></i> Social
       </a>
-      <a href="#account" class="sidebar-link text-red-600">
+      <a href="#account" class="sidebar-link text-red-600 dark:text-red-400">
         <i class="fas fa-user-shield mr-2"></i> Account
       </a>
     </nav>
   </aside>
-
   <!-- Main Content -->
   <main class="flex-1 flex justify-center py-10 px-4 ml-0 md:ml-64 mt-16">
     <form
       action="/user/<%= user.username %>/edit"
       method="post"
       enctype="multipart/form-data"
-      class="w-full max-w-3xl bg-white rounded-lg shadow p-8 space-y-10 border border-gray-200"
+      class="w-full max-w-3xl bg-white dark:bg-dark-surface rounded-lg shadow p-8 space-y-10 border border-gray-200 dark:border-dark-border"
     >
-      <h1 class="text-3xl font-bold text-gray-900 mb-6">Edit Profile</h1>
-
-      <!-- Profile Info Section -->
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Edit Profile</h1>      <!-- Profile Info Section -->
       <section id="profile-info" class="space-y-6">
         <h2
-          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+          class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary border-b border-gray-200 dark:border-dark-border pb-2 mb-4"
         >
           Profile Information
         </h2>
         <div class="flex flex-col gap-4">
           <div class="flex flex-col md:flex-row gap-6">
             <div class="flex flex-col items-center">
-              <label class="block text-gray-700 font-medium mb-2"
+              <label class="block text-gray-700 dark:text-dark-text-secondary font-medium mb-2"
                 >Profile Picture</label
               >
               <div
-                class="w-24 h-24 rounded-full overflow-hidden border border-gray-300 mb-2"
+                class="w-24 h-24 rounded-full overflow-hidden border border-gray-300 dark:border-dark-border mb-2"
               >
                 <img
                   src="<%= user.avatarUrl || '/images/male.jpg' %>"
@@ -73,12 +70,12 @@
               <input
                 type="file"
                 name="avatar"
-                class="w-36 text-sm border border-gray-300 rounded px-2 py-1 bg-gray-50"
+                class="w-36 text-sm border border-gray-300 dark:border-dark-border rounded px-2 py-1 bg-gray-50 dark:bg-dark-card dark:text-dark-text-primary"
               />
             </div>
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-gray-700 font-medium">Full Name</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Full Name</label>
                 <input
                   type="text"
                   name="name"
@@ -88,7 +85,7 @@
                 />
               </div>
               <div>
-                <label class="block text-gray-700 font-medium">Username</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Username</label>
                 <input
                   type="text"
                   name="username"
@@ -97,17 +94,16 @@
                 />
               </div>
               <div>
-                <label class="block text-gray-700 font-medium">Email</label>
-                <input
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Email</label>                <input
                   type="email"
                   name="email"
                   value="<%= user.email %>"
-                  class="input-field bg-gray-100 cursor-not-allowed"
+                  class="input-field bg-gray-100 dark:bg-dark-card cursor-not-allowed"
                   readonly
                 />
               </div>
               <div>
-                <label class="block text-gray-700 font-medium">Phone</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Phone</label>
                 <input
                   type="text"
                   name="phone"
@@ -116,7 +112,7 @@
                 />
               </div>
               <div>
-                <label class="block text-gray-700 font-medium">Gender</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Gender</label>
                 <select name="gender" class="input-field">
                   <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
                   <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
@@ -127,12 +123,12 @@
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-gray-700 font-medium">Bio</label>
+              <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Bio</label>
               <textarea name="bio" class="input-field h-24 resize-none" maxlength="250"><%= user.bio %></textarea>
             </div>
             <div class="flex flex-col gap-4">
               <div>
-                <label class="block text-gray-700 font-medium">Occupation</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Occupation</label>
                 <input
                   type="text"
                   name="occupation"
@@ -141,7 +137,7 @@
                 />
               </div>
               <div>
-                <label class="block text-gray-700 font-medium">Location</label>
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Location</label>
                 <input
                   type="text"
                   name="location"
@@ -152,20 +148,18 @@
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- Social Links Section -->
+      </section>      <!-- Social Links Section -->
       <section id="social-links" class="space-y-6">
         <h2
-          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+          class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary border-b border-gray-200 dark:border-dark-border pb-2 mb-4"
         >
           Social Links
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-gray-700 font-medium">LinkedIn</label>
+            <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">LinkedIn</label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700 dark:text-blue-400">
                 <i class="fab fa-linkedin"></i>
               </span>
               <input
@@ -177,9 +171,9 @@
             </div>
           </div>
           <div>
-            <label class="block text-gray-700 font-medium">GitHub</label>
+            <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">GitHub</label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-800">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-800 dark:text-dark-text-primary">
                 <i class="fab fa-github"></i>
               </span>
               <input
@@ -191,9 +185,9 @@
             </div>
           </div>
           <div>
-            <label class="block text-gray-700 font-medium">Behance</label>
+            <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Behance</label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 dark:text-blue-400">
                 <i class="fab fa-behance"></i>
               </span>
               <input
@@ -205,18 +199,16 @@
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- Account Section -->
+      </section>      <!-- Account Section -->
       <section id="account" class="space-y-6">
         <h2
-          class="text-xl font-semibold text-gray-800 border-b border-gray-200 pb-2 mb-4"
+          class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary border-b border-gray-200 dark:border-dark-border pb-2 mb-4"
         >
           Account
         </h2>
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <p class="text-red-700 font-semibold mb-2">Danger Zone</p>
-          <p class="text-sm text-red-600 mb-4">
+        <div class="bg-gray-50 dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg p-6">
+          <p class="text-red-700 dark:text-red-400 font-semibold mb-2">Danger Zone</p>
+          <p class="text-sm text-red-600 dark:text-red-300 mb-4">
             Deactivating your account will disable your profile and remove your
             access. Deletion is permanent and cannot be undone.
           </p>
@@ -262,15 +254,32 @@
     padding: 0.5rem;
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
+    color: #374151; /* gray-700 */
   }
   .input-field:focus {
     border-color: #2563eb; /* Tailwind blue-600 */
     box-shadow: 0 0 0 2px #bfdbfe; /* Tailwind blue-200 */
   }
+  
+  /* Dark mode styles */
+  .dark .input-field {
+    border-color: #475569; /* dark-border */
+    background: #334155; /* dark-card */
+    color: #e2e8f0; /* dark-text-primary */
+  }
+  .dark .input-field:focus {
+    border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 2px #1e40af; /* blue-800 */
+  }
+  .dark .input-field[readonly] {
+    background: #1e293b; /* dark-surface */
+    color: #94a3b8; /* dark-text-secondary */
+  }
+  
   .sidebar-link {
-    @apply flex items-center px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium transition;
+    @apply flex items-center px-3 py-2 rounded text-gray-700 dark:text-dark-text-secondary hover:bg-gray-100 dark:hover:bg-dark-card font-medium transition;
   }
   .sidebar-link.text-red-600 {
-    @apply hover:bg-red-50;
+    @apply hover:bg-red-50 dark:hover:bg-red-900/20;
   }
 </style>

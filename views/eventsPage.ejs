@@ -42,9 +42,8 @@
   <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
     <% events.filter(event => new Date(event.endDate) >= new Date()).forEach(event => { 
       const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
-    %>
-    <div
-      class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col 
+    %>    <div
+      class="bg-white dark:bg-dark-surface shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100 dark:border-dark-border
       <%= isExpired ? 'grayscale opacity-50' : '' %>"
     >
       <!-- Event Image -->
@@ -57,12 +56,12 @@
       <!-- Event Details -->
       <div class="p-4 sm:p-5 flex flex-col justify-between flex-grow">
         <div>
-          <h2 class="text-lg sm:text-2xl font-semibold text-gray-900 mb-1">
+          <h2 class="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-dark-text-primary mb-1 transition-colors duration-300">
             <%= event.title %>
           </h2>
           <% if (event.club && event.club.name) { %>
-          <div class="text-xs sm:text-sm font-regular text-gray-500 mb-2 flex items-center gap-1">
-            <a href="/club/<%= event.club.id %>/about" class=" hover:underline">
+          <div class="text-xs sm:text-sm font-regular text-gray-500 dark:text-dark-text-secondary mb-2 flex items-center gap-1 transition-colors duration-300">
+            <a href="/club/<%= event.club.id %>/about" class="hover:underline hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-300">
               <%= event.club.name %>
             </a>
             <svg class="inline-block ml-1" width="14" height="14" viewBox="0 0 24 24" fill="var(--color-primary)" xmlns="http://www.w3.org/2000/svg">
@@ -71,8 +70,8 @@
             </svg>
           </div>
           <% } %>
-          <div class="w-20 h-[2px] bg-gray-200 my-2 mx-0"></div>
-          <div class="flex items-center flex-wrap gap-x-1 gap-y-1 mt-3 text-[10px] sm:text-[11px] text-black font-medium">
+          <div class="w-20 h-[2px] bg-gray-200 dark:bg-dark-border my-2 mx-0 transition-colors duration-300"></div>
+          <div class="flex items-center flex-wrap gap-x-1 gap-y-1 mt-3 text-[10px] sm:text-[11px] text-black dark:text-dark-text-primary font-medium transition-colors duration-300">
             <span class="flex items-center gap-1">
               <i class="far fa-calendar-alt text-[13px]"></i>
               <%= new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>

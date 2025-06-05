@@ -1,41 +1,53 @@
 <% layout("layouts/main") %> <%- include("layouts/clubDetails", { club, user,
 currentTab: "gallery" }) %>
 
-<div class="container mx-auto">
+<div
+  class="container mx-auto bg-gray-50 dark:bg-dark-bg transition-colors duration-300"
+>
   <div class="mt-8">
-    <h2 class="text-xl font-semibold mb-2 text-blue-700">Gallery</h2>
+    <h2
+      class="text-xl font-semibold mb-2 text-blue-700 dark:text-primary-400 transition-colors duration-300"
+    >
+      Gallery
+    </h2>
     <% if (isClubMod) { %>
     <div class="mb-8">
       <form
         action="/club/<%= club._id %>/gallery/upload"
         method="POST"
         enctype="multipart/form-data"
-        class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center gap-4 border border-gray-200"
+        class="bg-white dark:bg-dark-surface rounded-lg shadow p-6 flex flex-col md:flex-row items-center gap-4 border border-gray-200 dark:border-dark-border transition-colors duration-300"
       >
         <div class="flex flex-col items-center md:flex-row gap-4 w-full">
           <div class="flex flex-col items-center">
-            <label class="block text-gray-700 font-medium mb-2">Upload Image</label>
+            <label
+              class="block text-gray-700 dark:text-dark-text-primary font-medium mb-2 transition-colors duration-300"
+              >Upload Image</label
+            >
             <input
               type="file"
               name="galleryImage"
               accept="image/*"
               required
-              class="w-36 text-sm border border-gray-300 rounded px-2 py-1 bg-gray-50"
+              class="w-36 text-sm border border-gray-300 dark:border-dark-border rounded px-2 py-1 bg-gray-50 dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             />
           </div>
           <div class="flex-1">
-            <label class="block text-gray-700 font-medium mb-2">Caption (optional)</label>
+            <label
+              class="block text-gray-700 dark:text-dark-text-primary font-medium mb-2 transition-colors duration-300"
+              >Caption (optional)</label
+            >
             <input
               type="text"
               name="caption"
               maxlength="100"
               placeholder="Add a caption..."
-              class="input-field"
+              class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
             />
           </div>
           <button
             type="submit"
-            class="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition mt-4 md:mt-0"
+            class="bg-blue-600 dark:bg-primary-500 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 dark:hover:bg-primary-600 transition-colors duration-300 mt-4 md:mt-0"
           >
             <i class="fas fa-upload mr-2"></i>Upload
           </button>
@@ -51,7 +63,9 @@ currentTab: "gallery" }) %>
       >
         <div class="flex flex-col md:flex-row items-center gap-4 w-full">
           <div class="flex flex-col items-center md:items-start flex-1">
-            <label class="block text-gray-700 font-medium mb-2">Change Club Display Image</label>
+            <label class="block text-gray-700 font-medium mb-2"
+              >Change Club Display Image</label
+            >
             <input
               type="file"
               name="clubImage"
@@ -71,34 +85,56 @@ currentTab: "gallery" }) %>
         </div>
       </form>
       <% if (club.image) { %>
-      <form action="/club/<%= club._id %>/image/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the club display image?');" class="mt-2">
-        <button type="submit" class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+      <form
+        action="/club/<%= club._id %>/image/delete"
+        method="POST"
+        onsubmit="return confirm('Are you sure you want to delete the club display image?');"
+        class="mt-2"
+      >
+        <button
+          type="submit"
+          class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1"
+        >
           <i class="fas fa-trash-alt"></i> Delete Club Display Image
         </button>
       </form>
       <% } %>
     </div>
-    <% } %>
-    <% if (club.gallery && club.gallery.length > 0) { %>
+    <% } %> <% if (club.gallery && club.gallery.length > 0) { %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
       <% club.gallery.forEach(function(item) { %>
-      <div class="bg-white rounded-lg shadow p-4 flex flex-col items-center">
+      <div
+        class="bg-white dark:bg-dark-surface rounded-lg shadow p-4 flex flex-col items-center border border-gray-200 dark:border-dark-border transition-colors duration-300"
+      >
         <img
           src="<%= item.url %>"
           alt="Gallery Image"
-          class="w-full h-72 object-contain rounded mb-3 border border-gray-200 bg-gray-50"
+          class="w-full h-72 object-contain rounded mb-3 border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-card transition-colors duration-300"
         />
         <% if (item.caption) { %>
-        <p class="text-gray-700 text-center text-base mb-1">
+        <p
+          class="text-gray-700 dark:text-dark-text-primary text-center text-base mb-1 transition-colors duration-300"
+        >
           <%= item.caption %>
         </p>
         <% } %>
-        <div class="text-xs text-gray-400 mt-1">
-          Uploaded <%= item.uploadedAt ? new Date(item.uploadedAt).toLocaleDateString() : '' %>
+        <div
+          class="text-xs text-gray-400 dark:text-dark-text-secondary mt-1 transition-colors duration-300"
+        >
+          Uploaded <%= item.uploadedAt ? new
+          Date(item.uploadedAt).toLocaleDateString() : '' %>
         </div>
         <% if (isClubMod) { %>
-        <form action="/club/<%= club._id %>/gallery/<%= item._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this image?');" class="mt-2">
-          <button type="submit" class="text-red-600 hover:underline text-xs font-semibold flex items-center gap-1">
+        <form
+          action="/club/<%= club._id %>/gallery/<%= item._id %>/delete"
+          method="POST"
+          onsubmit="return confirm('Are you sure you want to delete this image?');"
+          class="mt-2"
+        >
+          <button
+            type="submit"
+            class="text-red-600 dark:text-red-400 hover:underline text-xs font-semibold flex items-center gap-1 transition-colors duration-300"
+          >
             <i class="fas fa-trash-alt"></i> Delete
           </button>
         </form>
@@ -107,11 +143,17 @@ currentTab: "gallery" }) %>
       <% }) %>
     </div>
     <% } else { %>
-    <div class="text-gray-500 italic">No images in the gallery yet.</div>
+    <div
+      class="text-gray-500 dark:text-dark-text-secondary italic transition-colors duration-300"
+    >
+      No images in the gallery yet.
+    </div>
     <% } %>
   </div>
 
-  <a href="/club" class="inline-block mt-8 text-blue-600 hover:underline"
+  <a
+    href="/club"
+    class="inline-block mt-8 text-blue-600 dark:text-primary-400 hover:underline transition-colors duration-300"
     >&larr; Back to Clubs</a
   >
 </div>

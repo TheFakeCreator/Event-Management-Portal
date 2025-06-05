@@ -1,12 +1,22 @@
 <% layout('layouts/main') %>
 
-<div class="container mx-auto p-10">
-  <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">Edit Club</h1>
+<div
+  class="container mx-auto p-10 bg-gray-50 dark:bg-dark-bg transition-colors duration-300"
+>
+  <h1
+    class="text-4xl font-bold text-center text-blue-600 dark:text-primary-400 mb-8 transition-colors duration-300"
+  >
+    Edit Club
+  </h1>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Edit Form -->
-    <div class="bg-white shadow-lg rounded-lg p-6">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+    <div
+      class="bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 border border-gray-200 dark:border-dark-border transition-colors duration-300"
+    >
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 transition-colors duration-300"
+      >
         Update Club Details
       </h2>
 
@@ -16,28 +26,34 @@
         class="space-y-4"
       >
         <div>
-          <label for="clubName" class="block text-gray-700 font-medium">
+          <label
+            for="clubName"
+            class="block text-gray-700 dark:text-dark-text-primary font-medium transition-colors duration-300"
+          >
             Club Name:
           </label>
           <input
             type="text"
             id="clubName"
             name="name"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
             value="<%= club.name %>"
             required
           />
         </div>
 
         <div>
-          <label for="description" class="block text-gray-700 font-medium">
+          <label
+            for="description"
+            class="block text-gray-700 dark:text-dark-text-primary font-medium transition-colors duration-300"
+          >
             Description:
           </label>
           <textarea
             id="description"
             name="description"
             rows="3"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
             required
           >
 <%= club.description %></textarea
@@ -45,42 +61,51 @@
         </div>
 
         <div>
-          <label for="about" class="block text-gray-700 font-medium">
+          <label
+            for="about"
+            class="block text-gray-700 dark:text-dark-text-primary font-medium transition-colors duration-300"
+          >
             About:
           </label>
           <textarea
             id="about"
             name="about"
             rows="3"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           >
 <%= club.about %></textarea
           >
         </div>
 
         <div>
-          <label for="imageUrl" class="block text-gray-700 font-medium">
+          <label
+            for="imageUrl"
+            class="block text-gray-700 dark:text-dark-text-primary font-medium transition-colors duration-300"
+          >
             Image URL:
           </label>
           <input
             type="text"
             id="imageUrl"
             name="image"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
             value="<%= club.image %>"
             required
           />
         </div>
 
         <div>
-          <label for="bannerUrl" class="block text-gray-700 font-medium">
+          <label
+            for="bannerUrl"
+            class="block text-gray-700 dark:text-dark-text-primary font-medium transition-colors duration-300"
+          >
             Banner URL:
           </label>
           <input
             type="text"
             id="bannerUrl"
             name="banner"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
             value="<%= club.banner %>"
           />
         </div>
@@ -209,28 +234,54 @@
 
   <!-- Add Moderator Section -->
   <div class="bg-white shadow-lg rounded-lg p-6 mt-8">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Add Moderator to this Club</h2>
-    <form action="/admin/clubs/<%= club._id %>/add-moderator" method="POST" class="flex flex-col md:flex-row gap-4 items-center">
-      <select name="userId" class="p-2 border border-gray-300 rounded-lg flex-1" required>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">
+      Add Moderator to this Club
+    </h2>
+    <form
+      action="/admin/clubs/<%= club._id %>/add-moderator"
+      method="POST"
+      class="flex flex-col md:flex-row gap-4 items-center"
+    >
+      <select
+        name="userId"
+        class="p-2 border border-gray-300 rounded-lg flex-1"
+        required
+      >
         <option value="" disabled selected>Select a user</option>
         <% users && users.forEach(function(user) { %>
-          <option value="<%= user._id %>"><%= user.name %> (<%= user.email %>)</option>
+        <option value="<%= user._id %>">
+          <%= user.name %> (<%= user.email %>)
+        </option>
         <% }) %>
       </select>
-      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Add as Moderator</button>
+      <button
+        type="submit"
+        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+      >
+        Add as Moderator
+      </button>
     </form>
     <% if (club.moderators && club.moderators.length > 0) { %>
     <div class="mt-4">
       <h3 class="font-semibold mb-2">Current Moderators:</h3>
       <ul class="list-disc ml-6">
         <% club.moderators.forEach(function(mod) { %>
-          <li>
-            <%= mod.name || mod.email || mod.toString() %>
-            <form action="/admin/clubs/<%= club._id %>/remove-moderator" method="POST" style="display:inline">
-              <input type="hidden" name="userId" value="<%= mod._id %>" />
-              <button type="submit" class="ml-2 text-red-600 hover:underline text-xs">Remove</button>
-            </form>
-          </li>
+        <li>
+          <%= mod.name || mod.email || mod.toString() %>
+          <form
+            action="/admin/clubs/<%= club._id %>/remove-moderator"
+            method="POST"
+            style="display: inline"
+          >
+            <input type="hidden" name="userId" value="<%= mod._id %>" />
+            <button
+              type="submit"
+              class="ml-2 text-red-600 hover:underline text-xs"
+            >
+              Remove
+            </button>
+          </form>
+        </li>
         <% }) %>
       </ul>
     </div>

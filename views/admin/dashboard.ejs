@@ -1,7 +1,9 @@
 <% layout('layouts/main') %>
 
 <div class="container mx-auto p-10">
-  <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">
+  <h1
+    class="text-4xl font-bold text-center text-blue-600 dark:text-primary-400 mb-8 transition-colors duration-300"
+  >
     Admin Dashboard
   </h1>
 
@@ -9,54 +11,104 @@
     <!-- Assign Roles -->
     <a
       href="/admin/roles"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
-      <i class="fa-solid fa-user-shield text-4xl text-blue-500 mb-4"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">Assign Roles</h2>
-      <p class="text-gray-600">Manage user roles and permissions.</p>
+      <i
+        class="fa-solid fa-user-shield text-4xl text-blue-500 dark:text-primary-400 mb-4 transition-colors duration-300"
+      ></i>
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+      >
+        Assign Roles
+      </h2>
+      <p
+        class="text-gray-600 dark:text-dark-text-secondary transition-colors duration-300"
+      >
+        Manage user roles and permissions.
+      </p>
     </a>
 
     <!-- Manage Club -->
     <a
       href="/admin/clubs"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
-      <i class="fa-solid fa-building text-4xl text-green-500 mb-4"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">Manage Club</h2>
-      <p class="text-gray-600">Create, edit, or delete clubs.</p>
+      <i
+        class="fa-solid fa-building text-4xl text-green-500 dark:text-green-400 mb-4 transition-colors duration-300"
+      ></i>
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+      >
+        Manage Club
+      </h2>
+      <p
+        class="text-gray-600 dark:text-dark-text-secondary transition-colors duration-300"
+      >
+        Create, edit, or delete clubs.
+      </p>
     </a>
 
     <!-- View All Users -->
     <a
       href="/admin/users"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
-      <i class="fa-solid fa-users text-4xl text-purple-500 mb-4"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">Manage Users</h2>
-      <p class="text-gray-600">View and manage all registered users.</p>
+      <i
+        class="fa-solid fa-users text-4xl text-purple-500 dark:text-purple-400 mb-4 transition-colors duration-300"
+      ></i>
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+      >
+        Manage Users
+      </h2>
+      <p
+        class="text-gray-600 dark:text-dark-text-secondary transition-colors duration-300"
+      >
+        View and manage all registered users.
+      </p>
     </a>
     <!-- Manage Events -->
     <a
       href="/admin/events"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
-      <i class="fa-solid fa-calendar text-4xl text-red-500 mb-4"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">Manage Events</h2>
-      <p class="text-gray-600">Create, edit, or delete events.</p>
+      <i
+        class="fa-solid fa-calendar text-4xl text-red-500 dark:text-red-400 mb-4 transition-colors duration-300"
+      ></i>
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+      >
+        Manage Events
+      </h2>
+      <p
+        class="text-gray-600 dark:text-dark-text-secondary transition-colors duration-300"
+      >
+        Create, edit, or delete events.
+      </p>
     </a>
     <!-- Settings -->
     <a
       href="/admin/settings"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
-      <i class="fa-solid fa-cog text-4xl text-yellow-500 mb-4"></i>
-      <h2 class="text-2xl font-semibold text-gray-800">Settings</h2>
-      <p class="text-gray-600">Manage application settings.</p>
+      <i
+        class="fa-solid fa-cog text-4xl text-yellow-500 dark:text-yellow-400 mb-4 transition-colors duration-300"
+      ></i>
+      <h2
+        class="text-2xl font-semibold text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+      >
+        Settings
+      </h2>
+      <p
+        class="text-gray-600 dark:text-dark-text-secondary transition-colors duration-300"
+      >
+        Manage application settings.
+      </p>
     </a>
     <!-- Logs -->
     <a
       href="/admin/logs"
-      class="block bg-white shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition transform hover:scale-105"
+      class="block bg-white dark:bg-dark-surface shadow-lg rounded-lg p-6 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-gray-100 dark:border-dark-border"
     >
       <i class="fa-solid fa-clipboard-list text-4xl text-blue-500 mb-4"></i>
       <h2 class="text-2xl font-semibold text-gray-800">Logs</h2>

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Built version) -->
+    <link rel="stylesheet" href="/css/style.css" />
 
     <!-- FontAwesome -->
     <link
@@ -16,142 +16,262 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-
     <!-- Google Fonts: Poppins -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Theme Toggle Script (load early to prevent flash) -->
+    <script src="/javascript/theme-toggle.js"></script>
   </head>
 
-  <body class="bg-gray-50 min-h-screen flex flex-col">
+  <body
+    class="bg-gray-50 dark:bg-dark-bg min-h-screen flex flex-col transition-colors duration-300"
+  >
     <!-- Navbar -->
-    <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <nav
+      class="bg-white dark:bg-dark-surface shadow-md fixed top-0 left-0 w-full z-50 transition-colors duration-300"
+    >
       <div
         class="container mx-auto flex justify-between items-center py-4 px-6"
       >
         <!-- Logo -->
-        <a href="/" class="text-2xl font-bold text-blue-600 flex items-center">
+        <a
+          href="/"
+          class="text-2xl font-bold text-blue-600 dark:text-primary-400 flex items-center transition-colors duration-300"
+        >
           EventX
         </a>
 
         <!-- Hamburger Menu (Mobile) -->
         <button
           id="menu-btn"
-          class="md:hidden text-gray-600 focus:outline-none"
+          class="md:hidden text-gray-600 dark:text-dark-text-secondary focus:outline-none transition-colors duration-300"
         >
           <i class="fas fa-bars text-2xl"></i>
         </button>
-
         <!-- Navigation Links -->
         <div id="menu" class="hidden md:flex space-x-6">
-          <a href="/" class="text-gray-600 hover:text-blue-500 transition"
+          <a
+            href="/"
+            class="text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
             >Home</a
           >
-          <a href="/event" class="text-gray-600 hover:text-blue-500 transition"
+          <a
+            href="/event"
+            class="text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
             >Events</a
           >
-          <a href="/club" class="text-gray-600 hover:text-blue-500 transition"
+          <a
+            href="/club"
+            class="text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
             >Clubs</a
           >
           <a
             href="/recruitment"
-            class="text-gray-600 hover:text-blue-500 transition"
+            class="text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
             >Recruitments</a
           >
           <% if (isAuthenticated && user.role === "admin") { %>
           <a
             href="/admin/dashboard"
-            class="text-gray-600 hover:text-blue-500 transition"
+            class="text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
           >
             Admin
           </a>
           <% } %>
         </div>
-
         <!-- Authentication -->
         <% if (isAuthenticated) { %>
-        <div class="relative">
-          <!-- Button -->
+        <div class="flex items-center space-x-4">
+          <!-- Theme Toggle Button -->
           <button
-            id="account-btn"
-            class="text-gray-700 hover:text-blue-500 flex items-center focus:outline-none"
+            id="theme-toggle"
+            class="hidden md:flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-300"
+            aria-label="Toggle theme"
+            title="Toggle theme"
           >
-            <i class="fas fa-user-circle text-2xl mr-2"></i>
-            <i class="fas fa-chevron-down ml-2 text-sm"></i>
+            <!-- Sun icon (visible in dark mode) -->
+            <svg
+              id="sun-icon"
+              class="w-5 h-5 text-yellow-500 hidden"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <!-- Moon icon (visible in light mode) -->
+            <svg
+              id="moon-icon"
+              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+              ></path>
+            </svg>
           </button>
 
-          <!-- Dropdown Menu -->
-          <div
-            id="dropdown-menu"
-            class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md p-2 hidden"
-          >
-            <form action="/auth/logout" method="post">
-              <button
-                class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 flex items-center"
-              >
-                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-              </button>
-            </form>
-            <a href="/user/<%= user.username %>">
-              <button
-                class="w-full text-left px-4 py-2 text-black hover:bg-gray-100 flex items-center"
-              >
-                <i class="fas fa-user-circle mr-2"></i>profile
-              </button>
-            </a>
+          <!-- Profile Button and Dropdown -->
+          <div class="relative">
+            <button
+              id="account-btn"
+              class="text-gray-700 dark:text-dark-text-primary hover:text-blue-500 dark:hover:text-primary-400 flex items-center focus:outline-none transition-colors duration-300"
+            >
+              <i class="fas fa-user-circle text-2xl mr-2"></i>
+              <i class="fas fa-chevron-down ml-2 text-sm"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div
+              id="dropdown-menu"
+              class="absolute right-0 mt-2 w-40 bg-white dark:bg-dark-surface shadow-lg rounded-md p-2 hidden transition-colors duration-300"
+            >
+              <form action="/auth/logout" method="post">
+                <button
+                  class="w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300"
+                >
+                  <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+              </form>
+              <a href="/user/<%= user.username %>">
+                <button
+                  class="w-full text-left px-4 py-2 text-black dark:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300"
+                >
+                  <i class="fas fa-user-circle mr-2"></i>profile
+                </button>
+              </a>
+            </div>
           </div>
         </div>
         <% } else { %>
-        <div class="hidden md:flex space-x-4">
+        <div class="hidden md:flex items-center space-x-4">
+          <!-- Theme Toggle Button -->
+          <button
+            id="theme-toggle"
+            class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-300"
+            aria-label="Toggle theme"
+            title="Toggle theme"
+          >
+            <!-- Sun icon (visible in dark mode) -->
+            <svg
+              id="sun-icon"
+              class="w-5 h-5 text-yellow-500 hidden"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <!-- Moon icon (visible in light mode) -->
+            <svg
+              id="moon-icon"
+              class="w-5 h-5 text-gray-700 dark:text-gray-300"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+              ></path>
+            </svg>
+          </button>
+
           <a
             href="/auth/login"
-            class="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition"
+            class="px-4 py-2 border border-blue-500 dark:border-primary-400 text-blue-500 dark:text-primary-400 rounded-lg hover:bg-blue-500 dark:hover:bg-primary-500 hover:text-white transition-colors duration-300"
           >
             Login
           </a>
           <a
             href="/auth/signup"
-            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            class="px-4 py-2 bg-blue-500 dark:bg-primary-500 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-primary-600 transition-colors duration-300"
           >
             Signup
           </a>
         </div>
         <% } %>
       </div>
-
       <!-- Mobile Menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md py-4">
-        <a href="/" class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-white dark:bg-dark-surface shadow-md py-4 transition-colors duration-300"
+      >
+        <a
+          href="/"
+          class="block px-6 py-2 text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
           >Home</a
         >
         <a
           href="/event"
-          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          class="block px-6 py-2 text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
           >Events</a
         >
         <a
           href="/club"
-          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          class="block px-6 py-2 text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
           >Clubs</a
         >
         <a
           href="/recruitments"
-          class="block px-6 py-2 text-gray-600 hover:text-blue-500"
+          class="block px-6 py-2 text-gray-600 dark:text-dark-text-secondary hover:text-blue-500 dark:hover:text-primary-400 transition-colors duration-300"
           >Recruitments</a
         >
+
+        <!-- Mobile Theme Toggle -->
+        <div class="px-6 py-2">
+          <button
+            id="mobile-theme-toggle"
+            class="flex items-center justify-center w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors duration-300"
+            aria-label="Toggle theme"
+          >
+            <!-- Sun icon (visible in dark mode) -->
+            <svg
+              id="mobile-sun-icon"
+              class="w-5 h-5 text-yellow-500 hidden mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <!-- Moon icon (visible in light mode) -->
+            <svg
+              id="mobile-moon-icon"
+              class="w-5 h-5 text-gray-700 dark:text-gray-300 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+              ></path>
+            </svg>
+            <span class="text-gray-700 dark:text-dark-text-primary"
+              >Toggle Theme</span
+            >
+          </button>
+        </div>
+
         <% if (!isAuthenticated) { %>
         <a
           href="/auth/login"
-          class="block px-6 py-2 text-blue-500 hover:bg-blue-100"
+          class="block px-6 py-2 text-blue-500 dark:text-primary-400 hover:bg-blue-100 dark:hover:bg-dark-card transition-colors duration-300"
           >Login</a
         >
         <a
           href="/auth/signup"
-          class="block px-6 py-2 text-white bg-blue-500 hover:bg-blue-600"
+          class="block px-6 py-2 text-white bg-blue-500 dark:bg-primary-500 hover:bg-blue-600 dark:hover:bg-primary-600 transition-colors duration-300"
           >Signup</a
         >
         <% } %>
@@ -170,10 +290,10 @@
     >
       <% if (_success && _success.length) { %>
       <div
-        class="relative flex items-center bg-green-100 border border-green-400 text-green-700 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px]"
+        class="relative flex items-center bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-500 text-green-700 dark:text-green-300 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px] transition-colors duration-300"
       >
         <svg
-          class="w-5 h-5 mr-2 text-green-500"
+          class="w-5 h-5 mr-2 text-green-500 dark:text-green-400"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -188,7 +308,7 @@
         <span class="font-medium"><%= _success[0] %></span>
         <button
           onclick="closeFlashMessage()"
-          class="absolute top-1 right-2 text-green-700 hover:text-green-900 text-xl"
+          class="absolute top-1 right-2 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 text-xl transition-colors duration-300"
         >
           &times;
         </button>
@@ -219,10 +339,10 @@
       </div>
       <% } %> <% if (_error && _error.length) { %>
       <div
-        class="relative flex items-center bg-red-100 border border-red-400 text-red-700 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px]"
+        class="relative flex items-center bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-500 text-red-700 dark:text-red-300 px-5 py-3 rounded shadow-lg animate-fade-in mb-3 min-w-[320px] transition-colors duration-300"
       >
         <svg
-          class="w-5 h-5 mr-2 text-red-500"
+          class="w-5 h-5 mr-2 text-red-500 dark:text-red-400"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -237,7 +357,7 @@
         <span class="font-medium"><%= _error[0] %></span>
         <button
           onclick="closeFlashMessage()"
-          class="absolute top-1 right-2 text-red-700 hover:text-red-900 text-xl"
+          class="absolute top-1 right-2 text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 text-xl transition-colors duration-300"
         >
           &times;
         </button>
@@ -310,18 +430,24 @@
     <!-- Dynamic Content -->
     <div class="container mx-auto mt-20 px-6 flex-grow"><%- body %></div>
     <!-- Footer -->
-    <footer class="bg-gray-50 mt-10 drop-shadow-2xl">
+    <footer
+      class="bg-gray-50 dark:bg-dark-surface mt-10 drop-shadow-2xl transition-colors duration-300"
+    >
       <div class="container mx-auto px-6 py-12">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- About Section -->
           <div class="space-y-4">
-            <h3 class="text-2xl font-bold text-blue-600">EventX</h3>
+            <h3
+              class="text-2xl font-bold text-blue-600 dark:text-primary-400 transition-colors duration-300"
+            >
+              EventX
+            </h3>
             <div class="flex items-center space-x-2 mb-4"></div>
             <ul class="space-y-3">
               <li>
                 <a
                   href="/about"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
                 >
                   About
                 </a>
@@ -329,7 +455,7 @@
               <li>
                 <a
                   href="/privacy"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
                 >
                   Privacy Policy
                 </a>
@@ -337,7 +463,7 @@
               <li>
                 <a
                   href="/contact"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
                 >
                   Contact Us
                 </a>
@@ -347,13 +473,17 @@
 
           <!-- Contributors Section -->
           <div class="space-y-4">
-            <h3 class="text-lg font-semibold text-black mb-4">Contributors</h3>
+            <h3
+              class="text-lg font-semibold text-black dark:text-dark-text-primary mb-4 transition-colors duration-300"
+            >
+              Contributors
+            </h3>
             <ul class="space-y-3">
               <li>
                 <a
                   href="https://github.com/TheFakeCreator"
                   target="_blank"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fab fa-github mr-2 text-sm"></i>
                   @TheFakeCreator
@@ -363,7 +493,7 @@
                 <a
                   href="https://github.com/shijha19"
                   target="_blank"
-                  class="text-black hover:text-blue-600 transition-colors duration-200 flex items-center"
+                  class="text-black dark:text-dark-text-primary hover:text-blue-600 dark:hover:text-primary-400 transition-colors duration-200 flex items-center"
                 >
                   <i class="fab fa-github mr-2 text-sm"></i>
                   @shijha19

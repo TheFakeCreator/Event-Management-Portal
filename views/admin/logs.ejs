@@ -1,7 +1,11 @@
 <% layout('layouts/main') %>
 
 <div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">System Logs</h1>
+  <h1
+    class="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+  >
+    System Logs
+  </h1>
 
   <!-- Search Bar -->
   <div class="mb-4">
@@ -9,36 +13,65 @@
       type="text"
       id="searchLogs"
       placeholder="Search logs..."
-      class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+      class="w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:border-transparent transition-colors duration-300"
     />
   </div>
 
   <!-- Logs Table -->
-  <div class="bg-white shadow-lg rounded-lg p-4 overflow-x-auto">
-    <table class="w-full border-collapse border border-gray-300" id="logsTable">
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-4 overflow-x-auto transition-colors duration-300"
+  >
+    <table
+      class="w-full border-collapse border border-gray-300 dark:border-dark-border"
+      id="logsTable"
+    >
       <thead>
-        <tr class="bg-gray-200 text-gray-700">
-          <th class="border p-3">Timestamp</th>
-          <th class="border p-3">User</th>
-          <th class="border p-3">Action</th>
-          <th class="border p-3">Description</th>
+        <tr
+          class="bg-gray-200 dark:bg-dark-card text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+        >
+          <th class="border border-gray-300 dark:border-dark-border p-3">
+            Timestamp
+          </th>
+          <th class="border border-gray-300 dark:border-dark-border p-3">
+            User
+          </th>
+          <th class="border border-gray-300 dark:border-dark-border p-3">
+            Action
+          </th>
+          <th class="border border-gray-300 dark:border-dark-border p-3">
+            Description
+          </th>
         </tr>
       </thead>
       <tbody>
         <% logs.forEach(log => { %>
-        <tr class="log-entry hover:bg-gray-100 transition">
-          <td class="border p-3">
+        <tr
+          class="log-entry hover:bg-gray-100 dark:hover:bg-dark-card transition-colors duration-300"
+        >
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-900 dark:text-dark-text-primary"
+          >
             <%= new Date(log.timestamp).toLocaleString() %>
           </td>
-          <td class="border p-3 font-medium text-gray-800"><%= log.user %></td>
-          <td class="border p-3 font-semibold">
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 font-medium text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+          >
+            <%= log.user %>
+          </td>
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 font-semibold"
+          >
             <span
-              class="px-3 py-1 rounded-lg text-white text-sm <% if (log.action === 'CREATE') { %> bg-green-500 <% } %> <% if (log.action === 'EDIT') { %> bg-yellow-500 <% } %> <% if (log.action === 'DELETE') { %> bg-red-500 <% } %>"
+              class="px-3 py-1 rounded-lg text-white text-sm <% if (log.action === 'CREATE') { %> bg-green-500 dark:bg-green-600 <% } %> <% if (log.action === 'EDIT') { %> bg-yellow-500 dark:bg-yellow-600 <% } %> <% if (log.action === 'DELETE') { %> bg-red-500 dark:bg-red-600 <% } %>"
             >
               <%= log.action %>
             </span>
           </td>
-          <td class="border p-3 text-gray-700"><%= log.details %></td>
+          <td
+            class="border border-gray-300 dark:border-dark-border p-3 text-gray-700 dark:text-dark-text-secondary transition-colors duration-300"
+          >
+            <%= log.details %>
+          </td>
         </tr>
         <% }); %>
       </tbody>

@@ -12,11 +12,15 @@
     <div
       class="relative z-10 w-full flex items-end gap-6 p-6 bg-gradient-to-t from-black/60 via-black/30 to-transparent"
     >
-      <img
-        src="<%= club.image %>"
-        alt="<%= club.name %> Logo"
-        class="w-28 h-28 object-cover rounded-lg shadow-md border-4 border-white hidden md:block mb-2"
-      />
+      <div
+        class="w-28 h-28 bg-white rounded-lg shadow-md border-4 border-white hidden md:flex items-center justify-center mb-2 p-3 flex-shrink-0"
+      >
+        <img
+          src="<%= club.image %>"
+          alt="<%= club.name %> Logo"
+          class="max-w-full max-h-full object-contain"
+        />
+      </div>
       <div class="flex-1">
         <div class="flex items-start justify-between">
           <div class="max-w-2xl w-full">

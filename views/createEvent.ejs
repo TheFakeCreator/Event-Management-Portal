@@ -1,21 +1,56 @@
 <% layout("layouts/main") %>
 
-<div class="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded-xl mt-10">
-  <h1 class="text-4xl font-extrabold text-blue-600 mb-8 text-center">Create Event</h1>
-  
+<div
+  class="max-w-3xl mx-auto bg-white dark:bg-dark-surface p-8 shadow-lg dark:shadow-2xl rounded-xl border dark:border-dark-border mt-10 transition-colors duration-300"
+>
+  <h1
+    class="text-4xl font-extrabold text-blue-600 dark:text-blue-400 mb-8 text-center"
+  >
+    Create Event
+  </h1>
+
   <form action="/event/create" method="POST" class="space-y-6">
     <div class="grid grid-cols-1 gap-4">
       <div>
-        <label for="title" class="block text-lg font-medium text-gray-700">Event Title</label>
-        <input type="text" name="title" id="title" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter event title" required/>
+        <label
+          for="title"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Event Title</label
+        >
+        <input
+          type="text"
+          name="title"
+          id="title"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          placeholder="Enter event title"
+          required
+        />
       </div>
       <div>
-        <label for="description" class="block text-lg font-medium text-gray-700">Event Description</label>
-        <textarea name="description" id="description" rows="4" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter event description"></textarea>
+        <label
+          for="description"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Event Description</label
+        >
+        <textarea
+          name="description"
+          id="description"
+          rows="4"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          placeholder="Enter event description"
+        ></textarea>
       </div>
       <div>
-        <label for="type" class="block text-lg font-medium text-gray-700">Type</label>
-        <select name="type" id="type" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+        <label
+          for="type"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Type</label
+        >
+        <select
+          name="type"
+          id="type"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+        >
           <option value="Workshops">Workshops</option>
           <option value="Talks">Talks</option>
           <option value="Workshops & Talks">Workshops & Talks</option>
@@ -26,63 +61,146 @@
           <option value="Other" selected>Other</option>
         </select>
       </div>
-      
+
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label for="startDate" class="block text-lg font-medium text-gray-700">Start Date</label>
-          <input type="date" name="startDate" id="startDate" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+          <label
+            for="startDate"
+            class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+            >Start Date</label
+          >
+          <input
+            type="date"
+            name="startDate"
+            id="startDate"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+            required
+          />
         </div>
         <div>
-          <label for="endDate" class="block text-lg font-medium text-gray-700">End Date</label>
-          <input type="date" name="endDate" id="endDate" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+          <label
+            for="endDate"
+            class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+            >End Date</label
+          >
+          <input
+            type="date"
+            name="endDate"
+            id="endDate"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+            required
+          />
         </div>
       </div>
-      
+
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label for="startTime" class="block text-lg font-medium text-gray-700">Start Time</label>
-          <input type="time" name="startTime" id="startTime" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+          <label
+            for="startTime"
+            class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+            >Start Time</label
+          >
+          <input
+            type="time"
+            name="startTime"
+            id="startTime"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+            required
+          />
         </div>
         <div>
-          <label for="endTime" class="block text-lg font-medium text-gray-700">End Time</label>
-          <input type="time" name="endTime" id="endTime" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required />
+          <label
+            for="endTime"
+            class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+            >End Time</label
+          >
+          <input
+            type="time"
+            name="endTime"
+            id="endTime"
+            class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+            required
+          />
         </div>
       </div>
-      
+
       <div>
-        <label for="location" class="block text-lg font-medium text-gray-700">Location</label>
-        <input type="text" name="location" id="location" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter event location" required/>
+        <label
+          for="location"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Location</label
+        >
+        <input
+          type="text"
+          name="location"
+          id="location"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          placeholder="Enter event location"
+          required
+        />
       </div>
-      
+
       <div>
-        <label for="image" class="block text-lg font-medium text-gray-700">Event Image URL</label>
-        <input type="text" name="image" id="image" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Paste image URL"/>
+        <label
+          for="image"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Event Image URL</label
+        >
+        <input
+          type="text"
+          name="image"
+          id="image"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          placeholder="Paste image URL"
+        />
       </div>
-      
       <div>
-        <label for="club" class="block text-lg font-medium text-gray-700">Club</label>
-        <select name="club" id="club" class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+        <label
+          for="club"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Club</label
+        >
+        <select
+          name="club"
+          id="club"
+          class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+        >
           <% clubs.forEach(club => { %>
-            <option value="<%= club._id %>"><%= club.name %></option>
+          <option value="<%= club._id %>"><%= club.name %></option>
           <% }); %>
         </select>
       </div>
-      
+
       <div>
-        <label for="collaborators" class="block text-lg font-medium text-gray-700">Collaborators</label>
-        <div id="collaborators-container" class="mt-2 flex flex-wrap gap-2 p-3 border rounded-lg shadow-sm min-h-[44px]">
-          <select id="collaborators-select" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+        <label
+          for="collaborators"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Collaborators</label
+        >
+        <div
+          id="collaborators-container"
+          class="mt-2 flex flex-wrap gap-2 p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm min-h-[44px] bg-white dark:bg-dark-card transition-colors duration-300"
+        >
+          <select
+            id="collaborators-select"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          >
             <option value="">Select a collaborator...</option>
             <% clubs.forEach(club => { %>
-              <option value="<%= club._id %>"><%= club.name %></option>
+            <option value="<%= club._id %>"><%= club.name %></option>
             <% }); %>
           </select>
         </div>
         <input type="hidden" name="collaborators" id="collaborators-hidden" />
       </div>
     </div>
-    
-    <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300">Create Event</button>
+
+    <button
+      type="submit"
+      class="w-full bg-blue-500 dark:bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition duration-300"
+    >
+      Create Event
+    </button>
   </form>
 </div>
 
@@ -92,40 +210,46 @@
     const container = document.getElementById("collaborators-container");
     const hiddenInput = document.getElementById("collaborators-hidden");
     let collaborators = [];
-  
+
     select.addEventListener("change", () => {
       const selectedClubId = select.value;
       const selectedClubName = select.options[select.selectedIndex].text;
-  
-      if (selectedClubId && !collaborators.find(c => c.id === selectedClubId)) {
+
+      if (
+        selectedClubId &&
+        !collaborators.find((c) => c.id === selectedClubId)
+      ) {
         addCollaborator(selectedClubId, selectedClubName);
         select.value = "";
       }
     });
-  
+
     function addCollaborator(id, name) {
       collaborators.push({ id, name });
       updateCollaborators();
     }
-  
+
     function removeCollaborator(id) {
       collaborators = collaborators.filter((c) => c.id !== id);
       updateCollaborators();
     }
-  
+
     function updateCollaborators() {
       container.innerHTML = "";
-  
+
       collaborators.forEach((collaborator) => {
         const tag = document.createElement("span");
-        tag.className = "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
+        tag.className =
+          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
         tag.innerHTML = `${collaborator.name} <span class="ml-2 font-bold">&times;</span>`;
-        tag.addEventListener("click", () => removeCollaborator(collaborator.id));
+        tag.addEventListener("click", () =>
+          removeCollaborator(collaborator.id)
+        );
         container.appendChild(tag);
       });
-      
+
       container.appendChild(select);
-      hiddenInput.value = JSON.stringify(collaborators.map(c => c.id));
+      hiddenInput.value = JSON.stringify(collaborators.map((c) => c.id));
     }
   });
 </script>

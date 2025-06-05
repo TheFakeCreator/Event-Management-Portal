@@ -1,10 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+import { safelist } from "./tailwind.safelist.js";
+
 export default {
   content: [
     "./src/**/*.{html,js,jsx,ts,tsx}",
     "./public/index.html",
     "./views/**/*.ejs",
   ],
+  safelist: safelist,
+  darkMode: ["class"], // Enable class-based dark mode
   theme: {
     extend: {
       fontFamily: {
@@ -23,6 +27,18 @@ export default {
           700: "#223d99",
           800: "#192b70",
           900: "#101947",
+        },
+        // Dark theme color palette
+        dark: {
+          bg: "#0f172a", // Dark background
+          surface: "#1e293b", // Card/surface backgrounds
+          card: "#334155", // Elevated surfaces
+          border: "#475569", // Borders and dividers
+          text: {
+            primary: "#f8fafc", // Primary text
+            secondary: "#cbd5e1", // Secondary text
+            muted: "#94a3b8", // Muted text
+          },
         },
       },
     },

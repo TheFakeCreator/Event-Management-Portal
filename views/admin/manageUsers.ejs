@@ -2,7 +2,7 @@
 
 <div class="container mx-auto p-4 sm:p-6 lg:p-10">
   <h1
-    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-purple-600 mb-6 sm:mb-8"
+    class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-purple-600 dark:text-purple-400 mb-6 sm:mb-8"
   >
     Manage Users
   </h1>
@@ -12,39 +12,78 @@
     <input
       type="text"
       id="searchUser"
-      class="w-full p-2 sm:p-3 border border-gray-300 rounded-lg text-sm sm:text-base"
+      class="w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border rounded-lg text-sm sm:text-base bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
       placeholder="Search users by name or email..."
       onkeyup="filterUsers()"
     />
   </div>
 
   <!-- Users Table -->
-  <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
-    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+  <div
+    class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-lg border dark:border-dark-border p-4 sm:p-6 transition-colors duration-300"
+  >
+    <h2
+      class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4"
+    >
       User List
     </h2>
 
     <div class="overflow-x-auto">
       <table
-        class="w-full border-collapse border border-gray-300 text-sm sm:text-base"
+        class="w-full border-collapse border border-gray-300 dark:border-dark-border text-sm sm:text-base"
       >
         <thead>
-          <tr class="bg-gray-100">
-            <th class="border p-2 sm:p-3">Name</th>
-            <th class="border p-2 sm:p-3">Email</th>
-            <th class="border p-2 sm:p-3">Role</th>
-            <th class="border p-2 sm:p-3">Actions</th>
+          <tr class="bg-gray-100 dark:bg-dark-card">
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Name
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Email
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Role
+            </th>
+            <th
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody id="usersTableBody">
           <% users.forEach(user => { %>
-          <tr>
-            <td class="border p-2 sm:p-3"><%= user.name %></td>
-            <td class="border p-2 sm:p-3"><%= user.email %></td>
-            <td class="border p-2 sm:p-3 text-center"><%= user.role %></td>
-            <td class="border p-2 sm:p-3 flex justify-center">
+          <tr
+            class="hover:bg-gray-50 dark:hover:bg-dark-card transition-colors duration-200"
+          >
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= user.name %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= user.email %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 text-center text-gray-900 dark:text-dark-text-primary"
+            >
+              <%= user.role %>
+            </td>
+            <td
+              class="border border-gray-300 dark:border-dark-border p-2 sm:p-3 flex justify-center"
+            >
               <form action="/admin/users/delete/<%= user.id %>" method="POST">
-                <button type="submit" class="text-red-500 hover:underline">
+                <button
+                  type="submit"
+                  class="text-red-500 dark:text-red-400 hover:underline"
+                >
                   Delete
                 </button>
               </form>
