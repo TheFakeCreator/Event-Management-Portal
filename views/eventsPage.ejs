@@ -18,29 +18,31 @@
         >
           <i class="fas fa-search text-xs"></i>
         </button>
-      </div>
-        <!-- Club Filter -->
-      <div class="w-full sm:w-auto sm:min-w-[160px]">
+      </div>        <!-- Club Filter -->
+      <div class="w-full sm:w-auto sm:min-w-[160px] relative">
         <select
           id="clubFilter"
-          class="w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text-primary shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-300 text-sm appearance-none cursor-pointer"
-          style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 4 5\'><path fill=\'%23666\' d=\'M2 0L0 2h4zm0 5L0 3h4z\'/></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.65em auto;"
+          class="w-full py-2.5 sm:py-3 pl-4 sm:pl-5 pr-10 sm:pr-12 rounded-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text-primary shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 text-sm appearance-none cursor-pointer hover:border-primary/50 dark:hover:border-primary-400/50"
         >
           <option value="">All Clubs</option>
           <% const eventClubs = new Set(events.map(event => event.club?.name).filter(Boolean)); %>
           <% eventClubs.forEach(clubName => { %>
             <option value="<%= clubName %>"><%= clubName %></option>
           <% }); %>
-        </select>
+        </select>        <!-- Custom dropdown arrow -->
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500 dark:text-dark-text-secondary transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
       </div>
-    </div>
-    
-    <!-- Create Event Button -->
+    </div>    <!-- Create Event Button -->
     <a
       href="/event/create"
       class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto justify-center min-w-[140px]"
     >
-      <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Create Event</span>
+      <i class="fas fa-plus-circle"></i> 
+      <span class="create-event-text">Create Event</span>
     </a>
   </div>  <!-- Event Grid -->
   <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
@@ -141,6 +143,68 @@
     <% }) %>
   </div>
 </div>
+
+<style>
+/* Custom dropdown styling to override browser defaults */
+#clubFilter {
+  background-image: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 0.625rem 3rem 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+/* Hide default dropdown arrow in WebKit browsers */
+#clubFilter::-webkit-outer-spin-button,
+#clubFilter::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide default dropdown arrow in Firefox */
+#clubFilter::-moz-focus-inner {
+  border: 0;
+}
+
+/* Dark mode styling */
+.dark #clubFilter {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+/* Focus states */
+#clubFilter:focus {
+  outline: none !important;
+  border-color: #3762EC !important;
+  box-shadow: 0 0 0 2px rgba(55, 98, 236, 0.2) !important;
+}
+
+/* Hover states */
+#clubFilter:hover {
+  border-color: rgba(55, 98, 236, 0.5) !important;
+}
+
+.dark #clubFilter:hover {
+  border-color: rgba(87, 133, 242, 0.5) !important;
+}
+
+/* Ensure Create Event button text is visible on all screen sizes */
+.create-event-text {
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  .create-event-text {
+    display: inline-block;
+  }
+}
+</style>
 
 <script>
       const searchInput = document.querySelector('input[type="text"]');

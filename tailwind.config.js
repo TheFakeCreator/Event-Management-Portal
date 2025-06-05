@@ -8,9 +8,12 @@ export default {
     "./views/**/*.ejs",
   ],
   safelist: safelist,
-  darkMode: ["class"], // Enable class-based dark mode
+  darkMode: "class", // Enable class-based dark mode
   theme: {
     extend: {
+      screens: {
+        xs: "475px",
+      },
       fontFamily: {
         sans: ["Poppins", "ui-sans-serif", "system-ui", "sans-serif"],
       },

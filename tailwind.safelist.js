@@ -13,7 +13,6 @@ export const safelist = [
   "dark:text-primary-400",
   "dark:text-primary-500",
   "dark:text-primary-600",
-
   // Dark mode border classes
   "dark:border-dark-border",
   "dark:border-primary-400",
@@ -25,11 +24,16 @@ export const safelist = [
   "dark:hover:bg-slate-600",
   "dark:hover:bg-dark-card",
   "dark:hover:text-primary-400",
+  "hover:border-primary/50",
+  "dark:hover:border-primary-400/50",
 
   // Focus states for dark mode
   "dark:focus:ring-primary-500",
-
   // Icon visibility classes for theme toggle
   "dark:block",
   "dark:hidden",
+
+  // XS breakpoint classes
+  "xs:inline",
+  "hidden",
 ];
