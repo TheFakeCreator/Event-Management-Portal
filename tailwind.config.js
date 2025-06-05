@@ -30,9 +30,9 @@ export default {
         },
         // Dark theme color palette
         dark: {
-          bg: "#0f172a", // Dark background
-          surface: "#1e293b", // Card/surface backgrounds
-          card: "#334155", // Elevated surfaces
+          bg: "#04050A", // Dark background
+          surface: "#04050A", // Card/surface backgrounds
+          card: "#13172b", // Elevated surfaces
           border: "#475569", // Borders and dividers
           text: {
             primary: "#f8fafc", // Primary text

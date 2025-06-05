@@ -42,14 +42,26 @@
     >
       <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Create Event</span>
     </a>
-  </div>
-
-  <!-- Event Grid -->
+  </div>  <!-- Event Grid -->
   <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
-    <% events.filter(event => new Date(event.endDate) >= new Date()).forEach(event => { 
+    <% 
+    // Sort events: active events first, expired events last
+    const sortedEvents = events.sort((a, b) => {
+      const aExpired = new Date(a.endDate) < new Date();
+      const bExpired = new Date(b.endDate) < new Date();
+      
+      // If one is expired and other is not, non-expired comes first
+      if (aExpired && !bExpired) return 1;
+      if (!aExpired && bExpired) return -1;
+      
+      // If both are in same category (both expired or both active), sort by date
+      return new Date(a.startDate) - new Date(b.startDate);
+    });
+    
+    sortedEvents.forEach(event => { 
       const isExpired = new Date(event.endDate) < new Date(); // Check if event is expired
     %>    <div
-      class="bg-white dark:bg-dark-surface shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col border border-gray-100 dark:border-dark-border
+      class="bg-white dark:bg-dark-surface shadow-md shadow-gray-100/60 dark:shadow-dark-border/30 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-gray-200/70 dark:hover:shadow-dark-border/40 transition-all duration-300 flex flex-col border border-gray-100 dark:border-dark-border
       <%= isExpired ? 'grayscale opacity-50' : '' %>"
     >
       <!-- Event Image -->

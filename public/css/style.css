@@ -2301,6 +2301,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-gray-100\/60{
+  --tw-shadow-color: rgb(243 244 246 / 0.6);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .outline{
   outline-style: solid;
 }
@@ -2560,6 +2565,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.hover\:shadow-gray-200\/70:hover{
+  --tw-shadow-color: rgb(229 231 235 / 0.7);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .focus\:border-blue-500:focus{
   --tw-border-opacity: 1;
   border-color: rgb(59 130 246 / var(--tw-border-opacity));
@@ -2767,7 +2777,7 @@ video {
 
 :is(.dark .dark\:bg-dark-bg){
   --tw-bg-opacity: 1;
-  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+  background-color: rgb(4 5 10 / var(--tw-bg-opacity));
 }
 
 :is(.dark .dark\:bg-dark-border){
@@ -2851,8 +2861,8 @@ video {
 }
 
 :is(.dark .dark\:from-dark-bg){
-  --tw-gradient-from: #0f172a var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(15 23 42 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: #04050A var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(4 5 10 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
@@ -2989,6 +2999,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+:is(.dark .dark\:shadow-dark-border\/30){
+  --tw-shadow-color: rgb(71 85 105 / 0.3);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 :is(.dark .dark\:shadow-gray-900\/50){
   --tw-shadow-color: rgb(17 24 39 / 0.5);
   --tw-shadow: var(--tw-shadow-colored);
@@ -3077,6 +3092,11 @@ video {
 :is(.dark .dark\:hover\:text-red-100:hover){
   --tw-text-opacity: 1;
   color: rgb(254 226 226 / var(--tw-text-opacity));
+}
+
+:is(.dark .dark\:hover\:shadow-dark-border\/40:hover){
+  --tw-shadow-color: rgb(71 85 105 / 0.4);
+  --tw-shadow: var(--tw-shadow-colored);
 }
 
 :is(.dark .dark\:focus\:border-primary-500:focus){
