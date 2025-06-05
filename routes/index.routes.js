@@ -15,7 +15,7 @@ router.get("/privacy", isAuthenticatedLineant, getPrivacy);
 
 // Test route for unauthorized users (lineants)
 router.get("/test", isAuthenticatedLineant, (req, res) => {
-  res.render("unauthorized.ejs", {
+  res.render("landingPage", {
     title: "Admin Dashboard",
     isAuthenticated: req.isAuthenticated,
     user: req.user,

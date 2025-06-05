@@ -700,11 +700,11 @@ class MouseFollowingBlob {
       ".sponsor-placeholder",
       ".contributor-card",
       '[role="button"]',
-      '[tabindex]',
+      "[tabindex]",
     ];
 
-    return interactiveSelectors.some((selector) =>
-      element.matches(selector) || element.closest(selector)
+    return interactiveSelectors.some(
+      (selector) => element.matches(selector) || element.closest(selector)
     );
   }
 
@@ -779,7 +779,9 @@ class MouseFollowingBlob {
             opacity: 1,
           },
           {
-            transform: `translate(${-50 + Math.cos(angle) * 100}%, ${-50 + Math.sin(angle) * 100}%) scale(0)`,
+            transform: `translate(${-50 + Math.cos(angle) * 100}%, ${
+              -50 + Math.sin(angle) * 100
+            }%) scale(0)`,
             opacity: 0,
           },
         ],
@@ -817,10 +819,15 @@ class MouseFollowingBlob {
 
     // Add subtle morphing based on movement
     const speed = Math.sqrt(dx * dx + dy * dy);
-    const morphOffset = Math.sin(this.time * this.morphSpeed) * this.morphIntensity;
+    const morphOffset =
+      Math.sin(this.time * this.morphSpeed) * this.morphIntensity;
 
     // Interpolate between current and target state
-    this.currentState = this.interpolateState(this.currentState, this.targetState, 0.1);
+    this.currentState = this.interpolateState(
+      this.currentState,
+      this.targetState,
+      0.1
+    );
 
     // Apply position and styling
     this.blob.style.left = `${this.blobX}px`;
@@ -838,8 +845,14 @@ class MouseFollowingBlob {
     const shadowIntensity = this.currentState.scale;
     this.blob.style.boxShadow = `
       0 0 ${20 * shadowIntensity}px ${this.currentState.color},
-      0 0 ${40 * shadowIntensity}px ${this.currentState.color.replace("0.3", "0.2")},
-      0 0 ${60 * shadowIntensity}px ${this.currentState.color.replace("0.3", "0.1")}
+      0 0 ${40 * shadowIntensity}px ${this.currentState.color.replace(
+      "0.3",
+      "0.2"
+    )},
+      0 0 ${60 * shadowIntensity}px ${this.currentState.color.replace(
+      "0.3",
+      "0.1"
+    )}
     `;
   }
 
@@ -907,7 +920,8 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("WaveAnimator initialized:", waveAnimator);
 
   // Initialize mouse following blob
-  console.log("Initializing MouseFollowingBlob...");  const mouseBlob = new MouseFollowingBlob();
+  console.log("Initializing MouseFollowingBlob...");
+  const mouseBlob = new MouseFollowingBlob();
   console.log("MouseFollowingBlob initialized:", mouseBlob);
 
   // Observe all sections for scroll animations

@@ -1,26 +1,30 @@
 <% layout("layouts/main") %>
 
-<div class="w-full px-0 sm:px-4 py-6 sm:py-8 mx-auto">
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-primary">Events</h1>
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 w-full sm:w-auto">
-      <div class="relative flex flex-row items-center w-full sm:w-2/3 mb-2 sm:mb-0">
+<div class="w-full px-0 sm:px-4 py-6 sm:py-8 mx-auto">  <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 lg:gap-6 mb-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-primary dark:text-primary-400 transition-colors duration-300">Events</h1>
+    
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+      <!-- Search Input Container -->
+      <div class="relative w-full sm:w-auto sm:min-w-[300px]">
         <input
           type="text"
           placeholder="Search events..."
-          class="w-full py-2 sm:py-3 px-4 sm:px-5 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+          class="w-full py-2.5 sm:py-3 pl-4 sm:pl-5 pr-12 sm:pr-14 rounded-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text-primary shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-300 text-sm"
         />
         <button
-          class="bg-primary text-white translate-x-[-55%] rounded-full p-2 sm:p-3 shadow-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center"
-          style="height: 36px; width: 36px;"
+          type="button"
+          class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary/90 dark:bg-primary-500 dark:hover:bg-primary-600 text-white rounded-full p-2 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-300 flex items-center justify-center"
+          style="width: 32px; height: 32px;"
         >
-          <i class="fas fa-search text-regular"></i>
+          <i class="fas fa-search text-xs"></i>
         </button>
       </div>
-      <div class="w-full sm:w-1/4">
+        <!-- Club Filter -->
+      <div class="w-full sm:w-auto sm:min-w-[160px]">
         <select
           id="clubFilter"
-          class="w-full py-2 px-4 rounded-full border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+          class="w-full py-2.5 sm:py-3 px-4 sm:px-5 rounded-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-surface text-gray-900 dark:text-dark-text-primary shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-300 text-sm appearance-none cursor-pointer"
+          style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 4 5\'><path fill=\'%23666\' d=\'M2 0L0 2h4zm0 5L0 3h4z\'/></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.65em auto;"
         >
           <option value="">All Clubs</option>
           <% const eventClubs = new Set(events.map(event => event.club?.name).filter(Boolean)); %>
@@ -30,9 +34,11 @@
         </select>
       </div>
     </div>
+    
+    <!-- Create Event Button -->
     <a
       href="/event/create"
-      class="bg-green-600 text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg hover:bg-green-700 transition-all flex items-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto justify-center"
+      class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg transition-all duration-300 flex items-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto justify-center min-w-[140px]"
     >
       <i class="fas fa-plus-circle"></i> <span class="hidden xs:inline">Create Event</span>
     </a>
@@ -125,27 +131,36 @@
 </div>
 
 <script>
-      document.querySelector('input').addEventListener('input', function () {
-        filterEvents();
-      });
+      const searchInput = document.querySelector('input[type="text"]');
+      const searchButton = document.querySelector('button[type="button"]');
+      const clubFilter = document.querySelector('#clubFilter');
 
-      document.querySelector('#clubFilter').addEventListener('change', function () {
-        filterEvents();
+      // Event listeners
+      searchInput.addEventListener('input', filterEvents);
+      searchButton.addEventListener('click', filterEvents);
+      clubFilter.addEventListener('change', filterEvents);
+
+      // Allow Enter key to trigger search
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          filterEvents();
+        }
       });
 
       function filterEvents() {
-        const searchQuery = document.querySelector('input').value.toLowerCase();
-        const selectedClub = document.querySelector('#clubFilter').value.toLowerCase();
+        const searchQuery = searchInput.value.toLowerCase().trim();
+        const selectedClub = clubFilter.value.toLowerCase();
         const eventCards = document.querySelectorAll('.grid > div');
 
         eventCards.forEach(card => {
           const title = card.querySelector('h2').textContent.toLowerCase();
           const clubName = card.querySelector('a')?.textContent.toLowerCase() || '';
 
-          if (
-            (!searchQuery || title.includes(searchQuery)) &&
-            (!selectedClub || clubName.includes(selectedClub))
-          ) {
+          const matchesSearch = !searchQuery || title.includes(searchQuery);
+          const matchesClub = !selectedClub || clubName.includes(selectedClub);
+
+          if (matchesSearch && matchesClub) {
             card.style.display = 'block';
           } else {
             card.style.display = 'none';
