@@ -40,9 +40,10 @@ currentTab: "events" }) %>
     </h2>
     <% if (club.pastEvents && club.pastEvents.length > 0) { %>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-      <% club.pastEvents.filter(function(event) { // Only show if less than 48
-      hours (172800000 ms) have passed since endDate return (new Date() - new
-      Date(event.endDate)) <= 172800000; }).forEach(function(event) { %>
+      <% club.pastEvents.filter(function(event) {
+        // Only show if less than 48 hours (172800000 ms) have passed since endDate
+        return (new Date() - new Date(event.endDate)) <= 172800000;
+      }).forEach(function(event) { %>
       <div
         class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl p-5 opacity-60 cursor-not-allowed"
       >
@@ -53,8 +54,7 @@ currentTab: "events" }) %>
           <%= event.description %>
         </p>
         <div class="text-sm text-gray-400 dark:text-gray-500">
-          From: <%= new Date(event.startDate).toLocaleDateString() %> To: <%=
-          new Date(event.endDate).toLocaleDateString() %>
+          From: <%= new Date(event.startDate).toLocaleDateString() %> To: <%= new Date(event.endDate).toLocaleDateString() %>
         </div>
         <span
           class="inline-block mt-2 px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full text-xs"
