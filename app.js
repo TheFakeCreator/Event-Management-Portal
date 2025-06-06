@@ -27,11 +27,12 @@ import authRouter from "./routes/auth.routes.js";
 import clubRouter from "./routes/club.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import recruitmentRouter from "./routes/recruitment.routes.js";
+import announcementRouter from "./routes/announcement.routes.js";
 dotenv.config();
 
 // App constants
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -70,7 +71,9 @@ app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/club", clubRouter);
 app.use("/recruitment", recruitmentRouter);
+app.use("/announcements", announcementRouter);
 app.use("/api", uploadRoutes);
+app.use("/announcements", announcementRouter);
 app.use("/api/events", eventRouter);
 
 // Centralized error handler (must be after all routes)
