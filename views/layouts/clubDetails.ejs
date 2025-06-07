@@ -55,9 +55,8 @@
   <div
     class="mb-6 border-b border-gray-200 dark:border-dark-border transition-colors duration-300"
   >
-    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
-      <% const tabs = ["about", "recruitments", "gallery", "socials", "events",
-      "members"]; %> <% tabs.forEach(tab => { %>
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">      <% const tabs = ["about", "recruitments", "gallery", "socials", "events",
+      "members", "sponsors"]; %> <% tabs.forEach(tab => { %>
       <li class="mr-2">
         <a
           href="/club/<%= club._id %>/<%= tab %>"

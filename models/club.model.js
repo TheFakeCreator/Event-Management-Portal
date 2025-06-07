@@ -28,6 +28,23 @@ const clubSchema = new Schema(
         type: String,
       },
     ],
+    sponsors: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        logo: {
+          type: String,
+        },
+        description: {
+          type: String,
+        },
+        website: {
+          type: String,
+        },
+      },
+    ],
     recruitments: [
       {
         type: Schema.Types.ObjectId,
