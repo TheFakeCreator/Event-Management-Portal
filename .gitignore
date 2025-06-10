@@ -1,3 +1,11 @@
 node_modules
 .env
 /Designs
+
+# Security Documentation - CONFIDENTIAL
+documentation/SECURITY_VULNERABILITIES.md
+documentation/SECURITY_CHECKLIST.md
+security-audit-*.md
+penetration-test-*.md
+vulnerability-report-*.md
+incident-report-*.md
