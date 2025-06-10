@@ -193,6 +193,76 @@
         </div>
         <input type="hidden" name="collaborators" id="collaborators-hidden" />
       </div>
+      <!-- Event Leads Section -->
+      <div>
+        <label
+          for="eventLeads"
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary"
+          >Event Leads (Optional)</label
+        >
+        <div
+          id="eventLeads-container"
+          class="mt-2 flex flex-wrap gap-2 p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm min-h-[44px] bg-white dark:bg-dark-card transition-colors duration-300"
+        >
+          <select
+            id="eventLeads-select"
+            class="w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
+          >
+            <option value="">Select event lead from club members...</option>
+            <% clubs.forEach(club => { %> <% if (club.currentMembers &&
+            club.currentMembers.length > 0) { %>
+            <optgroup label="<%= club.name %> - Members">
+              <% club.currentMembers.forEach(member => { %>
+              <option
+                value="<%= member._id %>"
+                data-name="<%= member.name %>"
+                data-email="<%= member.email %>"
+              >
+                <%= member.name %> (<%= member.email %>)
+              </option>
+              <% }); %>
+            </optgroup>
+            <% } %> <% if (club.moderators && club.moderators.length > 0) { %>
+            <optgroup label="<%= club.name %> - Moderators">
+              <% club.moderators.forEach(moderator => { %>
+              <option
+                value="<%= moderator._id %>"
+                data-name="<%= moderator.name %>"
+                data-email="<%= moderator.email %>"
+              >
+                <%= moderator.name %> (<%= moderator.email %>) - Moderator
+              </option>
+              <% }); %>
+            </optgroup>
+            <% } %> <% }); %>
+          </select>
+        </div>
+        <input type="hidden" name="eventLeads" id="eventLeads-hidden" />
+        <p class="text-sm text-gray-500 dark:text-dark-text-muted mt-1">
+          Select users from club members and moderators as event leads. They
+          will have permission to view participants.
+        </p>
+      </div>
+
+      <!-- Sponsors Section -->
+      <div>
+        <label
+          class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary mb-2"
+          >Event Sponsors (Optional)</label
+        >
+        <div id="sponsors-container" class="space-y-3">
+          <!-- Sponsors will be added here dynamically -->
+        </div>
+        <button
+          type="button"
+          onclick="addSponsorField()"
+          class="mt-2 flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+        >
+          <i class="fas fa-plus-circle"></i>
+          Add Sponsor
+        </button>
+        <input type="hidden" name="sponsors" id="sponsors-hidden" />
+      </div>
     </div>
 
     <button
@@ -206,6 +276,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    // Collaborators functionality
     const select = document.getElementById("collaborators-select");
     const container = document.getElementById("collaborators-container");
     const hiddenInput = document.getElementById("collaborators-hidden");
@@ -250,6 +321,160 @@
 
       container.appendChild(select);
       hiddenInput.value = JSON.stringify(collaborators.map((c) => c.id));
+    } // Event Leads functionality
+    const eventLeadsSelect = document.getElementById("eventLeads-select");
+    const eventLeadsContainer = document.getElementById("eventLeads-container");
+    const eventLeadsHidden = document.getElementById("eventLeads-hidden");
+    let eventLeads = [];
+
+    eventLeadsSelect.addEventListener("change", (e) => {
+      const selectedUserId = e.target.value;
+      if (
+        selectedUserId &&
+        !eventLeads.some((lead) => lead.id === selectedUserId)
+      ) {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const userName = selectedOption.getAttribute("data-name");
+        const userEmail = selectedOption.getAttribute("data-email");
+
+        eventLeads.push({
+          id: selectedUserId,
+          name: userName,
+          email: userEmail,
+        });
+        updateEventLeads();
+        e.target.value = "";
+      }
+    });
+
+    function removeEventLead(userId) {
+      eventLeads = eventLeads.filter((lead) => lead.id !== userId);
+      updateEventLeads();
     }
+
+    function updateEventLeads() {
+      // Clear container and re-add select
+      eventLeadsContainer.innerHTML = "";
+
+      eventLeads.forEach((lead) => {
+        const tag = document.createElement("span");
+        tag.className =
+          "bg-green-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer flex items-center gap-2";
+        tag.innerHTML = `${lead.name} <span class="ml-2 font-bold" onclick="removeEventLead('${lead.id}')">&times;</span>`;
+        eventLeadsContainer.appendChild(tag);
+      });
+
+      eventLeadsContainer.appendChild(eventLeadsSelect);
+      eventLeadsHidden.value = JSON.stringify(
+        eventLeads.map((lead) => lead.id)
+      );
+    }
+
+    // Sponsors functionality
+    let sponsorCount = 0;
+    let sponsors = [];
+
+    window.addSponsorField = function () {
+      const sponsorsContainer = document.getElementById("sponsors-container");
+      const sponsorDiv = document.createElement("div");
+      sponsorDiv.className =
+        "border border-gray-300 dark:border-dark-border rounded-lg p-4 bg-gray-50 dark:bg-dark-card";
+      sponsorDiv.id = `sponsor-${sponsorCount}`;
+
+      sponsorDiv.innerHTML = `
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="font-medium text-gray-700 dark:text-dark-text-primary">Sponsor ${
+            sponsorCount + 1
+          }</h4>
+          <button type="button" onclick="removeSponsorField(${sponsorCount})" 
+                  class="text-red-500 hover:text-red-700">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Name *</label>
+            <input type="text" name="sponsor_name_${sponsorCount}" required
+                   class="mt-1 w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Logo URL</label>
+            <input type="url" name="sponsor_logo_${sponsorCount}"
+                   class="mt-1 w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Description</label>
+            <textarea name="sponsor_description_${sponsorCount}" rows="2"
+                      class="mt-1 w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Website URL</label>
+            <input type="url" name="sponsor_website_${sponsorCount}"
+                   class="mt-1 w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary">
+          </div>
+        </div>
+      `;
+
+      sponsorsContainer.appendChild(sponsorDiv);
+      sponsorCount++;
+      updateSponsorsData();
+    };
+
+    window.removeSponsorField = function (index) {
+      const sponsorDiv = document.getElementById(`sponsor-${index}`);
+      if (sponsorDiv) {
+        sponsorDiv.remove();
+        updateSponsorsData();
+      }
+    };
+
+    function updateSponsorsData() {
+      const sponsorsHidden = document.getElementById("sponsors-hidden");
+      sponsors = [];
+
+      for (let i = 0; i < sponsorCount; i++) {
+        const sponsorDiv = document.getElementById(`sponsor-${i}`);
+        if (sponsorDiv) {
+          sponsors.push(i);
+        }
+      }
+
+      sponsorsHidden.value = JSON.stringify(sponsors);
+    }
+
+    // Form submission handler to collect sponsor data
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const sponsorsData = [];
+
+      for (let i = 0; i < sponsorCount; i++) {
+        const sponsorDiv = document.getElementById(`sponsor-${i}`);
+        if (sponsorDiv) {
+          const name = document.querySelector(
+            `input[name="sponsor_name_${i}"]`
+          )?.value;
+          const logo = document.querySelector(
+            `input[name="sponsor_logo_${i}"]`
+          )?.value;
+          const description = document.querySelector(
+            `textarea[name="sponsor_description_${i}"]`
+          )?.value;
+          const website = document.querySelector(
+            `input[name="sponsor_website_${i}"]`
+          )?.value;
+
+          if (name) {
+            sponsorsData.push({
+              name: name,
+              logo: logo || "",
+              description: description || "",
+              website: website || "",
+            });
+          }
+        }
+      }
+
+      document.getElementById("sponsors-hidden").value =
+        JSON.stringify(sponsorsData);
+    });
   });
 </script>

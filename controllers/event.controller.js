@@ -102,7 +102,9 @@ export const getCreateEvent = async (req, res) => {
   try {
     const user = req.user;
 
-    const clubs = await Club.find({});
+    const clubs = await Club.find({})
+      .populate("currentMembers", "name email")
+      .populate("moderators", "name email");
     res.render("createEvent", {
       title: "Create Event",
       clubs,
@@ -200,6 +202,8 @@ export const createEvent = async (req, res) => {
       image,
       club,
       collaborators,
+      eventLeads,
+      sponsors,
     } = req.body;
 
     if (
@@ -231,7 +235,39 @@ export const createEvent = async (req, res) => {
           .status(400)
           .json({ message: "Invalid collaborators format." });
       }
+    } // Handle event leads
+    let eventLeadsArray = [];
+    if (eventLeads) {
+      try {
+        const parsedEventLeads = JSON.parse(eventLeads);
+        if (Array.isArray(parsedEventLeads)) {
+          // EventLeads now come as user IDs directly from the dropdown
+          eventLeadsArray = parsedEventLeads.map(
+            (id) => new mongoose.Types.ObjectId(id)
+          );
+        }
+      } catch (error) {
+        console.log("Error parsing event leads:", error);
+        // Continue without event leads if there's an error
+      }
     }
+
+    // Handle sponsors
+    let sponsorsArray = [];
+    if (sponsors) {
+      try {
+        const parsedSponsors = JSON.parse(sponsors);
+        if (Array.isArray(parsedSponsors)) {
+          sponsorsArray = parsedSponsors.filter(
+            (sponsor) => sponsor.name && sponsor.name.trim()
+          );
+        }
+      } catch (error) {
+        console.log("Error parsing sponsors:", error);
+        // Continue without sponsors if there's an error
+      }
+    }
+
     const event = await Event.create({
       title,
       description,
@@ -245,6 +281,8 @@ export const createEvent = async (req, res) => {
       club,
       createdBy: req.user._id,
       collaborators: collaboratorsArray,
+      eventLeads: eventLeadsArray,
+      sponsors: sponsorsArray,
     });
 
     const log = await Log.create({
@@ -371,8 +409,11 @@ export const getEditEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id)
       .populate("club")
-      .populate("collaborators");
-    const clubs = await Club.find();
+      .populate("collaborators")
+      .populate("eventLeads", "name email");
+    const clubs = await Club.find()
+      .populate("currentMembers", "name email")
+      .populate("moderators", "name email");
     if (!event) {
       return res.status(404).send("Event not found");
     }
@@ -411,6 +452,8 @@ export const editEvent = async (req, res) => {
       image,
       club,
       collaborators,
+      eventLeads,
+      sponsors,
     } = req.body;
 
     let normalizedDescription = description
@@ -443,6 +486,69 @@ export const editEvent = async (req, res) => {
         req.flash("error", "Invalid collaborators format.");
         return res.redirect(`/event/${id}`);
       }
+    } // Handle event leads
+    let eventLeadsArray = [];
+    if (eventLeads) {
+      try {
+        // Check if eventLeads is a JSON string (new dropdown format) or array (legacy email format)
+        if (typeof eventLeads === "string" && eventLeads.startsWith("[")) {
+          // New format: JSON array of user IDs
+          const parsedEventLeads = JSON.parse(eventLeads);
+          if (Array.isArray(parsedEventLeads)) {
+            eventLeadsArray = parsedEventLeads.map(
+              (id) => new mongoose.Types.ObjectId(id)
+            );
+          }
+        } else {
+          // Legacy format: array of emails from form fields
+          const emailsArray = Array.isArray(eventLeads)
+            ? eventLeads
+            : [eventLeads];
+
+          // Find users by email
+          const users = await User.find({
+            email: {
+              $in: emailsArray.filter((email) => email && email.trim()),
+            },
+          });
+
+          eventLeadsArray = users.map((user) => user._id);
+        }
+      } catch (error) {
+        console.error("Error processing event leads:", error);
+        req.flash("error", "Invalid event leads format.");
+        return res.redirect(`/event/${id}`);
+      }
+    }
+
+    // Handle sponsors
+    let sponsorsArray = [];
+    if (sponsors) {
+      try {
+        // Sponsors come as indexed form data, need to reconstruct array
+        const sponsorKeys = Object.keys(req.body).filter((key) =>
+          key.startsWith("sponsors[")
+        );
+        const sponsorsByIndex = {};
+
+        sponsorKeys.forEach((key) => {
+          const match = key.match(/sponsors\[(\d+)\]\[(\w+)\]/);
+          if (match) {
+            const index = match[1];
+            const field = match[2];
+            if (!sponsorsByIndex[index]) sponsorsByIndex[index] = {};
+            sponsorsByIndex[index][field] = req.body[key];
+          }
+        });
+
+        sponsorsArray = Object.values(sponsorsByIndex).filter(
+          (sponsor) => sponsor.name && sponsor.name.trim()
+        );
+      } catch (error) {
+        console.error("Error processing sponsors:", error);
+        req.flash("error", "Invalid sponsors format.");
+        return res.redirect(`/event/${id}`);
+      }
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(
@@ -459,6 +565,8 @@ export const editEvent = async (req, res) => {
         image,
         club,
         collaborators: collaboratorsArray,
+        eventLeads: eventLeadsArray,
+        sponsors: sponsorsArray,
       },
       { new: true }
     );
@@ -482,5 +590,176 @@ export const editEvent = async (req, res) => {
     console.error("Error updating event:", error);
     req.flash("error", "Failed to update event.");
     res.redirect(`/event/${req.params.id}`);
+  }
+};
+
+export const getEventParticipants = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+      .populate("club")
+      .populate("collaborators")
+      .populate("eventLeads", "name email avatar");
+
+    if (!event) {
+      req.flash("error", "Event not found");
+      return res.redirect("/event");
+    }
+
+    // Check if user has permission to view participants
+    const isEventCreator =
+      req.user && event.createdBy.toString() === req.user._id.toString();
+    const isAdmin = req.user && req.user.role === "admin";
+    const isModerator = req.user && req.user.role === "moderator";
+    const isEventLead =
+      req.user &&
+      event.eventLeads.some(
+        (lead) => lead._id.toString() === req.user._id.toString()
+      );
+
+    if (!isEventCreator && !isAdmin && !isModerator && !isEventLead) {
+      req.flash("error", "You don't have permission to view participants");
+      return res.redirect(`/event/${req.params.id}`);
+    }
+
+    // Get all registrations for this event
+    const registrations = await EventRegistration.find({ event: req.params.id })
+      .populate("user", "name email avatar")
+      .sort({ registeredAt: -1 });
+
+    res.render("eventParticipants", {
+      title: "Event Participants",
+      event,
+      registrations,
+      user: req.user,
+      isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
+  } catch (error) {
+    console.error("Error fetching participants:", error);
+    req.flash("error", "Failed to fetch participants");
+    res.redirect(`/event/${req.params.id}`);
+  }
+};
+
+export const reportEvent = async (req, res) => {
+  try {
+    const { reason, description } = req.body;
+    const eventId = req.params.id;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    }
+
+    // Check if user already reported this event
+    const existingReport = event.reports.find(
+      (report) => report.reportedBy.toString() === req.user._id.toString()
+    );
+
+    if (existingReport) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reported this event",
+      });
+    }
+
+    // Add report to event
+    event.reports.push({
+      reportedBy: req.user._id,
+      reason,
+      description,
+    });
+
+    await event.save();
+
+    // Create log entry
+    await Log.create({
+      user: req.user._id,
+      action: "CREATE",
+      targetType: "EVENT",
+      targetId: eventId,
+      details: `Event ${event.title} reported by ${req.user.name} for ${reason}`,
+    });
+
+    res.json({ success: true, message: "Report submitted successfully" });
+  } catch (error) {
+    console.error("Error reporting event:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to submit report" });
+  }
+};
+
+export const addEventWinners = async (req, res) => {
+  try {
+    const { winners } = req.body;
+    const eventId = req.params.id;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
+    }
+
+    // Check if user has permission to add winners
+    const isEventCreator =
+      req.user && event.createdBy.toString() === req.user._id.toString();
+    const isAdmin = req.user && req.user.role === "admin";
+    const isModerator = req.user && req.user.role === "moderator";
+
+    if (!isEventCreator && !isAdmin && !isModerator) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Check if event has ended
+    if (new Date() <= new Date(event.endDate)) {
+      return res.status(400).json({
+        success: false,
+        message: "Winners can only be added after the event has ended",
+      });
+    }
+
+    // Parse and validate winners data
+    let winnersArray = [];
+    if (winners) {
+      try {
+        const parsedWinners = JSON.parse(winners);
+        if (Array.isArray(parsedWinners)) {
+          winnersArray = parsedWinners.filter(
+            (winner) =>
+              winner.position &&
+              winner.position.trim() &&
+              winner.name &&
+              winner.name.trim()
+          );
+        }
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid winners data format",
+        });
+      }
+    }
+
+    event.winners = winnersArray;
+    await event.save();
+
+    // Create log entry
+    await Log.create({
+      user: req.user._id,
+      action: "EDIT",
+      targetType: "EVENT",
+      targetId: eventId,
+      details: `Winners added to event ${event.title} by ${req.user.name}`,
+    });
+
+    res.json({ success: true, message: "Winners added successfully" });
+  } catch (error) {
+    console.error("Error adding winners:", error);
+    res.status(500).json({ success: false, message: "Failed to add winners" });
   }
 };

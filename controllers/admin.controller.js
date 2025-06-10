@@ -168,8 +168,11 @@ export const getEditEvent = async (req, res, next) => {
   try {
     const event = await Event.findById(req.params.id)
       .populate("club")
-      .populate("collaborators");
-    const clubs = await Club.find();
+      .populate("collaborators")
+      .populate("eventLeads", "name email");
+    const clubs = await Club.find()
+      .populate("currentMembers", "name email")
+      .populate("moderators", "name email");
     if (!event) {
       req.flash("error", "Event not found");
       return res.redirect("/admin/events");
@@ -573,7 +576,68 @@ export const editEvent = async (req, res) => {
       image,
       club,
       collaborators,
-    } = req.body;
+      eventLeads,
+      sponsors,
+    } = req.body; // Handle event leads
+    let eventLeadsArray = [];
+    if (eventLeads) {
+      try {
+        // Check if eventLeads is a JSON string (new dropdown format) or array (legacy email format)
+        if (typeof eventLeads === "string" && eventLeads.startsWith("[")) {
+          // New format: JSON array of user IDs
+          const parsedEventLeads = JSON.parse(eventLeads);
+          if (Array.isArray(parsedEventLeads)) {
+            eventLeadsArray = parsedEventLeads.map(
+              (id) => new mongoose.Types.ObjectId(id)
+            );
+          }
+        } else {
+          // Legacy format: array of emails from form fields
+          const emailsArray = Array.isArray(eventLeads)
+            ? eventLeads
+            : [eventLeads];
+
+          // Find users by email
+          const users = await User.find({
+            email: {
+              $in: emailsArray.filter((email) => email && email.trim()),
+            },
+          });
+
+          eventLeadsArray = users.map((user) => user._id);
+        }
+      } catch (error) {
+        console.error("Error processing event leads:", error);
+      }
+    }
+
+    // Handle sponsors
+    let sponsorsArray = [];
+    if (sponsors) {
+      try {
+        // Sponsors come as indexed form data, need to reconstruct array
+        const sponsorKeys = Object.keys(req.body).filter((key) =>
+          key.startsWith("sponsors[")
+        );
+        const sponsorsByIndex = {};
+
+        sponsorKeys.forEach((key) => {
+          const match = key.match(/sponsors\[(\d+)\]\[(\w+)\]/);
+          if (match) {
+            const index = match[1];
+            const field = match[2];
+            if (!sponsorsByIndex[index]) sponsorsByIndex[index] = {};
+            sponsorsByIndex[index][field] = req.body[key];
+          }
+        });
+
+        sponsorsArray = Object.values(sponsorsByIndex).filter(
+          (sponsor) => sponsor.name && sponsor.name.trim()
+        );
+      } catch (error) {
+        console.error("Error processing sponsors:", error);
+      }
+    }
 
     const event = await Event.findByIdAndUpdate(
       id,
@@ -595,6 +659,8 @@ export const editEvent = async (req, res) => {
           : typeof collaborators === "string"
           ? [collaborators]
           : [],
+        eventLeads: eventLeadsArray,
+        sponsors: sponsorsArray,
       },
       { new: true }
     );

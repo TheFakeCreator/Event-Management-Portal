@@ -70,12 +70,86 @@ const eventSchema = new Schema({
   //     ref: "EventRegistration",
   //   },
   // ],
+  sponsors: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      logo: {
+        type: String,
+      },
+      description: {
+        type: String,
+      },
+      website: {
+        type: String,
+      },
+    },
+  ],
+  winners: [
+    {
+      position: {
+        type: String, // "1st Place", "2nd Place", "Best Team", etc.
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String, // Achievement description
+      },
+      prize: {
+        type: String, // Prize details
+      },
+    },
+  ],
+  eventLeads: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   preEventNotes: {
     type: String, // plan for handling the event
   },
   postEventNotes: {
     type: String, // feedback and suggestions for the upcoming handlers
   },
+  reports: [
+    {
+      reportedBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      reason: {
+        type: String,
+        enum: [
+          "inappropriate_content",
+          "misleading_information",
+          "unauthorized_collaboration",
+          "spam",
+          "other",
+        ],
+        required: true,
+      },
+      description: {
+        type: String,
+        required: true,
+      },
+      reportedAt: {
+        type: Date,
+        default: Date.now,
+      },
+      status: {
+        type: String,
+        enum: ["pending", "resolved", "dismissed"],
+        default: "pending",
+      },
+    },
+  ],
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

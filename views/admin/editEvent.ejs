@@ -141,10 +141,46 @@
           <% clubs.forEach(club => { %>
             <option value="<%= club._id %>" <%= event.collaborators.some(c => c._id == club._id) ? 'disabled' : '' %>><%= club.name %></option>
           <% }); %>
-        </select>
-        <input type="hidden" name="collaborators" id="collaborators-hidden" />
+        </select>        <input type="hidden" name="collaborators" id="collaborators-hidden" />
       </div>
-    </div>    <button
+
+      <!-- Event Leads Section -->
+      <div>
+        <label for="eventLeads" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Leads</label>
+        <div
+          id="eventLeads-container"
+          class="mt-2 flex flex-wrap gap-2 p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card rounded-lg shadow-sm min-h-[44px] transition-colors duration-300"
+        >
+          <select id="eventLeads-select" class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 transition-colors duration-300">
+            <option value="">Select event lead from club members...</option>
+            <% clubs.forEach(club => { %>
+              <% if (club.currentMembers && club.currentMembers.length > 0) { %>
+                <optgroup label="<%= club.name %> - Members">
+                  <% club.currentMembers.forEach(member => { %>
+                    <option value="<%= member._id %>" data-name="<%= member.name %>" data-email="<%= member.email %>">
+                      <%= member.name %> (<%= member.email %>)
+                    </option>
+                  <% }); %>
+                </optgroup>
+              <% } %>
+              <% if (club.moderators && club.moderators.length > 0) { %>
+                <optgroup label="<%= club.name %> - Moderators">
+                  <% club.moderators.forEach(moderator => { %>
+                    <option value="<%= moderator._id %>" data-name="<%= moderator.name %>" data-email="<%= moderator.email %>">
+                      <%= moderator.name %> (<%= moderator.email %>) - Moderator
+                    </option>
+                  <% }); %>
+                </optgroup>
+              <% } %>
+            <% }); %>
+          </select>
+        </div>
+        <input type="hidden" name="eventLeads" id="eventLeads-hidden" />
+        <p class="text-sm text-gray-500 dark:text-dark-text-muted mt-1 transition-colors duration-300">
+          Select users from club members and moderators as event leads.
+        </p>
+      </div>
+    </div><button
       type="submit"
       class="w-full bg-blue-500 dark:bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition duration-300"
     >
@@ -202,8 +238,59 @@
     function removeCollaborator(id) {
       collaborators = collaborators.filter((c) => c.id !== id);
       updateCollaborators();
+    }    updateCollaborators(); // Initial render
+
+    // Event Leads functionality
+    const eventLeadsSelect = document.getElementById("eventLeads-select");
+    const eventLeadsContainer = document.getElementById("eventLeads-container");
+    const eventLeadsHidden = document.getElementById("eventLeads-hidden");
+    let eventLeads = [];    // Load existing event leads
+    try {
+      eventLeads = JSON.parse(`<%- JSON.stringify(event.eventLeads ? event.eventLeads.map(lead => ({ id: lead._id.toString(), name: lead.name, email: lead.email })) : []) %>`);
+    } catch (e) { 
+      eventLeads = []; 
     }
 
-    updateCollaborators(); // Initial render
+    eventLeadsSelect.addEventListener("change", (e) => {
+      const selectedUserId = e.target.value;
+      if (selectedUserId && !eventLeads.some(lead => lead.id === selectedUserId)) {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const userName = selectedOption.getAttribute("data-name");
+        const userEmail = selectedOption.getAttribute("data-email");
+        
+        eventLeads.push({
+          id: selectedUserId,
+          name: userName,
+          email: userEmail
+        });
+        updateEventLeads();
+        e.target.value = "";
+      }
+    });
+
+    function removeEventLead(userId) {
+      eventLeads = eventLeads.filter((lead) => lead.id !== userId);
+      updateEventLeads();
+    }
+
+    function updateEventLeads() {
+      eventLeadsContainer.innerHTML = "";
+      
+      eventLeads.forEach((lead) => {
+        const tag = document.createElement("span");
+        tag.className = "bg-green-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
+        tag.innerHTML = `${lead.name} <span class="ml-2 font-bold" onclick="removeEventLead('${lead.id}')">&times;</span>`;
+        eventLeadsContainer.appendChild(tag);
+      });
+
+      eventLeadsContainer.appendChild(eventLeadsSelect);
+      eventLeadsHidden.value = JSON.stringify(eventLeads.map(lead => lead.id));
+    }
+
+    // Make removeEventLead function global
+    window.removeEventLead = removeEventLead;
+
+    // Initial render for event leads
+    updateEventLeads();
   });
 </script>

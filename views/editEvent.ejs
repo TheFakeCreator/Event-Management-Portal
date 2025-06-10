@@ -6,26 +6,52 @@
   </h1>
 
   <form action="/event/<%= event._id %>/edit" method="POST" class="space-y-6">
-    <div class="grid grid-cols-1 gap-4">      <div>
-        <label for="title" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Title</label>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="relative">
+        <label for="title" class="flex items-center gap-1 text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Title
+          <span class="group relative inline-block align-middle">
+            <button type="button" tabindex="-1" class="focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+            </button>
+            <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-56 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Enter a descriptive event title.</span>
+          </span>
+        </label>
         <input
           type="text"
           value="<%= event.title %>"
           name="title"
           id="title"
+          maxlength="100"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Enter event title"
           required
         />
+        <div class="flex items-center justify-between mt-1">
+          <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 100 chars</span>
+          <span id="title-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/100</span>
+        </div>
       </div>
-      <div>
-        <label for="description" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Description</label>
+      <div class="relative">
+        <label for="description" class="flex items-center gap-1 text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Description
+          <span class="group relative inline-block align-middle">
+            <button type="button" tabindex="-1" class="focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+            </button>
+            <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Describe the event in detail. Markdown supported.</span>
+          </span>
+        </label>
         <textarea
           name="description"
           id="description"
+          maxlength="1000"
           rows="4"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
+          placeholder="Describe the event..."
         ><%= event.description %></textarea>
+        <div class="flex items-center justify-between mt-1">
+          <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 1000 chars</span>
+          <span id="description-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/1000</span>
+        </div>
       </div>
       <div>
         <label for="type" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Type</label>
@@ -90,28 +116,52 @@
             required
           />
         </div>
-      </div>      <div>
-        <label for="location" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Location</label>
+      </div>      <div class="relative">
+        <label for="location" class="flex items-center gap-1 text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Location
+          <span class="group relative inline-block align-middle">
+            <button type="button" tabindex="-1" class="focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+            </button>
+            <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-56 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Venue or online link.</span>
+          </span>
+        </label>
         <input
           type="text"
           name="location"          id="location"
           value="<%= event.location %>"
+          maxlength="100"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Enter event location"
           required
         />
+        <div class="flex items-center justify-between mt-1">
+          <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 100 chars</span>
+          <span id="location-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/100</span>
+        </div>
       </div>
 
-      <div>
-        <label for="image" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Image URL</label>
+      <div class="relative">
+        <label for="image" class="flex items-center gap-1 text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Image URL
+          <span class="group relative inline-block align-middle">
+            <button type="button" tabindex="-1" class="focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+            </button>
+            <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Paste a direct image URL for the event poster/banner.</span>
+          </span>
+        </label>
         <input
           type="text"
           name="image"
           id="image"
           value="<%= event.image %>"
+          maxlength="200"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300"
           placeholder="Paste image URL"
         />
+        <div class="flex items-center justify-between mt-1">
+          <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 200 chars</span>
+          <span id="image-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/200</span>
+        </div>
       </div>
 
       <div>
@@ -128,20 +178,136 @@
       </div>
 
       <div>
-        <label for="collaborators" class="block text-lg font-medium text-gray-700">Collaborators</label>
+        <label for="collaborators" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Collaborators</label>
         <div
           id="collaborators-container"
-          class="mt-2 flex flex-wrap gap-2 p-3 border rounded-lg shadow-sm min-h-[44px]"
+          class="mt-2 flex flex-wrap gap-2 p-3 border border-gray-200 dark:border-dark-border rounded-lg shadow-sm min-h-[44px] bg-gray-50 dark:bg-dark-card transition-colors duration-300"
         >
           <!-- Collaborator tags will be rendered by JS -->
         </div>
-        <select id="collaborators-select" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400">
+        <select id="collaborators-select" class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300">
           <option value="">Select a collaborator...</option>
           <% clubs.forEach(club => { %>
             <option value="<%= club._id %>" <%= event.collaborators.some(c => c._id == club._id) ? 'disabled' : '' %>><%= club.name %></option>
           <% }); %>
         </select>
         <input type="hidden" name="collaborators" id="collaborators-hidden" />
+      </div>
+
+      <!-- Event Leads Section -->
+      <div>
+        <label for="eventLeads" class="block text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Event Leads</label>
+        <div
+          id="eventLeads-container"
+          class="mt-2 flex flex-wrap gap-2 p-3 border border-gray-200 dark:border-dark-border rounded-lg shadow-sm min-h-[44px] bg-gray-50 dark:bg-dark-card transition-colors duration-300"
+        >
+          <select id="eventLeads-select" class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300">
+            <option value="">Select event lead from club members...</option>
+            <% clubs.forEach(club => { %>
+              <% if (club.currentMembers && club.currentMembers.length > 0) { %>
+                <optgroup label="<%= club.name %> - Members">
+                  <% club.currentMembers.forEach(member => { %>
+                    <option value="<%= member._id %>" data-name="<%= member.name %>" data-email="<%= member.email %>">
+                      <%= member.name %> (<%= member.email %>)
+                    </option>
+                  <% }); %>
+                </optgroup>
+              <% } %>
+              <% if (club.moderators && club.moderators.length > 0) { %>
+                <optgroup label="<%= club.name %> - Moderators">
+                  <% club.moderators.forEach(moderator => { %>
+                    <option value="<%= moderator._id %>" data-name="<%= moderator.name %>" data-email="<%= moderator.email %>">
+                      <%= moderator.name %> (<%= moderator.email %>) - Moderator
+                    </option>
+                  <% }); %>
+                </optgroup>
+              <% } %>
+            <% }); %>
+          </select>
+        </div>
+        <input type="hidden" name="eventLeads" id="eventLeads-hidden" />
+        <p class="text-sm text-gray-500 dark:text-dark-text-secondary mt-1">
+          Select users from club members and moderators as event leads.
+        </p>
+      </div>
+
+      <!-- Sponsors Section -->
+      <div>
+        <label class="text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300">Sponsors</label>
+        <div id="sponsors-container" class="mt-2 flex flex-col gap-2 p-3 border border-gray-200 dark:border-dark-border rounded-lg shadow-sm min-h-[44px] bg-gray-50 dark:bg-dark-card transition-colors duration-300">
+          <!-- Sponsor tags will be rendered by JS -->
+        </div>
+        <button type="button" id="show-sponsor-form-btn" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-300">Add Sponsor</button>
+        <div id="sponsor-form-wrapper" class="hidden mt-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="relative flex flex-col">
+              <label for="sponsor-name" class="sr-only">Sponsor Name</label>
+              <div class="flex items-center">
+                <input type="text" id="sponsor-name" maxlength="50" class="flex-1 p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300" placeholder="Sponsor Name" />
+                <span class="group relative inline-block align-middle ml-2">
+                  <button type="button" tabindex="-1" class="focus:outline-none flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+                  </button>
+                  <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-56 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Enter the official name of the sponsor.</span>
+                </span>
+              </div>
+              <div class="flex items-center justify-between mt-1">
+                <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 50 chars</span>
+                <span id="sponsor-name-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/50</span>
+              </div>
+            </div>
+            <div class="relative flex flex-col">
+              <label for="sponsor-logo" class="sr-only">Sponsor Logo</label>
+              <div class="flex items-center">
+                <input type="text" id="sponsor-logo" maxlength="200" class="flex-1 p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300" placeholder="Logo URL (optional)" />
+                <span class="group relative inline-block align-middle ml-2">
+                  <button type="button" tabindex="-1" class="focus:outline-none flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+                  </button>
+                  <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Paste a direct image URL for the sponsor logo. Optional.</span>
+                </span>
+              </div>
+              <div class="flex items-center justify-between mt-1">
+                <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 200 chars</span>
+                <span id="sponsor-logo-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/200</span>
+              </div>
+            </div>
+            <div class="relative flex flex-col">
+              <label for="sponsor-website" class="sr-only">Sponsor Website</label>
+              <div class="flex items-center">
+                <input type="text" id="sponsor-website" maxlength="100" class="flex-1 p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300" placeholder="Website (optional)" />
+                <span class="group relative inline-block align-middle ml-2">
+                  <button type="button" tabindex="-1" class="focus:outline-none flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+                  </button>
+                  <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Enter the sponsor's website URL. Optional.</span>
+                </span>
+              </div>
+            </div>
+            <div class="relative flex flex-col">
+              <label for="sponsor-description" class="sr-only">Sponsor Description</label>
+              <div class="flex items-center">
+                <input type="text" id="sponsor-description" maxlength="100" class="flex-1 p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-primary-500 focus:outline-none transition-colors duration-300" placeholder="Description (optional)" />
+                <span class="group relative inline-block align-middle ml-2">
+                  <button type="button" tabindex="-1" class="focus:outline-none flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400 dark:text-primary-400 hover:text-blue-600 dark:hover:text-primary-300 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg>
+                  </button>
+                  <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded bg-gray-900 text-white text-xs px-3 py-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg font-medium">Short description about the sponsor or their support. Optional.</span>
+                </span>
+              </div>
+              <div class="flex items-center justify-between mt-1">
+                <span class="block text-xs text-gray-400 dark:text-dark-text-secondary">Max 100 chars</span>
+                <span id="sponsor-description-count" class="block text-xs text-gray-400 dark:text-dark-text-secondary ml-2">0/100</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <button type="button" id="add-sponsor-btn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-300">Add</button>
+            <button type="button" id="cancel-sponsor-btn" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold shadow transition duration-300">Cancel</button>
+          </div>
+        </div>
+        <input type="hidden" name="sponsors" id="sponsors-hidden" />
+        <p class="text-sm text-gray-500 dark:text-dark-text-secondary mt-1">Add sponsors for this event. Name is required.</p>
       </div>
     </div>
 
@@ -172,7 +338,7 @@
       collaborators.forEach((collaborator) => {
         const tag = document.createElement("span");
         tag.className =
-          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer";
+          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer transition-colors duration-300 hover:bg-blue-600 dark:bg-primary-700 dark:hover:bg-primary-600";
         tag.innerHTML = `${collaborator.name} <span class=\"ml-2 font-bold\">&times;</span>`;
         tag.addEventListener("click", () =>
           removeCollaborator(collaborator.id)
@@ -186,8 +352,11 @@
     select.addEventListener("change", () => {
       const selectedClubId = select.value;
       const selectedClubName = select.options[select.selectedIndex].text;
+      // Prevent adding invalid or placeholder values
       if (
         selectedClubId &&
+        selectedClubId !== "" &&
+        selectedClubId !== "na" &&
         !collaborators.find((c) => c.id === selectedClubId)
       ) {
         addCollaborator(selectedClubId, selectedClubName);
@@ -203,8 +372,199 @@
     function removeCollaborator(id) {
       collaborators = collaborators.filter((c) => c.id !== id);
       updateCollaborators();
+    }    updateCollaborators(); // Initial render
+
+    // Event Leads functionality
+    const eventLeadsSelect = document.getElementById("eventLeads-select");
+    const eventLeadsContainer = document.getElementById("eventLeads-container");
+    const eventLeadsHidden = document.getElementById("eventLeads-hidden");
+    let eventLeads = [];    // Load existing event leads
+    try {
+      eventLeads = JSON.parse(`<%- JSON.stringify(event.eventLeads ? event.eventLeads.map(lead => ({ id: lead._id.toString(), name: lead.name, email: lead.email })) : []) %>`);
+    } catch (e) { 
+      eventLeads = []; 
     }
 
-    updateCollaborators(); // Initial render
+    eventLeadsSelect.addEventListener("change", (e) => {
+      const selectedUserId = e.target.value;
+      if (selectedUserId && !eventLeads.some(lead => lead.id === selectedUserId)) {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const userName = selectedOption.getAttribute("data-name");
+        const userEmail = selectedOption.getAttribute("data-email");
+        
+        eventLeads.push({
+          id: selectedUserId,
+          name: userName,
+          email: userEmail
+        });
+        updateEventLeads();
+        e.target.value = "";
+      }
+    });
+
+    function removeEventLead(userId) {
+      eventLeads = eventLeads.filter((lead) => lead.id !== userId);
+      updateEventLeads();
+    }
+
+    function updateEventLeads() {
+      eventLeadsContainer.innerHTML = "";
+      
+      eventLeads.forEach((lead) => {
+        const tag = document.createElement("span");
+        tag.className = "bg-green-500 dark:bg-green-700 text-white px-3 py-1 rounded-full text-sm cursor-pointer transition-colors duration-300 hover:bg-green-600 dark:hover:bg-green-600";
+        tag.innerHTML = `${lead.name} <span class=\"ml-2 font-bold\" onclick=\"removeEventLead('${lead.id}')\">&times;</span>`;
+        eventLeadsContainer.appendChild(tag);
+      });
+      eventLeadsContainer.appendChild(eventLeadsSelect);
+      eventLeadsHidden.value = JSON.stringify(eventLeads.map(lead => lead.id));
+    }
+
+    // Make removeEventLead function global
+    window.removeEventLead = removeEventLead;
+
+    // Initial render for event leads
+    updateEventLeads();
+
+    // Sponsors functionality
+    const sponsorsContainer = document.getElementById("sponsors-container");
+    const sponsorsHidden = document.getElementById("sponsors-hidden");
+    const showSponsorFormBtn = document.getElementById("show-sponsor-form-btn");
+    const sponsorFormWrapper = document.getElementById("sponsor-form-wrapper");
+    const sponsorName = document.getElementById("sponsor-name");
+    const sponsorLogo = document.getElementById("sponsor-logo");
+    const sponsorWebsite = document.getElementById("sponsor-website");
+    const sponsorDescription = document.getElementById("sponsor-description");
+    const addSponsorBtn = document.getElementById("add-sponsor-btn");
+    const cancelSponsorBtn = document.getElementById("cancel-sponsor-btn");
+    let sponsors = [];
+    try {
+      sponsors = JSON.parse(`<%- JSON.stringify(event.sponsors || []) %>`);
+      sponsors = sponsors.filter(s => s && s.name);
+    } catch (e) { sponsors = []; }
+
+    showSponsorFormBtn.addEventListener("click", () => {
+      sponsorFormWrapper.classList.remove("hidden");
+      showSponsorFormBtn.classList.add("hidden");
+    });
+    cancelSponsorBtn.addEventListener("click", () => {
+      sponsorFormWrapper.classList.add("hidden");
+      showSponsorFormBtn.classList.remove("hidden");
+      sponsorName.value = sponsorLogo.value = sponsorWebsite.value = sponsorDescription.value = "";
+    });
+    addSponsorBtn.addEventListener("click", () => {
+      const name = sponsorName.value.trim();
+      const logo = sponsorLogo.value.trim();
+      const website = sponsorWebsite.value.trim();
+      const description = sponsorDescription.value.trim();
+      if (!name) return;
+      sponsors.push({ name, logo, website, description });
+      sponsorName.value = sponsorLogo.value = sponsorWebsite.value = sponsorDescription.value = "";
+      updateSponsors();
+      sponsorFormWrapper.classList.add("hidden");
+      showSponsorFormBtn.classList.remove("hidden");
+    });
+
+    function updateSponsors() {
+      sponsorsContainer.innerHTML = "";
+      if (sponsors.length === 0) {
+        const emptyMsg = document.createElement("div");
+        emptyMsg.className = "text-gray-500 dark:text-dark-text-secondary text-sm";
+        emptyMsg.textContent = "No sponsors added yet.";
+        sponsorsContainer.appendChild(emptyMsg);
+      } else {
+        sponsors.forEach((sponsor, idx) => {
+          const tag = document.createElement("div");
+          tag.className = "flex flex-wrap items-center gap-2 bg-blue-100 dark:bg-primary-900/40 text-blue-900 dark:text-primary-200 px-3 py-1 rounded-lg text-sm shadow-sm transition-colors duration-300";
+          tag.innerHTML = `
+            <span class='font-semibold'>${sponsor.name}</span>
+            ${sponsor.logo ? `<img src='${sponsor.logo}' alt='logo' class='h-6 w-6 rounded-full object-cover border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card' />` : ""}
+            ${sponsor.website ? `<a href='${sponsor.website}' target='_blank' class='underline text-blue-600 dark:text-primary-400 ml-1'>Website</a>` : ""}
+            ${sponsor.description ? `<span class='ml-1 text-gray-600 dark:text-dark-text-secondary'>${sponsor.description}</span>` : ""}
+            <button type='button' class='ml-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold focus:outline-none' aria-label='Remove sponsor' onclick='removeSponsor(${idx})'>&times;</button>
+          `;
+          sponsorsContainer.appendChild(tag);
+        });
+      }
+      sponsorsHidden.value = JSON.stringify(sponsors);
+    }
+
+    window.removeSponsor = function(idx) {
+      sponsors.splice(idx, 1);
+      updateSponsors();
+    };
+
+    updateSponsors();
+
+    // --- Character Count Functionality ---
+    function addCharCount(input, counter, max) {
+      function update() {
+        counter.textContent = `${input.value.length} / ${max} chars`;
+      }
+      input.addEventListener('input', update);
+      update();
+    }
+
+    // Event Title
+    const titleInput = document.getElementById('title');
+    if (titleInput) {
+      // Remove duplicate live character counter creation for title
+    }
+
+    // Description
+    const descInput = document.getElementById('description');
+    if (descInput) {
+      // Remove duplicate live character counter creation for description
+    }
+
+    // Location
+    const locationInput = document.getElementById('location');
+    if (locationInput) {
+      // Remove duplicate live character counter creation for location
+    }
+
+    // Image
+    const imageInput = document.getElementById('image');
+    if (imageInput) {
+      // Remove duplicate live character counter creation for image
+    }
+
+    // Sponsors fields (in the add sponsor form)
+    function setupSponsorCharCounts() {
+      const sponsorFields = [
+        { id: 'sponsor-name', max: 50 },
+        { id: 'sponsor-logo', max: 200 },
+        { id: 'sponsor-website', max: 100 },
+        { id: 'sponsor-description', max: 100 }
+      ];
+      sponsorFields.forEach(f => {
+        const input = document.getElementById(f.id);
+        if (input) {
+          // Remove duplicate live character counter creation for sponsor fields
+        }
+      });
+    }
+    setupSponsorCharCounts();
+
+    // Character counter utility
+    function addCharCounter(inputId, counterId, max) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      if (!input || !counter) return;
+      function update() {
+        counter.textContent = `${input.value.length}/${max}`;
+      }
+      input.addEventListener("input", update);
+      update();
+    }
+    // Add counters for all relevant fields
+    addCharCounter("title", "title-count", 100);
+    addCharCounter("description", "description-count", 1000);
+    addCharCounter("location", "location-count", 100);
+    addCharCounter("image", "image-count", 200);
+    addCharCounter("sponsor-name", "sponsor-name-count", 50);
+    addCharCounter("sponsor-logo", "sponsor-logo-count", 200);
+    addCharCounter("sponsor-website", "sponsor-website-count", 100);
+    addCharCounter("sponsor-description", "sponsor-description-count", 100);
   });
 </script>
