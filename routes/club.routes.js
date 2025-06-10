@@ -12,6 +12,10 @@ import {
   getEditClub,
   postEditClub,
   editAboutClub,
+  getClubSponsors,
+  addClubSponsor,
+  editClubSponsor,
+  deleteClubSponsor,
 } from "../controllers/club.controller.js";
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 import upload from "../middlewares/upload.js";
@@ -65,6 +69,12 @@ router.get("/:id/:subPage", isAuthenticatedLineant, getClubTab);
 router.post("/add", isAuthenticated, isAdmin, createClub);
 router.post("/:id/edit", isAuthenticated, isClubModerator, postEditClub);
 router.post("/:id/edit-about", isAuthenticated, isClubModerator, editAboutClub);
+
+// Sponsor Management Routes
+router.get("/:id/sponsors", isAuthenticatedLineant, getClubSponsors);
+router.post("/:id/sponsors", isAuthenticated, isClubModerator, addClubSponsor);
+router.post("/:id/sponsors/:sponsorId/edit", isAuthenticated, isClubModerator, editClubSponsor);
+router.post("/:id/sponsors/:sponsorId/delete", isAuthenticated, isClubModerator, deleteClubSponsor);
 
 // POST: Upload image to club gallery
 router.post(

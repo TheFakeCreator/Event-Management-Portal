@@ -40,6 +40,7 @@ const clubSubPages = {
   socials: "clubDetailsSocials",
   events: "clubDetailsEvents",
   members: "clubDetailsMembers",
+  sponsors: "clubDetailsSponsors",
 };
 
 export const getClubTab = async (req, res, next) => {
@@ -253,5 +254,162 @@ export const editAboutClub = async (req, res) => {
   } catch (error) {
     console.error("Error updating club about:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const getClubSponsors = async (req, res) => {
+  try {
+    const user = req.user;
+    const clubId = req.params.id;
+    const club = await Club.findById(clubId);
+
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/club");
+    }
+
+    res.render("clubDetailsSponsors", {
+      title: "Club Sponsors",
+      club,
+      user,
+      isAuthenticated: req.isAuthenticated,
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
+  } catch (error) {
+    console.error("Error fetching club sponsors:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const addClubSponsor = async (req, res) => {
+  try {
+    const { name, logo, description, website } = req.body;
+    const clubId = req.params.id;
+    const club = await Club.findById(clubId);
+
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/club");
+    }
+
+    // Check permission - only admin or club moderator can add sponsors
+    const isClubMod =
+      req.user.role === "admin" ||
+      (club.moderators &&
+        club.moderators.map((m) => m.toString()).includes(req.user._id.toString()));
+
+    if (!isClubMod) {
+      return res.status(403).render("unauthorized", {
+        title: "Unauthorized",
+        user: req.user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+
+    club.sponsors.push({
+      name,
+      logo,
+      description,
+      website,
+    });
+
+    await club.save();
+    req.flash("success", "Sponsor added successfully!");
+    res.redirect(`/club/${clubId}/sponsors`);
+  } catch (error) {
+    console.error("Error adding club sponsor:", error);
+    req.flash("error", "Failed to add sponsor");
+    res.redirect(`/club/${req.params.id}/sponsors`);
+  }
+};
+
+export const editClubSponsor = async (req, res) => {
+  try {
+    const { name, logo, description, website } = req.body;
+    const { id: clubId, sponsorId } = req.params;
+    const club = await Club.findById(clubId);
+
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/club");
+    }
+
+    // Check permission
+    const isClubMod =
+      req.user.role === "admin" ||
+      (club.moderators &&
+        club.moderators.map((m) => m.toString()).includes(req.user._id.toString()));
+
+    if (!isClubMod) {
+      return res.status(403).render("unauthorized", {
+        title: "Unauthorized",
+        user: req.user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+
+    const sponsorIndex = club.sponsors.findIndex(
+      (s) => s._id.toString() === sponsorId
+    );
+
+    if (sponsorIndex === -1) {
+      req.flash("error", "Sponsor not found");
+      return res.redirect(`/club/${clubId}/sponsors`);
+    }
+
+    club.sponsors[sponsorIndex] = {
+      ...club.sponsors[sponsorIndex],
+      name,
+      logo,
+      description,
+      website,
+    };
+
+    await club.save();
+    req.flash("success", "Sponsor updated successfully!");
+    res.redirect(`/club/${clubId}/sponsors`);
+  } catch (error) {
+    console.error("Error updating club sponsor:", error);
+    req.flash("error", "Failed to update sponsor");
+    res.redirect(`/club/${req.params.id}/sponsors`);
+  }
+};
+
+export const deleteClubSponsor = async (req, res) => {
+  try {
+    const { id: clubId, sponsorId } = req.params;
+    const club = await Club.findById(clubId);
+
+    if (!club) {
+      req.flash("error", "Club not found");
+      return res.redirect("/club");
+    }
+
+    // Check permission
+    const isClubMod =
+      req.user.role === "admin" ||
+      (club.moderators &&
+        club.moderators.map((m) => m.toString()).includes(req.user._id.toString()));
+
+    if (!isClubMod) {
+      return res.status(403).render("unauthorized", {
+        title: "Unauthorized",
+        user: req.user,
+        isAuthenticated: req.isAuthenticated,
+      });
+    }
+
+    club.sponsors = club.sponsors.filter(
+      (s) => s._id.toString() !== sponsorId
+    );
+
+    await club.save();
+    req.flash("success", "Sponsor deleted successfully!");
+    res.redirect(`/club/${clubId}/sponsors`);
+  } catch (error) {
+    console.error("Error deleting club sponsor:", error);
+    req.flash("error", "Failed to delete sponsor");
+    res.redirect(`/club/${req.params.id}/sponsors`);
   }
 };
