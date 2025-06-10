@@ -17,6 +17,11 @@ import {
   trackFailedLogin,
   clearFailedAttempts,
 } from "../utils/securityLogger.js";
+import {
+  validatePasswordStrength,
+  hashPassword,
+  comparePassword,
+} from "../utils/passwordSecurity.js";
 
 export const getLoginUser = (req, res, next) => {
   try {
@@ -90,6 +95,13 @@ export const registerUser = async (req, res, next) => {
       return res.redirect("/auth/signup");
     }
 
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      req.flash("error", passwordValidation.errors.join(". "));
+      return res.redirect("/auth/signup");
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -97,8 +109,8 @@ export const registerUser = async (req, res, next) => {
       return res.redirect("/auth/signup");
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Hash the password using secure method
+    const hashedPassword = await hashPassword(password);
 
     // Create a new user but don't activate it yet
     const newUser = await User.create({
@@ -107,6 +119,7 @@ export const registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
       isVerified: false, // User is not verified yet
+      lastPasswordChange: Date.now(),
     }); // Generate a verification token with enhanced security
     const token = generateVerificationToken(newUser);
 
@@ -171,8 +184,36 @@ export const loginUser = async (req, res, next) => {
       return res.redirect(`/auth/login${redirect}`);
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Check if account is locked
+    if (user.isLocked) {
+      // Log account lockout attempt
+      logSecurityEvent(
+        SECURITY_EVENTS.LOGIN_FAILED,
+        {
+          email,
+          userId: user._id,
+          reason: "Account locked",
+          lockUntil: user.accountLockUntil,
+        },
+        req
+      );
+
+      req.flash(
+        "error",
+        "Account temporarily locked due to too many failed login attempts. Please try again later."
+      );
+      const redirect = redirectUrl
+        ? `?redirect=${encodeURIComponent(redirectUrl)}`
+        : "";
+      return res.redirect(`/auth/login${redirect}`);
+    }
+
+    // Use secure password comparison
+    const isMatch = await comparePassword(password, user.password, req);
     if (!isMatch) {
+      // Increment failed login attempts
+      await user.incFailedAttempts();
+
       // Log failed login attempt
       logSecurityEvent(
         SECURITY_EVENTS.LOGIN_FAILED,
@@ -180,6 +221,7 @@ export const loginUser = async (req, res, next) => {
           email,
           userId: user._id,
           reason: "Invalid password",
+          attemptCount: user.failedLoginAttempts + 1,
         },
         req
       );
@@ -212,8 +254,17 @@ export const loginUser = async (req, res, next) => {
       return res.redirect(`/auth/login${redirect}`);
     }
 
+    // Reset failed login attempts on successful login
+    if (user.failedLoginAttempts > 0) {
+      await user.resetFailedAttempts();
+    }
+
     // Clear failed attempts on successful login
     clearFailedAttempts(req.ip);
+
+    // Update last login time
+    user.lastLogin = Date.now();
+    await user.save();
 
     // Generate JWT token with enhanced security
     const token = generateAccessToken(user);
@@ -377,6 +428,13 @@ export const resetPassword = async (req, res, next) => {
       return res.redirect(`/auth/reset-password/${token}`);
     }
 
+    // Validate new password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      req.flash("error", passwordValidation.errors.join(". "));
+      return res.redirect(`/auth/reset-password/${token}`);
+    }
+
     const user = await User.findOne({ resetToken: token });
 
     if (!user) {
@@ -389,10 +447,37 @@ export const resetPassword = async (req, res, next) => {
       return res.redirect("/auth/forgot-password");
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    // Hash the new password securely
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Check against password history to prevent reuse
+    if (user.passwordHistory && user.passwordHistory.length > 0) {
+      for (const oldPassword of user.passwordHistory) {
+        const isReused = await comparePassword(newPassword, oldPassword.hash);
+        if (isReused) {
+          req.flash(
+            "error",
+            "Cannot reuse a previous password. Please choose a different password."
+          );
+          return res.redirect(`/auth/reset-password/${token}`);
+        }
+      }
+    }
+
+    // Add current password to history before changing
+    if (user.password) {
+      user.addPasswordToHistory(user.password);
+    }
+
     user.password = hashedPassword;
     user.resetToken = undefined;
     user.expireToken = undefined;
+    user.lastPasswordChange = Date.now();
+
+    // Reset failed login attempts when password is reset
+    user.failedLoginAttempts = 0;
+    user.accountLockUntil = undefined;
+
     await user.save();
 
     // Log successful password change

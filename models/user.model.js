@@ -97,9 +97,86 @@ const userSchema = new Schema(
       type: Boolean,
       default: false, // Soft delete feature
     },
+    // Password Security Fields
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    accountLockUntil: {
+      type: Date,
+    },
+    lastPasswordChange: {
+      type: Date,
+      default: Date.now,
+    },
+    passwordHistory: [
+      {
+        hash: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true } // Adds createdAt & updatedAt automatically
 );
+
+// Virtual field to check if account is locked
+userSchema.virtual("isLocked").get(function () {
+  return !!(this.accountLockUntil && this.accountLockUntil > Date.now());
+});
+
+// Method to increment failed login attempts
+userSchema.methods.incFailedAttempts = function () {
+  // If we have a previous lock that has expired, restart at 1
+  if (this.accountLockUntil && this.accountLockUntil < Date.now()) {
+    return this.updateOne({
+      $unset: {
+        accountLockUntil: 1,
+      },
+      $set: {
+        failedLoginAttempts: 1,
+      },
+    });
+  }
+
+  const updates = { $inc: { failedLoginAttempts: 1 } };
+
+  // If we've reached max attempts and it's not locked already, lock the account
+  if (this.failedLoginAttempts + 1 >= 5 && !this.isLocked) {
+    updates.$set = {
+      accountLockUntil: Date.now() + 2 * 60 * 60 * 1000, // Lock for 2 hours
+    };
+  }
+
+  return this.updateOne(updates);
+};
+
+// Method to reset failed login attempts
+userSchema.methods.resetFailedAttempts = function () {
+  return this.updateOne({
+    $unset: {
+      failedLoginAttempts: 1,
+      accountLockUntil: 1,
+    },
+  });
+};
+
+// Method to add password to history
+userSchema.methods.addPasswordToHistory = function (hashedPassword) {
+  // Keep only last 5 passwords
+  const history = this.passwordHistory || [];
+  history.unshift({ hash: hashedPassword });
+
+  // Keep only the last 5 passwords
+  if (history.length > 5) {
+    history.splice(5);
+  }
+
+  this.passwordHistory = history;
+  this.lastPasswordChange = Date.now();
+};
 
 const User = mongoose.model("User", userSchema);
 
