@@ -1,3 +1,11 @@
+// Load environment variables first
+import dotenv from "dotenv";
+dotenv.config();
+
+// Validate environment variables for security
+import { validateEnvironment } from "./utils/envValidator.js";
+validateEnvironment();
+
 // DB Import
 import db from "./configs/mongoose-connect.js";
 
@@ -6,7 +14,6 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 import expressSession from "express-session";
 import flash from "connect-flash";
 import ejsMate from "ejs-mate";

@@ -3,6 +3,20 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import transporter from "../configs/nodemailer.js";
 import crypto from "crypto";
+import {
+  generateAccessToken,
+  generateVerificationToken,
+  verifyToken,
+  blacklistToken,
+  getSecureCookieOptions,
+  getClearCookieOptions,
+} from "../utils/jwtManager.js";
+import {
+  logSecurityEvent,
+  SECURITY_EVENTS,
+  trackFailedLogin,
+  clearFailedAttempts,
+} from "../utils/securityLogger.js";
 
 export const getLoginUser = (req, res, next) => {
   try {
@@ -93,12 +107,8 @@ export const registerUser = async (req, res, next) => {
       email,
       password: hashedPassword,
       isVerified: false, // User is not verified yet
-    });
-
-    // Generate a verification token
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
+    }); // Generate a verification token with enhanced security
+    const token = generateVerificationToken(newUser);
 
     // Create a verification link
     const verificationUrl = `https://event-management-portal.onrender.com/auth/verify/${token}`;
@@ -114,11 +124,22 @@ export const registerUser = async (req, res, next) => {
         <a href="${verificationUrl}" target="_blank">Verify Email</a>
       `,
     });
-
     req.flash(
       "success",
       "Signup successful! Please check your email to verify your account."
     );
+
+    // Log security event
+    logSecurityEvent(
+      SECURITY_EVENTS.ACCOUNT_CREATED,
+      {
+        email,
+        username,
+        userId: newUser._id,
+      },
+      req
+    );
+
     res.redirect("/auth/login");
   } catch (error) {
     next(error);
@@ -129,36 +150,87 @@ export const loginUser = async (req, res, next) => {
   try {
     const { email, password, redirectUrl } = req.body;
     const user = await User.findOne({ email });
+
     if (!user) {
+      // Log failed login attempt
+      logSecurityEvent(
+        SECURITY_EVENTS.LOGIN_FAILED,
+        {
+          email,
+          reason: "User not found",
+        },
+        req
+      );
+
+      trackFailedLogin(req.ip);
+
       req.flash("error", "Invalid credentials.");
       const redirect = redirectUrl
         ? `?redirect=${encodeURIComponent(redirectUrl)}`
         : "";
       return res.redirect(`/auth/login${redirect}`);
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      // Log failed login attempt
+      logSecurityEvent(
+        SECURITY_EVENTS.LOGIN_FAILED,
+        {
+          email,
+          userId: user._id,
+          reason: "Invalid password",
+        },
+        req
+      );
+
+      trackFailedLogin(req.ip);
+
       req.flash("error", "Invalid credentials.");
       const redirect = redirectUrl
         ? `?redirect=${encodeURIComponent(redirectUrl)}`
         : "";
       return res.redirect(`/auth/login${redirect}`);
     }
+
     if (!user.isVerified) {
+      // Log failed login attempt
+      logSecurityEvent(
+        SECURITY_EVENTS.LOGIN_FAILED,
+        {
+          email,
+          userId: user._id,
+          reason: "Email not verified",
+        },
+        req
+      );
+
       req.flash("error", "Email not verified.");
       const redirect = redirectUrl
         ? `?redirect=${encodeURIComponent(redirectUrl)}`
         : "";
       return res.redirect(`/auth/login${redirect}`);
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 1000, // 1 day
-    });
+
+    // Clear failed attempts on successful login
+    clearFailedAttempts(req.ip);
+
+    // Generate JWT token with enhanced security
+    const token = generateAccessToken(user);
+
+    // Set secure cookie with enhanced security options
+    res.cookie("token", token, getSecureCookieOptions());
+
+    // Log successful login
+    logSecurityEvent(
+      SECURITY_EVENTS.LOGIN_SUCCESS,
+      {
+        email,
+        userId: user._id,
+        username: user.username,
+      },
+      req
+    );
 
     // Redirect to the previous page or default to user profile
     if (redirectUrl && redirectUrl.trim() !== "") {
@@ -177,7 +249,26 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
   try {
-    res.clearCookie("token");
+    // Get the token to blacklist it
+    const token = req.cookies.token;
+    if (token) {
+      blacklistToken(token);
+    }
+
+    // Log logout event
+    if (req.user) {
+      logSecurityEvent(
+        SECURITY_EVENTS.LOGOUT,
+        {
+          userId: req.user._id,
+          username: req.user.username,
+        },
+        req
+      );
+    }
+    // Clear the token cookie with same options as when it was set
+    res.clearCookie("token", getClearCookieOptions());
+
     res.redirect("/");
   } catch (error) {
     next(error);
@@ -188,8 +279,9 @@ export const verifyUser = async (req, res, next) => {
   const { token } = req.params;
 
   try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify the token with enhanced validation
+    const decoded = verifyToken(token, "verification");
+
     const user = await User.findById(decoded.id);
 
     if (!user) {
@@ -210,7 +302,16 @@ export const verifyUser = async (req, res, next) => {
     req.flash("success", "Email Verified Successfully! You can now login.");
     res.redirect("/auth/login");
   } catch (error) {
-    req.flash("error", "Verification link is invalid or expired.");
+    if (error.name === "TokenExpiredError") {
+      req.flash(
+        "error",
+        "Verification link has expired. Please request a new one."
+      );
+    } else if (error.name === "JsonWebTokenError") {
+      req.flash("error", "Invalid verification link.");
+    } else {
+      req.flash("error", "Verification failed. Please try again.");
+    }
     res.redirect("/auth/login");
   }
 };
@@ -220,6 +321,17 @@ export const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
+      // Log password reset attempt for non-existent user
+      logSecurityEvent(
+        SECURITY_EVENTS.PASSWORD_RESET_REQUEST,
+        {
+          email,
+          success: false,
+          reason: "User not found",
+        },
+        req
+      );
+
       req.flash("error", "User not found.");
       return res.redirect("/auth/forgot-password");
     }
@@ -236,6 +348,18 @@ export const forgotPassword = async (req, res, next) => {
       html: `<p>Click the link below to reset your password:</p>
                <a href="${resetUrl}">Reset Password</a>`,
     });
+
+    // Log successful password reset request
+    logSecurityEvent(
+      SECURITY_EVENTS.PASSWORD_RESET_REQUEST,
+      {
+        email,
+        userId: user._id,
+        success: true,
+      },
+      req
+    );
+
     req.flash("success", "Reset password email sent.");
     res.redirect("/auth/login");
   } catch (error) {
@@ -270,6 +394,17 @@ export const resetPassword = async (req, res, next) => {
     user.resetToken = undefined;
     user.expireToken = undefined;
     await user.save();
+
+    // Log successful password change
+    logSecurityEvent(
+      SECURITY_EVENTS.PASSWORD_CHANGED,
+      {
+        userId: user._id,
+        email: user.email,
+        method: "reset_token",
+      },
+      req
+    );
 
     req.flash("success", "Password reset successful. You can now login.");
     res.redirect("/auth/login");
