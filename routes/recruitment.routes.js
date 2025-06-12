@@ -8,28 +8,61 @@ import {
   postApplyRecruitment,
   postNewRecruitment,
 } from "../controllers/recruitment.controller.js";
+import {
+  validateRecruitment,
+  validateParams,
+  validateQuery,
+  securityMiddleware,
+} from "../middlewares/inputValidationMiddleware.js";
 
 const router = express.Router();
 
 //GET Routes
-router.get("/", isAuthenticatedLineant, getRecruitments);
-router.get("/new", isAuthenticatedLineant, isClubModerator, getNewRecruitments);
-router.get("/:id", isAuthenticatedLineant, getRecruitmentDetails);
+router.get(
+  "/",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateQuery(["search", "club", "status", "page", "limit"]),
+  getRecruitments
+);
+router.get(
+  "/new",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  isClubModerator,
+  getNewRecruitments
+);
+router.get(
+  "/:id",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateParams(["id"]),
+  getRecruitmentDetails
+);
 
 // POST Routes
 router.post(
   "/new",
+  securityMiddleware,
   isAuthenticatedLineant,
   isClubModerator,
+  validateRecruitment.create,
   postNewRecruitment
 );
-router.post("/:id", isAuthenticatedLineant, async (req, res, next) => {
-  try {
-    await postApplyRecruitment(req, res, next);
-  } catch (err) {
-    req.flash("error", "Failed to submit application.");
-    res.redirect(`/recruitment/${req.params.id}`);
+router.post(
+  "/:id",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateParams(["id"]),
+  validateRecruitment.apply,
+  async (req, res, next) => {
+    try {
+      await postApplyRecruitment(req, res, next);
+    } catch (err) {
+      req.flash("error", "Failed to submit application.");
+      res.redirect(`/recruitment/${req.params.id}`);
+    }
   }
-});
+);
 
 export default router;

@@ -38,11 +38,11 @@
     </nav>
   </aside>
   <!-- Main Content -->
-  <main class="flex-1 flex justify-center py-10 px-4 ml-0 md:ml-64 mt-16">
-    <form
+  <main class="flex-1 flex justify-center py-10 px-4 ml-0 md:ml-64 mt-16">    <form
       action="/user/<%= user.username %>/edit"
       method="post"
       enctype="multipart/form-data"
+      data-validate="true"
       class="w-full max-w-3xl bg-white dark:bg-dark-surface rounded-lg shadow p-8 space-y-10 border border-gray-200 dark:border-dark-border"
     >
       <h1 class="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Edit Profile</h1>      <!-- Profile Info Section -->
@@ -73,16 +73,21 @@
                 class="w-36 text-sm border border-gray-300 dark:border-dark-border rounded px-2 py-1 bg-gray-50 dark:bg-dark-card dark:text-dark-text-primary"
               />
             </div>
-            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">              <div>
                 <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Full Name</label>
                 <input
                   type="text"
                   name="name"
                   value="<%= user.name %>"
+                  placeholder="Enter your full name"
+                  title="Your real name as you'd like it to appear on your profile"
                   class="input-field"
                   required
                 />
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Your real name as you'd like it to appear on your profile
+                </p>
               </div>
               <div>
                 <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Username</label>
@@ -90,17 +95,28 @@
                   type="text"
                   name="username"
                   value="<%= user.username %>"
+                  placeholder="Choose a unique username"
+                  title="3-30 characters, letters and numbers only"
                   class="input-field"
                 />
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  3-30 characters, letters and numbers only
+                </p>
               </div>
               <div>
-                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Email</label>                <input
+                <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Email</label>
+                <input
                   type="email"
                   name="email"
                   value="<%= user.email %>"
                   class="input-field bg-gray-100 dark:bg-dark-card cursor-not-allowed"
                   readonly
                 />
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-lock mr-1"></i>
+                  Email cannot be changed for security reasons
+                </p>
               </div>
               <div>
                 <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Phone</label>
@@ -108,23 +124,42 @@
                   type="text"
                   name="phone"
                   value="<%= user.phone %>"
+                  placeholder="Enter your phone number"
+                  title="Include country code if international"
                   class="input-field"
                 />
-              </div>
-              <div>
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Example: +1234567890 or 9876543210
+                </p>
+              </div>              <div>
                 <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Gender</label>
                 <select name="gender" class="input-field">
+                  <option value="">Select your gender</option>
                   <option value="male" <%= user.gender === 'male' ? 'selected' : '' %>>Male</option>
                   <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
                   <option value="other" <%= user.gender === 'other' ? 'selected' : '' %>>Other</option>
                 </select>
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Optional - used for demographic purposes only
+                </p>
               </div>
             </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">            <div>
               <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Bio</label>
-              <textarea name="bio" class="input-field h-24 resize-none" maxlength="250"><%= user.bio %></textarea>
+              <textarea 
+                name="bio" 
+                class="input-field h-24 resize-none" 
+                maxlength="250"
+                placeholder="Tell us about yourself..."
+                title="Brief description about yourself (max 250 characters)"
+              ><%= user.bio %></textarea>
+              <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                <i class="fas fa-info-circle mr-1"></i>
+                Brief description about yourself (max 250 characters)
+              </p>
             </div>
             <div class="flex flex-col gap-4">
               <div>
@@ -133,8 +168,14 @@
                   type="text"
                   name="occupation"
                   value="<%= user.occupation %>"
+                  placeholder="Your current role or profession"
+                  title="What you do professionally or academically"
                   class="input-field"
                 />
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Example: Software Developer, Student, Designer
+                </p>
               </div>
               <div>
                 <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Location</label>
@@ -142,8 +183,14 @@
                   type="text"
                   name="location"
                   value="<%= user.location %>"
+                  placeholder="Your city or location"
+                  title="Where you're based"
                   class="input-field"
                 />
+                <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Example: New York, NY or Mumbai, India
+                </p>
               </div>
             </div>
           </div>
@@ -155,8 +202,7 @@
         >
           Social Links
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">          <div>
             <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">LinkedIn</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700 dark:text-blue-400">
@@ -166,9 +212,15 @@
                 type="url"
                 name="linkedin"
                 value="<%= user.socials.linkedin %>"
+                placeholder="LinkedIn profile URL"
+                title="Your LinkedIn profile link"
                 class="input-field pl-10"
               />
             </div>
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Example: https://linkedin.com/in/username
+            </p>
           </div>
           <div>
             <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">GitHub</label>
@@ -180,9 +232,15 @@
                 type="url"
                 name="github"
                 value="<%= user.socials.github %>"
+                placeholder="GitHub profile URL"
+                title="Your GitHub profile link"
                 class="input-field pl-10"
               />
             </div>
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Example: https://github.com/username
+            </p>
           </div>
           <div>
             <label class="block text-gray-700 dark:text-dark-text-secondary font-medium">Behance</label>
@@ -194,9 +252,15 @@
                 type="url"
                 name="behance"
                 value="<%= user.socials.behance %>"
+                placeholder="Behance portfolio URL"
+                title="Your Behance portfolio link"
                 class="input-field pl-10"
               />
             </div>
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Example: https://behance.net/username
+            </p>
           </div>
         </div>
       </section>      <!-- Account Section -->

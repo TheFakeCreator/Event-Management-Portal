@@ -12,7 +12,12 @@
       Add Club
     </h1>
 
-    <form action="/club/add" method="post" class="space-y-5">
+    <form
+      action="/club/add"
+      method="post"
+      data-validate="true"
+      class="space-y-5"
+    >
       <div>
         <label
           for="name"
@@ -23,10 +28,15 @@
           type="text"
           name="name"
           id="name"
+          placeholder="Club name (e.g., Computer Science Society)"
+          title="Official name of your club or organization"
           class="w-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-primary-500 transition-colors duration-300"
-          placeholder="Enter club name"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Official name of your club or organization (2-255 characters)
+        </p>
       </div>
 
       <div>
@@ -38,10 +48,15 @@
         <textarea
           name="description"
           id="description"
+          placeholder="Brief description of your club... (e.g., A community of students passionate about computer science, programming, and technology innovation.)"
+          title="Short description of what your club does"
           class="w-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-primary-500 transition-colors duration-300 resize-none h-24"
-          placeholder="Write a brief description..."
           required
         ></textarea>
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Short description of what your club does (min 10 characters)
+        </p>
       </div>
 
       <div>
@@ -54,10 +69,15 @@
           type="text"
           name="image"
           id="image"
+          placeholder="Club logo/image URL (e.g., https://example.com/club-logo.jpg)"
+          title="Link to your club's logo or banner image"
           class="w-full border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-primary-500 transition-colors duration-300"
-          placeholder="Paste image URL"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Link to your club's logo or banner image
+        </p>
       </div>
 
       <!-- <div>

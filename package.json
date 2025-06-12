@@ -6,6 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:security": "jest __tests__/security.test.js __tests__/inputValidation.test.js __tests__/securityMiddleware.test.js __tests__/passwordSecurity.test.js",
+    "test:verbose": "jest --verbose",
     "start": "cross-env DEBUG=development:* nodemon app.js",
     "server": "nodemon app.js",
     "dev:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css --watch",

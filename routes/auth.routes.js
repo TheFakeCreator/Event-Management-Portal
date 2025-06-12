@@ -15,22 +15,43 @@ import {
   getResetPass,
 } from "../controllers/auth.controller.js";
 import { isAuthenticatedLineant } from "../middlewares/authMiddleware.js";
+import {
+  validateAuth,
+  validateParams,
+  securityMiddleware,
+} from "../middlewares/inputValidationMiddleware.js";
 
 const router = express.Router();
 
 // GET Routes
 router.get("/login", isAuthenticatedLineant, getLoginUser);
 router.get("/signup", isAuthenticatedLineant, getRegisterUser);
-router.get("/verify/:token", verifyUser);
+router.get("/verify/:token", validateParams(["token"]), verifyUser);
 router.get("/forgot-password", isAuthenticatedLineant, getForgotPass);
-router.get("/reset-password/:token", isAuthenticatedLineant, getResetPass);
+router.get(
+  "/reset-password/:token",
+  validateParams(["token"]),
+  isAuthenticatedLineant,
+  getResetPass
+);
 
-// POST Routes
-router.post("/signup", registerUser);
-router.post("/login", loginUser);
+// POST Routes - with validation and security middleware
+router.post("/signup", securityMiddleware, validateAuth.register, registerUser);
+router.post("/login", securityMiddleware, validateAuth.login, loginUser);
 router.post("/logout", logoutUser);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
+router.post(
+  "/forgot-password",
+  securityMiddleware,
+  validateAuth.forgotPassword,
+  forgotPassword
+);
+router.post(
+  "/reset-password/:token",
+  validateParams(["token"]),
+  securityMiddleware,
+  validateAuth.resetPassword,
+  resetPassword
+);
 
 router.get(
   "/google",

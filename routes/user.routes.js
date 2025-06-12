@@ -11,6 +11,12 @@ import {
   postUserEdit,
   requestRole,
 } from "../controllers/user.controller.js";
+import {
+  validateUser,
+  validateParams,
+  securityMiddleware,
+  validateFileUpload,
+} from "../middlewares/inputValidationMiddleware.js";
 
 const router = express.Router();
 
@@ -19,19 +25,48 @@ router.get("/test-error", isAuthenticatedLineant, (req, res, next) => {
   error.status = 500;
   next(error);
 });
+
 // GET Routes
-router.get("/:username/edit", isAuthenticated, getUserEdit);
-router.get("/:username", isAuthenticated, getUser);
-router.get("/:username/request-role", isAuthenticated, getRequestRole);
+router.get(
+  "/:username/edit",
+  securityMiddleware,
+  validateParams(["username"]),
+  isAuthenticated,
+  getUserEdit
+);
+router.get(
+  "/:username",
+  securityMiddleware,
+  validateParams(["username"]),
+  isAuthenticated,
+  getUser
+);
+router.get(
+  "/:username/request-role",
+  securityMiddleware,
+  validateParams(["username"]),
+  isAuthenticated,
+  getRequestRole
+);
 
-// Test route for error handler
-
-// POST Routes
+// POST Routes - with validation and security middleware
 router.post(
   "/:username/edit",
+  securityMiddleware,
+  validateParams(["username"]),
   isAuthenticated,
   upload.single("avatar"),
+  validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
+  validateUser.updateProfile,
   postUserEdit
 );
-router.post("/:username/request-role", isAuthenticated, requestRole);
+router.post(
+  "/:username/request-role",
+  securityMiddleware,
+  validateParams(["username"]),
+  isAuthenticated,
+  validateUser.requestRole,
+  requestRole
+);
+
 export default router;

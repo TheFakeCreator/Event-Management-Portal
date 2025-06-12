@@ -26,13 +26,20 @@
           name="requestedRole"
           id="requestedRole"
           required
+          title="Choose the role you want to request"
           class="w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring focus:ring-blue-300 dark:focus:ring-primary-400 transition-colors duration-300"
         >
           <option value="" disabled selected>Choose a role</option>
-          <option value="admin">Admin</option>
-          <option value="moderator">Moderator</option>
-          <option value="member">Member</option>
+          <option value="admin">Admin - Full system access</option>
+          <option value="moderator">Moderator - Club management access</option>
+          <option value="member">Member - Basic club member access</option>
         </select>
+        <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          <strong>Admin:</strong> Full system access and management.<br />
+          <strong>Moderator:</strong> Can manage club content and members.<br />
+          <strong>Member:</strong> Basic access to club features.
+        </p>
       </div>
 
       <div id="clubDropdownContainer" style="display: none">
@@ -43,6 +50,7 @@
         <select
           name="clubId"
           id="clubId"
+          title="Choose which club you want to join"
           class="w-full p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg focus:ring focus:ring-blue-300 dark:focus:ring-primary-400 transition-colors duration-300"
         >
           <option value="" disabled selected>Choose a club</option>
@@ -50,6 +58,10 @@
           <option value="<%= club._id %>"><%= club.name %></option>
           <% }) } %>
         </select>
+        <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-2">
+          <i class="fas fa-info-circle mr-1"></i>
+          Select the club you want to be a moderator or member of
+        </p>
       </div>
       <div class="mt-6">
         <button

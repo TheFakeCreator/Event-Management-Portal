@@ -203,7 +203,12 @@
           Login
         </h1>
         <!-- Login Form -->
-        <form action="/auth/login" method="post" class="space-y-4">
+        <form
+          action="/auth/login"
+          method="post"
+          data-validate="true"
+          class="space-y-4"
+        >
           <!-- Hidden field for redirect URL -->
           <input
             type="hidden"
@@ -220,9 +225,13 @@
               type="email"
               name="email"
               id="email"
+              placeholder="Enter your email address (e.g., user@example.com)"
               required
               class="w-full mt-1 p-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              The email you used to register
+            </p>
           </div>
 
           <div>
@@ -235,9 +244,13 @@
               type="password"
               name="password"
               id="password"
+              placeholder="Enter your password"
               required
               class="w-full mt-1 p-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             />
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Case sensitive password
+            </p>
           </div>
 
           <!-- Forgot Password Link -->

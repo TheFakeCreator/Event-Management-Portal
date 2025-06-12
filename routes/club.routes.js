@@ -20,6 +20,13 @@ import {
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
 import upload from "../middlewares/upload.js";
 import cloudinary from "../configs/cloudinary.js";
+import {
+  validateClub,
+  validateParams,
+  validateQuery,
+  securityMiddleware,
+  validateFileUpload,
+} from "../middlewares/inputValidationMiddleware.js";
 
 const router = express.Router();
 
@@ -60,28 +67,102 @@ const extractPublicId = (cloudinaryUrl) => {
 };
 
 // GET Routes
-router.get("/", isAuthenticatedLineant, getClubs);
-router.get("/add", isAuthenticated, isAdmin, getAddClub);
-router.get("/:id/edit", isAuthenticated, isClubModerator, getEditClub);
-router.get("/:id/:subPage", isAuthenticatedLineant, getClubTab);
+router.get(
+  "/",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateQuery(["search", "category", "page", "limit"]),
+  getClubs
+);
+router.get("/add", securityMiddleware, isAuthenticated, isAdmin, getAddClub);
+router.get(
+  "/:id/edit",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id"]),
+  isClubModerator,
+  getEditClub
+);
+router.get(
+  "/:id/:subPage",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateParams(["id", "subPage"]),
+  getClubTab
+);
 
 // POST Routes
-router.post("/add", isAuthenticated, isAdmin, createClub);
-router.post("/:id/edit", isAuthenticated, isClubModerator, postEditClub);
-router.post("/:id/edit-about", isAuthenticated, isClubModerator, editAboutClub);
+router.post(
+  "/add",
+  securityMiddleware,
+  isAuthenticated,
+  isAdmin,
+  validateClub.create,
+  createClub
+);
+router.post(
+  "/:id/edit",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id"]),
+  isClubModerator,
+  validateClub.update,
+  postEditClub
+);
+router.post(
+  "/:id/edit-about",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id"]),
+  isClubModerator,
+  validateClub.updateAbout,
+  editAboutClub
+);
 
 // Sponsor Management Routes
-router.get("/:id/sponsors", isAuthenticatedLineant, getClubSponsors);
-router.post("/:id/sponsors", isAuthenticated, isClubModerator, addClubSponsor);
-router.post("/:id/sponsors/:sponsorId/edit", isAuthenticated, isClubModerator, editClubSponsor);
-router.post("/:id/sponsors/:sponsorId/delete", isAuthenticated, isClubModerator, deleteClubSponsor);
+router.get(
+  "/:id/sponsors",
+  securityMiddleware,
+  isAuthenticatedLineant,
+  validateParams(["id"]),
+  getClubSponsors
+);
+router.post(
+  "/:id/sponsors",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id"]),
+  isClubModerator,
+  validateClub.addSponsor,
+  addClubSponsor
+);
+router.post(
+  "/:id/sponsors/:sponsorId/edit",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id", "sponsorId"]),
+  isClubModerator,
+  validateClub.editSponsor,
+  editClubSponsor
+);
+router.post(
+  "/:id/sponsors/:sponsorId/delete",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id", "sponsorId"]),
+  isClubModerator,
+  deleteClubSponsor
+);
 
 // POST: Upload image to club gallery
 router.post(
   "/:id/gallery/upload",
+  securityMiddleware,
   isAuthenticated,
+  validateParams(["id"]),
   isClubModerator,
   upload.single("galleryImage"),
+  validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
   async (req, res, next) => {
     try {
       const clubId = req.params.id;
@@ -114,9 +195,12 @@ router.post(
 // POST: Change club display image
 router.post(
   "/:id/image/upload",
+  securityMiddleware,
   isAuthenticated,
+  validateParams(["id"]),
   isClubModerator,
   upload.single("clubImage"),
+  validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
   async (req, res, next) => {
     try {
       const clubId = req.params.id;
@@ -144,7 +228,9 @@ router.post(
 // POST: Delete image from club gallery
 router.post(
   "/:id/gallery/:imageId/delete",
+  securityMiddleware,
   isAuthenticated,
+  validateParams(["id", "imageId"]),
   isClubModerator,
   async (req, res, next) => {
     try {
@@ -206,7 +292,9 @@ router.post(
 // POST: Delete club display image
 router.post(
   "/:id/image/delete",
+  securityMiddleware,
   isAuthenticated,
+  validateParams(["id"]),
   isClubModerator,
   async (req, res, next) => {
     try {
@@ -251,16 +339,25 @@ router.post(
 );
 
 // Test route for moderator middleware
-router.get("/:id/mod-section", isAuthenticated, isClubModerator, (req, res) => {
-  res.send(
-    "You are a moderator (or admin) for this club and can access this section."
-  );
-});
+router.get(
+  "/:id/mod-section",
+  securityMiddleware,
+  isAuthenticated,
+  validateParams(["id"]),
+  isClubModerator,
+  (req, res) => {
+    res.send(
+      "You are a moderator (or admin) for this club and can access this section."
+    );
+  }
+);
 
 // Route: View all recruitment responses for a club (admin/moderator only)
 router.get(
   "/:id/recruitments/responses",
+  securityMiddleware,
   isAuthenticatedLineant,
+  validateParams(["id"]),
   async (req, res) => {
     const user = req.user;
     const clubId = req.params.id;

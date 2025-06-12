@@ -22,6 +22,10 @@ import {
   hashPassword,
   comparePassword,
 } from "../utils/passwordSecurity.js";
+import {
+  generateVerificationUrl,
+  generatePasswordResetUrl,
+} from "../utils/urlHelper.js";
 
 export const getLoginUser = (req, res, next) => {
   try {
@@ -121,26 +125,66 @@ export const registerUser = async (req, res, next) => {
       isVerified: false, // User is not verified yet
       lastPasswordChange: Date.now(),
     }); // Generate a verification token with enhanced security
-    const token = generateVerificationToken(newUser);
+    const token = generateVerificationToken(newUser); // Create a verification link using dynamic URL
+    const verificationUrl = generateVerificationUrl(token, req);
 
-    // Create a verification link
-    const verificationUrl = `https://event-management-portal.onrender.com/auth/verify/${token}`;
+    // Debug logging for verification URL
+    console.log("Generated verification URL:", verificationUrl);
+    console.log("Environment:", process.env.NODE_ENV || "development");
 
-    // Send the verification email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Verify your Email",
-      html: `
-        <h4>Hello ${name},</h4>
-        <p>Thank you for registering. Please verify your email by clicking the link below:</p>
-        <a href="${verificationUrl}" target="_blank">Verify Email</a>
-      `,
-    });
-    req.flash(
-      "success",
-      "Signup successful! Please check your email to verify your account."
-    );
+    // Send the verification email with error handling
+    try {
+      console.log("Attempting to send verification email to:", email);
+
+      const emailResult = await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Verify your Email - Event Management Portal",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Welcome to Event Management Portal!</h2>
+            <h4>Hello ${name},</h4>
+            <p>Thank you for registering. To complete your account setup, please verify your email address by clicking the button below:</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${verificationUrl}" target="_blank" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email Address</a>
+            </div>
+            <p style="color: #666; font-size: 14px;">
+              If the button doesn't work, you can copy and paste this link into your browser:<br>
+              <a href="${verificationUrl}">${verificationUrl}</a>
+            </p>
+            <p style="color: #666; font-size: 12px;">
+              This verification link will expire in 24 hours. If you didn't create an account, please ignore this email.
+            </p>
+          </div>
+        `,
+      });
+
+      console.log("✅ Email sent successfully:", emailResult.messageId);
+      req.flash(
+        "success",
+        "Signup successful! Please check your email to verify your account."
+      );
+    } catch (emailError) {
+      console.error("❌ Email sending failed:", emailError);
+
+      // Log the email error but don't fail the registration
+      logSecurityEvent(
+        SECURITY_EVENTS.EMAIL_FAILED,
+        {
+          email,
+          userId: newUser._id,
+          error: emailError.message,
+          errorCode: emailError.code,
+        },
+        req
+      );
+
+      // Still allow user to be created but notify about email issue
+      req.flash(
+        "error",
+        "Account created successfully, but we couldn't send the verification email. Please contact support or try to resend the verification email."
+      );
+    }
 
     // Log security event
     logSecurityEvent(
@@ -330,29 +374,72 @@ export const verifyUser = async (req, res, next) => {
   const { token } = req.params;
 
   try {
-    // Verify the token with enhanced validation
-    const decoded = verifyToken(token, "verification");
+    console.log("🔍 Debug: Raw token from URL:", token);
+    console.log("🔍 Debug: Token length:", token.length);
+    console.log("🔍 Debug: Token starts with:", token.substring(0, 50));
+    console.log(
+      "🔍 Debug: Token ends with:",
+      token.substring(token.length - 10)
+    );
 
-    const user = await User.findById(decoded.id);
+    // Check if token looks like a JWT (should have 3 parts separated by dots)
+    const tokenParts = token.split(".");
+    console.log("🔍 Debug: Token parts count:", tokenParts.length);
 
-    if (!user) {
-      req.flash("error", "Invalid token or user not found.");
+    if (tokenParts.length !== 3) {
+      console.log(
+        "❌ Debug: Invalid JWT format - expected 3 parts, got",
+        tokenParts.length
+      );
+      req.flash("error", "Invalid verification link format.");
       return res.redirect("/auth/login");
     }
 
-    // Check if user is already verified
+    // Verify the token with enhanced validation
+    const decoded = verifyToken(token, "verification");
+    console.log("✅ Debug: Token decoded successfully:", {
+      id: decoded.id,
+      type: decoded.type,
+      exp: new Date(decoded.exp * 1000),
+    });
+
+    const user = await User.findById(decoded.id);
+    console.log("🔍 Debug: User lookup result:", user ? "Found" : "Not found");
+
+    if (!user) {
+      console.log("❌ Debug: User not found for ID:", decoded.id);
+      req.flash("error", "Invalid token or user not found.");
+      return res.redirect("/auth/login");
+    } // Check if user is already verified
     if (user.isVerified) {
+      console.log("ℹ️ Debug: User already verified");
       req.flash("info", "User already verified.");
       return res.redirect("/auth/login");
     }
 
     // Verify the user
+    console.log("✅ Debug: Verifying user...");
     user.isVerified = true;
     await user.save();
+    console.log("✅ Debug: User verified successfully");
+
+    // Log security event
+    logSecurityEvent(
+      SECURITY_EVENTS.ACCOUNT_VERIFIED,
+      {
+        email: user.email,
+        username: user.username,
+        userId: user._id,
+      },
+      req
+    );
 
     req.flash("success", "Email Verified Successfully! You can now login.");
     res.redirect("/auth/login");
   } catch (error) {
+    console.log("❌ Debug: Verification error:", error.message);
+    console.log("❌ Debug: Error type:", error.name);
+
     if (error.name === "TokenExpiredError") {
       req.flash(
         "error",
@@ -386,13 +473,12 @@ export const forgotPassword = async (req, res, next) => {
       req.flash("error", "User not found.");
       return res.redirect("/auth/forgot-password");
     }
-
     const token = crypto.randomBytes(32).toString("hex");
     user.resetToken = token;
     user.expireToken = Date.now() + 3600000; // Token expires in 1 hour
     await user.save();
 
-    const resetUrl = `https://event-management-portal.onrender.com/auth/reset-password/${token}`;
+    const resetUrl = generatePasswordResetUrl(token, req);
     await transporter.sendMail({
       to: email,
       subject: "Password Reset Request",

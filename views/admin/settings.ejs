@@ -106,9 +106,15 @@
           type="email"
           name="supportEmail"
           value="<%= settings.supportEmail %>"
+          placeholder="Support email address (e.g., support@yoursite.com)"
+          title="Email address for user support inquiries"
           class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Email address for user support inquiries
+        </p>
       </div>
       <div class="mb-4">
         <label
@@ -119,9 +125,15 @@
           type="text"
           name="supportPhone"
           value="<%= settings.supportPhone %>"
+          placeholder="Support phone number (e.g., +1-234-567-8900)"
+          title="Phone number for user support"
           class="w-full p-2 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg transition-colors duration-300"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Phone number for user support inquiries
+        </p>
       </div>
       <button
         type="submit"

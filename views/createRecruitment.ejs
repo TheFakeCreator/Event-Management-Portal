@@ -46,7 +46,12 @@
       <%= success %>
     </div>
     <% } %>
-    <form id="recruitmentForm" action="/recruitment/new" method="POST">
+    <form
+      id="recruitmentForm"
+      action="/recruitment/new"
+      method="POST"
+      data-validate="true"
+    >
       <input type="hidden" name="clubId" value="<%= clubId %>" />
       <div id="section-about" class="section">
         <h3 class="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400">
@@ -66,9 +71,14 @@
               id="title"
               name="title"
               required
+              placeholder="Recruitment title (e.g., Web Development Team - Spring 2024)"
+              title="Clear title for the recruitment drive"
               class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-              placeholder="e.g. Web Developer, Designer, etc."
             />
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Clear title for the recruitment drive (3-255 characters)
+            </p>
           </div>
           <div>
             <label
@@ -81,9 +91,15 @@
               name="description"
               required
               rows="4"
+              placeholder="Describe the role and requirements... (e.g., We're looking for passionate web developers to join our team. Experience with React and Node.js preferred but not required.)"
+              title="Detailed description of the position and requirements"
               class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-              placeholder="Describe the recruitment role, requirements, etc."
             ></textarea>
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Detailed description of the position and requirements (min 10
+              characters)
+            </p>
           </div>
           <div>
             <label
@@ -96,9 +112,14 @@
               id="deadline"
               name="deadline"
               required
+              title="Last date for applications (must be in the future)"
               class="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
               min="<%= new Date().toISOString().split('T')[0] %>"
             />
+            <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+              <i class="fas fa-info-circle mr-1"></i>
+              Last date for applications (must be in the future)
+            </p>
           </div>
         </div>
       </div>
@@ -136,8 +157,13 @@
                 type="text"
                 id="fieldLabel"
                 class="px-2 py-1 border border-gray-300 dark:border-dark-border rounded bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary"
-                placeholder="Field label"
+                placeholder="Question or field label (e.g., Why do you want to join our team?)"
+                title="The question or prompt for applicants"
               />
+              <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+                <i class="fas fa-info-circle mr-1"></i>
+                The question or prompt for applicants (max 255 characters)
+              </p>
               <label class="flex items-center space-x-1">
                 <input type="checkbox" id="fieldRequired" />
                 <span

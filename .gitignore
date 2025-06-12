@@ -1,5 +1,8 @@
 node_modules
 .env
+.env.test
+.env.local
+.env.production
 /Designs
 
 # Security Documentation - CONFIDENTIAL
@@ -7,7 +10,14 @@ documentation/SECURITY_VULNERABILITIES.md
 documentation/SECURITY_CHECKLIST.md
 documentation/JWT_SECURITY_FIXES.md
 documentation/PASSWORD_SECURITY_COMPLETE.md
+documentation/EMAIL_TROUBLESHOOTING.md
 security-audit-*.md
 penetration-test-*.md
 vulnerability-report-*.md
 incident-report-*.md
+
+# Test artifacts
+coverage/
+test-results/
+__tests__/logs/
+*.log

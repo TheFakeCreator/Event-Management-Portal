@@ -6,25 +6,58 @@
   </h1>
 
   <div class="mb-8 bg-white dark:bg-dark-surface p-6 rounded-lg shadow-lg dark:shadow-2xl border dark:border-dark-border">
-    <form action="/announcements/<%= announcement._id %>?_method=PUT" method="POST" class="space-y-4">
-      <div>
+    <form action="/announcements/<%= announcement._id %>?_method=PUT" method="POST" class="space-y-4">      <div>
         <label for="title" class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Title</label>
-        <input type="text" id="title" name="title" value="<%= announcement.title %>" required class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400" />
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          value="<%= announcement.title %>" 
+          placeholder="Announcement title (e.g., Important: Event Schedule Changes)"
+          title="Clear, attention-grabbing title"
+          required 
+          class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400" 
+        />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Clear, attention-grabbing title (3-200 characters)
+        </p>
       </div>
       <div>
         <label for="message" class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Message</label>
-        <textarea id="message" name="message" rows="4" required class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400"><%= announcement.message %></textarea>
+        <textarea 
+          id="message" 
+          name="message" 
+          rows="4" 
+          placeholder="Write your announcement... (e.g., Due to unforeseen circumstances, the workshop scheduled for tomorrow has been moved to next week. All registered participants will be notified via email.)"
+          title="Detailed announcement content"
+          required 
+          class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400"
+        ><%= announcement.message %></textarea>
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Detailed announcement content (10-5000 characters)
+        </p>
       </div>
       <div>
         <label for="clubId" class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary">Club (Optional)</label>
-        <select id="clubId" name="clubId" class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400">
-          <option value="">Select a club</option>
+        <select 
+          id="clubId" 
+          name="clubId" 
+          title="Select which club this announcement is for"
+          class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary focus:ring-blue-500 dark:focus:ring-primary-400 focus:border-blue-500 dark:focus:border-primary-400"
+        >
+          <option value="">General announcement (all users)</option>
           <% if (locals.clubs) { %>
             <% clubs.forEach(function(club) { %>
               <option value="<%= club._id %>" <%= announcement.club && announcement.club._id.toString() === club._id.toString() ? 'selected' : '' %>><%= club.name %></option>
             <% }); %>
           <% } %>
         </select>
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Leave blank for general announcements or select a specific club
+        </p>
       </div>
       <button type="submit" class="inline-flex justify-center py-2 px-4 bg-blue-600 dark:bg-primary-500 hover:bg-blue-700 dark:hover:bg-primary-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
         Update Announcement

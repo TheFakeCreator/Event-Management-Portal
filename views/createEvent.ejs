@@ -9,7 +9,12 @@
     Create Event
   </h1>
 
-  <form action="/event/create" method="POST" class="space-y-6">
+  <form
+    action="/event/create"
+    method="POST"
+    data-validate="true"
+    class="space-y-6"
+  >
     <div class="grid grid-cols-1 gap-4">
       <div>
         <label
@@ -21,10 +26,15 @@
           type="text"
           name="title"
           id="title"
+          placeholder="Enter event title (e.g., Web Development Workshop 2024)"
+          title="A clear, descriptive title for your event"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-          placeholder="Enter event title"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          A clear, descriptive title for your event (3-255 characters)
+        </p>
       </div>
       <div>
         <label
@@ -36,9 +46,14 @@
           name="description"
           id="description"
           rows="4"
+          placeholder="Describe your event... (e.g., Join us for an intensive workshop covering modern web development technologies including React, Node.js, and MongoDB.)"
+          title="Detailed description of what attendees can expect"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-          placeholder="Enter event description"
         ></textarea>
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Detailed description of what attendees can expect (min 10 characters)
+        </p>
       </div>
       <div>
         <label
@@ -49,6 +64,7 @@
         <select
           name="type"
           id="type"
+          title="Select the category that best describes your event"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
         >
           <option value="Workshops">Workshops</option>
@@ -60,6 +76,10 @@
           <option value="Tech">Tech</option>
           <option value="Other" selected>Other</option>
         </select>
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Choose the category that best describes your event
+        </p>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
@@ -73,9 +93,14 @@
             type="date"
             name="startDate"
             id="startDate"
+            title="When the event starts (YYYY-MM-DD)"
             class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             required
           />
+          <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+            <i class="fas fa-info-circle mr-1"></i>
+            When the event starts
+          </p>
         </div>
         <div>
           <label
@@ -87,9 +112,14 @@
             type="date"
             name="endDate"
             id="endDate"
+            title="When the event ends (must be same day or later)"
             class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             required
           />
+          <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+            <i class="fas fa-info-circle mr-1"></i>
+            When the event ends (must be same day or later)
+          </p>
         </div>
       </div>
 
@@ -104,9 +134,14 @@
             type="time"
             name="startTime"
             id="startTime"
+            title="Start time in 24-hour format (HH:MM)"
             class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             required
           />
+          <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+            <i class="fas fa-info-circle mr-1"></i>
+            Example: 14:30 or 09:00
+          </p>
         </div>
         <div>
           <label
@@ -118,9 +153,14 @@
             type="time"
             name="endTime"
             id="endTime"
+            title="End time in 24-hour format (HH:MM)"
             class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
             required
           />
+          <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+            <i class="fas fa-info-circle mr-1"></i>
+            Example: 16:30 or 17:00
+          </p>
         </div>
       </div>
 
@@ -134,10 +174,15 @@
           type="text"
           name="location"
           id="location"
+          placeholder="Event venue or location (e.g., Main Auditorium, Building A or Online via Zoom)"
+          title="Where the event will take place"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-          placeholder="Enter event location"
           required
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Where the event will take place (max 255 characters)
+        </p>
       </div>
 
       <div>
@@ -150,9 +195,14 @@
           type="text"
           name="image"
           id="image"
+          placeholder="Event poster/banner URL (e.g., https://example.com/event-poster.jpg)"
+          title="Link to your event poster or banner image"
           class="mt-2 w-full p-3 border border-gray-300 dark:border-dark-border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary transition-colors duration-300"
-          placeholder="Paste image URL"
         />
+        <p class="text-xs text-gray-500 dark:text-dark-text-muted mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Optional: Link to your event poster or banner image
+        </p>
       </div>
       <div>
         <label

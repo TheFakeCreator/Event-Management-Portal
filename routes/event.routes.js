@@ -19,25 +19,106 @@ import {
   reportEvent,
   addEventWinners,
 } from "../controllers/event.controller.js";
+import {
+  validateEvent,
+  validateParams,
+  validateQuery,
+  securityMiddleware,
+  validateFileUpload,
+} from "../middlewares/inputValidationMiddleware.js";
 
 const router = express.Router();
 
 // GET Routes
-router.get("/", isAuthenticatedLineant, getEvents);
-router.get("/create", isAuthenticated, isModeratorOrAdmin, getCreateEvent);
-router.get("/:id", isAuthenticated, getEventDetails);
-router.get("/:id/register", isAuthenticated, getEventRegister);
-router.get("/:id/edit", isAuthenticated, getEditEvent);
-router.get("/:id/participants", isAuthenticated, getEventParticipants);
+router.get(
+  "/",
+  securityMiddleware,
+  validateQuery(["search", "category", "page", "limit"]),
+  isAuthenticatedLineant,
+  getEvents
+);
+router.get(
+  "/create",
+  securityMiddleware,
+  isAuthenticated,
+  isModeratorOrAdmin,
+  getCreateEvent
+);
+router.get(
+  "/:id",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  getEventDetails
+);
+router.get(
+  "/:id/register",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  getEventRegister
+);
+router.get(
+  "/:id/edit",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  getEditEvent
+);
+router.get(
+  "/:id/participants",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  getEventParticipants
+);
 
-// POST Routes
-router.post("/create", isAuthenticated, isModeratorOrAdmin, createEvent);
-router.post("/:id/register", isAuthenticated, registerEvent);
-router.post("/:id/delete", isAuthenticated, isModeratorOrAdmin, deleteEvent);
-router.post("/:id/edit", isAuthenticated, isModeratorOrAdmin, editEvent);
-router.post("/:id/report", isAuthenticated, reportEvent);
+// POST Routes - with validation and security middleware
+router.post(
+  "/create",
+  securityMiddleware,
+  isAuthenticated,
+  isModeratorOrAdmin,
+  validateEvent.create,
+  createEvent
+);
+router.post(
+  "/:id/register",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  validateEvent.register,
+  registerEvent
+);
+router.post(
+  "/:id/delete",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  isModeratorOrAdmin,
+  deleteEvent
+);
+router.post(
+  "/:id/edit",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  isModeratorOrAdmin,
+  validateEvent.update,
+  editEvent
+);
+router.post(
+  "/:id/report",
+  securityMiddleware,
+  validateParams(["id"]),
+  isAuthenticated,
+  validateEvent.report,
+  reportEvent
+);
 router.post(
   "/:id/winners",
+  securityMiddleware,
+  validateParams(["id"]),
   isAuthenticated,
   isModeratorOrAdmin,
   addEventWinners
