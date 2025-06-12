@@ -121,36 +121,41 @@
               ></path>
             </svg>
           </button>
-
           <!-- Profile Button and Dropdown -->
           <div class="relative">
             <button
               id="account-btn"
               class="text-gray-700 dark:text-dark-text-primary hover:text-blue-500 dark:hover:text-primary-400 flex items-center focus:outline-none transition-colors duration-300"
+              aria-haspopup="true"
+              aria-expanded="false"
             >
               <i class="fas fa-user-circle text-2xl mr-2"></i>
-              <i class="fas fa-chevron-down ml-2 text-sm"></i>
+              <i
+                class="fas fa-chevron-down ml-2 text-sm transition-transform duration-200"
+                id="chevron-icon"
+              ></i>
             </button>
-
             <!-- Dropdown Menu -->
             <div
               id="dropdown-menu"
-              class="absolute right-0 mt-2 w-40 bg-white dark:bg-dark-surface shadow-lg rounded-md p-2 hidden transition-colors duration-300"
+              class="dropdown-menu absolute right-0 top-full mt-2 w-48 bg-white dark:bg-dark-surface shadow-xl rounded-md p-2 hidden transition-all duration-200 border border-gray-200 dark:border-gray-700"
+              style="z-index: 9999; position: absolute"
             >
-              <form action="/auth/logout" method="post">
+              <a href="/user/<%= user.username %>" class="block">
+                <div
+                  class="w-full text-left px-4 py-2 text-black dark:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300 rounded-md"
+                >
+                  <i class="fas fa-user-circle mr-2"></i>Profile
+                </div>
+              </a>
+              <form action="/auth/logout" method="post" class="block">
                 <button
-                  class="w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300"
+                  type="submit"
+                  class="w-full text-left px-4 py-2 text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300 rounded-md"
                 >
                   <i class="fas fa-sign-out-alt mr-2"></i> Logout
                 </button>
               </form>
-              <a href="/user/<%= user.username %>">
-                <button
-                  class="w-full text-left px-4 py-2 text-black dark:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-card flex items-center transition-colors duration-300"
-                >
-                  <i class="fas fa-user-circle mr-2"></i>profile
-                </button>
-              </a>
             </div>
           </div>
         </div>
@@ -316,8 +321,7 @@
         </svg>
         <span class="font-medium"><%= _success[0] %></span>
         <button
-          onclick="closeFlashMessage()"
-          class="absolute top-1 right-2 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 text-xl transition-colors duration-300"
+          class="flash-close-btn absolute top-1 right-2 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100 text-xl transition-colors duration-300"
         >
           &times;
         </button>
@@ -365,8 +369,7 @@
         </svg>
         <span class="font-medium"><%= _error[0] %></span>
         <button
-          onclick="closeFlashMessage()"
-          class="absolute top-1 right-2 text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 text-xl transition-colors duration-300"
+          class="flash-close-btn absolute top-1 right-2 text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-100 text-xl transition-colors duration-300"
         >
           &times;
         </button>
@@ -397,43 +400,6 @@
       </div>
       <% } %>
     </div>
-    <script>
-      let timer = 20;
-      let interval;
-      function closeFlashMessage() {
-        const container = document.getElementById("flash-message-container");
-        if (container) container.style.display = "none";
-        clearInterval(interval);
-      }
-      function animateTimer(id, countdownId) {
-        let dashArray = 100.48;
-        let dashOffset = 0;
-        interval = setInterval(() => {
-          timer--;
-          if (timer < 0) {
-            closeFlashMessage();
-            return;
-          }
-          if (countdownId) {
-            document.getElementById(countdownId).innerText = timer + "s";
-          }
-          dashOffset = dashArray * (1 - timer / 20);
-          const circle = document.getElementById(id);
-          if (circle) circle.setAttribute("stroke-dashoffset", dashOffset);
-        }, 1000);
-        if (countdownId) {
-          document.getElementById(countdownId).innerText = timer + "s";
-        }
-      }
-      window.addEventListener("DOMContentLoaded", function () {
-        if (document.getElementById("success-timer")) {
-          animateTimer("success-timer", "success-countdown");
-        } else if (document.getElementById("error-timer")) {
-          animateTimer("error-timer", "error-countdown");
-        }
-        setTimeout(closeFlashMessage, 20000);
-      });
-    </script>
     <% } %>
 
     <!-- Dynamic Content -->
@@ -545,45 +511,17 @@
         <div class="container mx-auto px-3">
           <p class="text-sm">
             © Copyright
-            <script>
-              document.write(new Date().getFullYear());
-            </script>
+            <span class="current-year"></span>
             | EventX | All rights reserved
           </p>
         </div>
       </div>
     </footer>
 
-    <script>
-      // Toggle Mobile Menu
-      const menuBtn = document.getElementById("menu-btn");
-      const mobileMenu = document.getElementById("mobile-menu");
-
-      menuBtn.addEventListener("click", () => {
-        mobileMenu.classList.toggle("hidden");
-      });
-
-      // Toggle Logout Dropdown
-      const accountBtn = document.getElementById("account-btn");
-      const dropdownMenu = document.getElementById("dropdown-menu");
-
-      if (accountBtn) {
-        accountBtn.addEventListener("click", (event) => {
-          event.stopPropagation();
-          dropdownMenu.classList.toggle("hidden");
-        });
-
-        document.addEventListener("click", (event) => {
-          if (
-            !accountBtn.contains(event.target) &&
-            !dropdownMenu.contains(event.target)
-          ) {
-            dropdownMenu.classList.add("hidden");
-          }
-        });
-      }
-    </script>
-
+    <!-- External JavaScript Files -->
+    <script src="/javascript/navigation.js"></script>
+    <script src="/javascript/flash-messages.js"></script>
+    <script src="/javascript/page-utils.js"></script>
     <!-- Form Validation Script -->
     <script src="/javascript/formValidation.js"></script>
   </body>

@@ -18,7 +18,7 @@ import {
   deleteClubSponsor,
 } from "../controllers/club.controller.js";
 import { isClubModerator } from "../middlewares/moderatorMiddleware.js";
-import upload from "../middlewares/upload.js";
+import { clubImageUpload, clubGalleryUpload } from "../middlewares/upload.js";
 import cloudinary from "../configs/cloudinary.js";
 import {
   validateClub,
@@ -27,6 +27,11 @@ import {
   securityMiddleware,
   validateFileUpload,
 } from "../middlewares/inputValidationMiddleware.js";
+import {
+  fileUploadRateLimit,
+  enhancedFileValidation,
+  fileUploadErrorHandler,
+} from "../middlewares/fileSecurityMiddleware.js";
 
 const router = express.Router();
 
@@ -161,8 +166,11 @@ router.post(
   isAuthenticated,
   validateParams(["id"]),
   isClubModerator,
-  upload.single("galleryImage"),
-  validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
+  fileUploadRateLimit,
+  clubGalleryUpload.single("galleryImage"),
+  validateFileUpload({ fileTypes: ["image"], maxSize: 8 * 1024 * 1024 }), // 8MB for gallery
+  enhancedFileValidation,
+  fileUploadErrorHandler,
   async (req, res, next) => {
     try {
       const clubId = req.params.id;
@@ -199,8 +207,11 @@ router.post(
   isAuthenticated,
   validateParams(["id"]),
   isClubModerator,
-  upload.single("clubImage"),
+  fileUploadRateLimit,
+  clubImageUpload.single("clubImage"),
   validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
+  enhancedFileValidation,
+  fileUploadErrorHandler,
   async (req, res, next) => {
     try {
       const clubId = req.params.id;

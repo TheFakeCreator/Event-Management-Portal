@@ -3,7 +3,7 @@ import {
   isAuthenticated,
   isAuthenticatedLineant,
 } from "../middlewares/authMiddleware.js";
-import upload from "../middlewares/upload.js";
+import { profileUpload } from "../middlewares/upload.js";
 import {
   getRequestRole,
   getUser,
@@ -18,6 +18,11 @@ import {
   validateFileUpload,
 } from "../middlewares/inputValidationMiddleware.js";
 import { protectUserInput } from "../middlewares/xssProtectionMiddleware.js";
+import {
+  fileUploadRateLimit,
+  enhancedFileValidation,
+  fileUploadErrorHandler,
+} from "../middlewares/fileSecurityMiddleware.js";
 
 const router = express.Router();
 
@@ -56,10 +61,13 @@ router.post(
   securityMiddleware,
   validateParams(["username"]),
   isAuthenticated,
-  upload.single("avatar"),
-  validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
+  fileUploadRateLimit,
+  profileUpload.single("avatar"),
+  validateFileUpload({ fileTypes: ["image"], maxSize: 2 * 1024 * 1024 }), // 2MB for avatars
+  enhancedFileValidation,
   protectUserInput, // XSS protection for user input
   validateUser.updateProfile,
+  fileUploadErrorHandler,
   postUserEdit
 );
 router.post(
