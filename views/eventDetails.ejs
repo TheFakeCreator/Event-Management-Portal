@@ -126,7 +126,7 @@
           <div
             class="text-gray-700 dark:text-dark-text-primary text-lg leading-relaxed bg-gray-50 dark:bg-dark-card p-4 rounded-lg"
           >
-            <%- event.description.replace(/\n/g, '<br />') %>
+            <%- safe.safeLineBreaks(event.description) %>
           </div>
         </div>
       </div>

@@ -141,7 +141,7 @@
           "
           id="live-slider-description"
         >
-          <%- ongoingEvents[0].description.replace(/\n/g, '<br />') %> <% if
+          <%- safe.safeLineBreaks(ongoingEvents[0].description) %> <% if
           (ongoingEvents[0].description &&
           ongoingEvents[0].description.split('\n').length > 7 ||
           ongoingEvents[0].description.length > 500) { %> ... <% } %>
@@ -157,7 +157,7 @@
       <!-- Decorative SVGs (optional, add your SVGs here) -->
     </div>
     <script type="application/json" id="ongoingEventsData">
-      <%- JSON.stringify(ongoingEvents) %>
+      <%- safe.safeJSON(ongoingEvents) %>
     </script>
     <link rel="stylesheet" href="/css/slider.css" />
     <script src="/javascript/slider.js"></script>
@@ -280,7 +280,7 @@
           "
           id="upcoming-slider-description"
         >
-          <%- upcomingEvents[0].description.replace(/\n/g, '<br />') %> <% if
+          <%- safe.safeLineBreaks(upcomingEvents[0].description) %> <% if
           (upcomingEvents[0].description &&
           upcomingEvents[0].description.split('\n').length > 7 ||
           upcomingEvents[0].description.length > 500) { %> ... <% } %>
@@ -339,7 +339,7 @@
       </div>
     </div>
     <script type="application/json" id="upcomingEventsData">
-      <%- JSON.stringify(upcomingEvents) %>
+      <%- safe.safeJSON(upcomingEvents) %>
     </script>
     <% } %> <link rel="stylesheet" href="/css/slider.css" />
     <script src="/javascript/slider.js"></script>

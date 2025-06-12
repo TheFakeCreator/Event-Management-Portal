@@ -20,10 +20,12 @@ import ejsMate from "ejs-mate";
 import "./configs/passport.js";
 import cors from "cors";
 import passport from "passport";
+import helmet from "helmet";
 import "./jobs/eventReminder.js";
 
 // Middleware Imports
 import errorHandler from "./middlewares/errorHandler.js";
+import { addXSSHelpers } from "./utils/xssProtection.js";
 
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
@@ -44,6 +46,53 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
+// Security headers with Content Security Policy
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cdn.jsdelivr.net",
+          "https://fonts.googleapis.com",
+          "https://cdnjs.cloudflare.com",
+        ],
+        scriptSrc: [
+          "'self'",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https:",
+          "http:",
+          "https://res.cloudinary.com",
+        ],
+        connectSrc: [
+          "'self'",
+          "https://api.cloudinary.com",
+          "https://res.cloudinary.com",
+        ],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+        upgradeInsecureRequests:
+          process.env.NODE_ENV === "production" ? [] : null,
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Allow embedding for file uploads
+  })
+);
+
 app.use(cors());
 app.engine("ejs", ejsMate);
 app.use(express.json());
@@ -65,6 +114,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+
+// Add XSS protection helpers to all responses
+app.use(addXSSHelpers);
 
 // Sets
 app.set("views", path.join(__dirname, "views"));

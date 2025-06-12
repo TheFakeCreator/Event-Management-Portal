@@ -195,9 +195,8 @@
     const container = document.getElementById("collaborators-container");
     const hiddenInput = document.getElementById("collaborators-hidden");
     // Pre-populate collaborators from server-side EJS
-    let collaborators = [];
-    try {
-      collaborators = JSON.parse(`<%- JSON.stringify(event.collaborators ? event.collaborators.map(c => ({ id: (c._id && c._id.toString ? c._id.toString() : c._id || ''), name: c.name || '' })) : []) %>`);
+    let collaborators = [];    try {
+      collaborators = JSON.parse(`<%- safe.safeJSON(event.collaborators ? event.collaborators.map(c => ({ id: (c._id && c._id.toString ? c._id.toString() : c._id || ''), name: c.name || '' })) : []) %>`);
       // Remove any with missing id or name
       collaborators = collaborators.filter(c => c.id && c.name);
     } catch (e) { collaborators = []; }
@@ -243,10 +242,10 @@
     // Event Leads functionality
     const eventLeadsSelect = document.getElementById("eventLeads-select");
     const eventLeadsContainer = document.getElementById("eventLeads-container");
-    const eventLeadsHidden = document.getElementById("eventLeads-hidden");
-    let eventLeads = [];    // Load existing event leads
+    const eventLeadsHidden = document.getElementById("eventLeads-hidden");    let eventLeads = [];
+    // Load existing event leads
     try {
-      eventLeads = JSON.parse(`<%- JSON.stringify(event.eventLeads ? event.eventLeads.map(lead => ({ id: lead._id.toString(), name: lead.name, email: lead.email })) : []) %>`);
+      eventLeads = JSON.parse(`<%- safe.safeJSON(event.eventLeads ? event.eventLeads.map(lead => ({ id: lead._id.toString(), name: lead.name, email: lead.email })) : []) %>`);
     } catch (e) { 
       eventLeads = []; 
     }

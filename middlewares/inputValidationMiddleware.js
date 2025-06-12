@@ -509,25 +509,46 @@ export const preventXSS = (req, res, next) => {
     /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi,
     /<embed\b[^<]*>/gi,
     /<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi,
+    /<meta\b[^<]*>/gi,
+    /<link\b[^<]*>/gi,
+    /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
+    /data:text\/html/gi,
+    /vbscript:/gi,
   ];
 
   const sanitizeValue = (value) => {
     if (typeof value === "string") {
+      let sanitized = value;
       for (const pattern of xssPatterns) {
-        if (pattern.test(value)) {
+        if (pattern.test(sanitized)) {
           logSecurityEvent(
             SECURITY_EVENTS.XSS_ATTEMPT,
             {
               pattern: pattern.toString(),
-              value: value.substring(0, 100),
+              value: sanitized.substring(0, 100),
               ip: req.ip,
+              userAgent: req.get("User-Agent"),
+              url: req.url,
             },
             req
           );
 
-          return value.replace(pattern, "");
+          // Remove the malicious content instead of just replacing
+          sanitized = sanitized.replace(pattern, "");
         }
       }
+
+      // Additional HTML entity encoding for critical fields
+      if (req.path.includes("/auth/") || req.path.includes("/admin/")) {
+        sanitized = sanitized
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#x27;");
+      }
+
+      return sanitized;
     }
     return value;
   };

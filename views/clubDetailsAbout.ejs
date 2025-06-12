@@ -43,7 +43,7 @@ currentTab: "about" }) %>
         <div
           class="text-gray-700 text-base leading-relaxed prose prose-blue max-w-none dark:text-gray-300"
         >
-          <%- aboutHtml %>
+          <%- safe.safeRich(aboutHtml) %>
         </div>
       </div>
 

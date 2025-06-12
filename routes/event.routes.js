@@ -26,6 +26,10 @@ import {
   securityMiddleware,
   validateFileUpload,
 } from "../middlewares/inputValidationMiddleware.js";
+import {
+  protectEventInput,
+  protectSearchInput,
+} from "../middlewares/xssProtectionMiddleware.js";
 
 const router = express.Router();
 
@@ -79,6 +83,7 @@ router.post(
   securityMiddleware,
   isAuthenticated,
   isModeratorOrAdmin,
+  protectEventInput, // XSS protection for event data
   validateEvent.create,
   createEvent
 );
@@ -104,6 +109,7 @@ router.post(
   validateParams(["id"]),
   isAuthenticated,
   isModeratorOrAdmin,
+  protectEventInput, // XSS protection for event updates
   validateEvent.update,
   editEvent
 );

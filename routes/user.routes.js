@@ -17,6 +17,7 @@ import {
   securityMiddleware,
   validateFileUpload,
 } from "../middlewares/inputValidationMiddleware.js";
+import { protectUserInput } from "../middlewares/xssProtectionMiddleware.js";
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.post(
   isAuthenticated,
   upload.single("avatar"),
   validateFileUpload({ fileTypes: ["image"], maxSize: 5 * 1024 * 1024 }),
+  protectUserInput, // XSS protection for user input
   validateUser.updateProfile,
   postUserEdit
 );
