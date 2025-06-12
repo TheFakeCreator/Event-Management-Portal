@@ -11,12 +11,13 @@
     >
       Request a Role
     </h1>
-
     <form
       action="/user/<%= user.username %>/request-role"
       method="POST"
       class="space-y-4"
     >
+      <!-- CSRF Token -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div>
         <label
           class="block text-lg font-semibold text-gray-700 dark:text-dark-text-primary mb-2 transition-colors duration-300"

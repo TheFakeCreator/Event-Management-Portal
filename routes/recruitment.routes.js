@@ -14,6 +14,7 @@ import {
   validateQuery,
   securityMiddleware,
 } from "../middlewares/inputValidationMiddleware.js";
+import { validateCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -46,6 +47,7 @@ router.post(
   securityMiddleware,
   isAuthenticatedLineant,
   isClubModerator,
+  validateCSRF,
   validateRecruitment.create,
   postNewRecruitment
 );
@@ -54,6 +56,7 @@ router.post(
   securityMiddleware,
   isAuthenticatedLineant,
   validateParams(["id"]),
+  validateCSRF,
   validateRecruitment.apply,
   async (req, res, next) => {
     try {

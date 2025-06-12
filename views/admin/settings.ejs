@@ -17,6 +17,8 @@
       Site Information
     </h2>
     <form action="/admin/settings/updateSite" method="POST">
+      <!-- CSRF Token -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="mb-4">
         <label
           class="block text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
@@ -62,6 +64,8 @@
       Feature Toggles
     </h2>
     <form action="/admin/settings/updateFeatures" method="POST">
+      <!-- CSRF Token -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="mb-4 flex items-center">
         <input type="checkbox" name="userRegistration" <%=
         settings.userRegistration ? "checked" : "" %> class="w-5 h-5">

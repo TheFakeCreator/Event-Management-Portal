@@ -23,6 +23,7 @@ import {
   enhancedFileValidation,
   fileUploadErrorHandler,
 } from "../middlewares/fileSecurityMiddleware.js";
+import { validateCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -61,6 +62,7 @@ router.post(
   securityMiddleware,
   validateParams(["username"]),
   isAuthenticated,
+  validateCSRF,
   fileUploadRateLimit,
   profileUpload.single("avatar"),
   validateFileUpload({ fileTypes: ["image"], maxSize: 2 * 1024 * 1024 }), // 2MB for avatars
@@ -75,6 +77,7 @@ router.post(
   securityMiddleware,
   validateParams(["username"]),
   isAuthenticated,
+  validateCSRF,
   validateUser.requestRole,
   requestRole
 );

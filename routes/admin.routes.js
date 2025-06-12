@@ -30,6 +30,7 @@ import {
   validateQuery,
   securityMiddleware,
 } from "../middlewares/inputValidationMiddleware.js";
+import { validateSensitiveCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -75,42 +76,73 @@ router.get(
 );
 
 // POST routes
-router.post("/clubs/create", validateAdmin.createClub, createClub);
+router.post(
+  "/clubs/create",
+  validateSensitiveCSRF,
+  validateAdmin.createClub,
+  createClub
+);
 router.post(
   "/clubs/update/:id",
   validateParams(["id"]),
+  validateSensitiveCSRF,
   validateAdmin.updateClub,
   editClub
 );
-router.post("/clubs/delete/:id", validateParams(["id"]), deleteClub);
-router.post("/roles/assign", validateAdmin.assignRole, assignRole);
+router.post(
+  "/clubs/delete/:id",
+  validateParams(["id"]),
+  validateSensitiveCSRF,
+  deleteClub
+);
+router.post(
+  "/roles/assign",
+  validateSensitiveCSRF,
+  validateAdmin.assignRole,
+  assignRole
+);
 router.post(
   "/roles/approve/:userId",
   validateParams(["userId"]),
+  validateSensitiveCSRF,
   approveRoleRequest
 );
 router.post(
   "/roles/deny/:userId",
   validateParams(["userId"]),
+  validateSensitiveCSRF,
   rejectRoleRequest
 );
-router.post("/users/delete/:userId", validateParams(["userId"]), deleteUser);
-router.post("/events/delete/:id", validateParams(["id"]), deleteEvent);
+router.post(
+  "/users/delete/:userId",
+  validateParams(["userId"]),
+  validateSensitiveCSRF,
+  deleteUser
+);
+router.post(
+  "/events/delete/:id",
+  validateParams(["id"]),
+  validateSensitiveCSRF,
+  deleteEvent
+);
 router.post(
   "/events/edit/:id",
   validateParams(["id"]),
+  validateSensitiveCSRF,
   validateAdmin.editEvent,
   editEvent
 );
 router.post(
   "/clubs/:id/add-moderator",
   validateParams(["id"]),
+  validateSensitiveCSRF,
   validateAdmin.addModerator,
   addModeratorToClub
 );
 router.post(
   "/clubs/:id/remove-moderator",
   validateParams(["id"]),
+  validateSensitiveCSRF,
   validateAdmin.removeModerator,
   removeModeratorFromClub
 );

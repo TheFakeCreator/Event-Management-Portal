@@ -32,6 +32,7 @@ import {
   enhancedFileValidation,
   fileUploadErrorHandler,
 } from "../middlewares/fileSecurityMiddleware.js";
+import { validateCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -102,6 +103,7 @@ router.post(
   securityMiddleware,
   isAuthenticated,
   isAdmin,
+  validateCSRF,
   validateClub.create,
   createClub
 );
@@ -111,6 +113,7 @@ router.post(
   isAuthenticated,
   validateParams(["id"]),
   isClubModerator,
+  validateCSRF,
   validateClub.update,
   postEditClub
 );
@@ -120,6 +123,7 @@ router.post(
   isAuthenticated,
   validateParams(["id"]),
   isClubModerator,
+  validateCSRF,
   validateClub.updateAbout,
   editAboutClub
 );
@@ -156,6 +160,7 @@ router.post(
   isAuthenticated,
   validateParams(["id", "sponsorId"]),
   isClubModerator,
+  validateCSRF,
   deleteClubSponsor
 );
 
@@ -166,6 +171,7 @@ router.post(
   isAuthenticated,
   validateParams(["id"]),
   isClubModerator,
+  validateCSRF,
   fileUploadRateLimit,
   clubGalleryUpload.single("galleryImage"),
   validateFileUpload({ fileTypes: ["image"], maxSize: 8 * 1024 * 1024 }), // 8MB for gallery

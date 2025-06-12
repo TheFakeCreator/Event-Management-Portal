@@ -26,6 +26,7 @@ import "./jobs/eventReminder.js";
 // Middleware Imports
 import errorHandler from "./middlewares/errorHandler.js";
 import { addXSSHelpers } from "./utils/xssProtection.js";
+import { generateCSRF, validateCSRF } from "./middlewares/csrfMiddleware.js";
 
 // Router Imports
 import indexRouter from "./routes/index.routes.js";
@@ -93,7 +94,22 @@ app.use(
   })
 );
 
-app.use(cors());
+// Secure CORS configuration
+const corsOptions = {
+  origin: [
+    "https://yourdomain.com",
+    "https://www.yourdomain.com",
+    ...(process.env.NODE_ENV === "development"
+      ? ["http://localhost:3000", "http://127.0.0.1:3000"]
+      : []),
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+};
+
+app.use(cors(corsOptions));
 app.engine("ejs", ejsMate);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -101,12 +117,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(
   expressSession({
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    secret: process.env.SESSION_SECRET,
+    name: "sessionId", // Change default session name for security
     cookie: {
-      secure: false, // Change this to true in production
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      httpOnly: true, // Prevent XSS attacks
+      maxAge: 1000 * 60 * 60, // 1 hour (reduced from 24 hours)
+      sameSite: "strict", // CSRF protection
     },
   })
 );
@@ -114,6 +133,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+
+// CSRF Protection
+app.use(generateCSRF);
 
 // Add XSS protection helpers to all responses
 app.use(addXSSHelpers);

@@ -45,7 +45,9 @@
       data-validate="true"
       class="w-full max-w-3xl bg-white dark:bg-dark-surface rounded-lg shadow p-8 space-y-10 border border-gray-200 dark:border-dark-border"
     >
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Edit Profile</h1>      <!-- Profile Info Section -->
+      <!-- CSRF Token -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-6">Edit Profile</h1><!-- Profile Info Section -->
       <section id="profile-info" class="space-y-6">
         <h2
           class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary border-b border-gray-200 dark:border-dark-border pb-2 mb-4"

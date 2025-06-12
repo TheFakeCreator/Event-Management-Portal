@@ -30,6 +30,7 @@ import {
   protectEventInput,
   protectSearchInput,
 } from "../middlewares/xssProtectionMiddleware.js";
+import { validateCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -83,6 +84,7 @@ router.post(
   securityMiddleware,
   isAuthenticated,
   isModeratorOrAdmin,
+  validateCSRF,
   protectEventInput, // XSS protection for event data
   validateEvent.create,
   createEvent
@@ -92,6 +94,7 @@ router.post(
   securityMiddleware,
   validateParams(["id"]),
   isAuthenticated,
+  validateCSRF,
   validateEvent.register,
   registerEvent
 );
@@ -101,6 +104,7 @@ router.post(
   validateParams(["id"]),
   isAuthenticated,
   isModeratorOrAdmin,
+  validateCSRF,
   deleteEvent
 );
 router.post(
@@ -109,6 +113,7 @@ router.post(
   validateParams(["id"]),
   isAuthenticated,
   isModeratorOrAdmin,
+  validateCSRF,
   protectEventInput, // XSS protection for event updates
   validateEvent.update,
   editEvent
@@ -118,6 +123,7 @@ router.post(
   securityMiddleware,
   validateParams(["id"]),
   isAuthenticated,
+  validateCSRF,
   validateEvent.report,
   reportEvent
 );
@@ -127,6 +133,7 @@ router.post(
   validateParams(["id"]),
   isAuthenticated,
   isModeratorOrAdmin,
+  validateCSRF,
   addEventWinners
 );
 

@@ -20,6 +20,7 @@ import {
   validateParams,
   securityMiddleware,
 } from "../middlewares/inputValidationMiddleware.js";
+import { validateCSRF } from "../middlewares/csrfMiddleware.js";
 
 const router = express.Router();
 
@@ -36,12 +37,25 @@ router.get(
 );
 
 // POST Routes - with validation and security middleware
-router.post("/signup", securityMiddleware, validateAuth.register, registerUser);
-router.post("/login", securityMiddleware, validateAuth.login, loginUser);
-router.post("/logout", logoutUser);
+router.post(
+  "/signup",
+  securityMiddleware,
+  validateCSRF,
+  validateAuth.register,
+  registerUser
+);
+router.post(
+  "/login",
+  securityMiddleware,
+  validateCSRF,
+  validateAuth.login,
+  loginUser
+);
+router.post("/logout", validateCSRF, logoutUser);
 router.post(
   "/forgot-password",
   securityMiddleware,
+  validateCSRF,
   validateAuth.forgotPassword,
   forgotPassword
 );
@@ -49,6 +63,7 @@ router.post(
   "/reset-password/:token",
   validateParams(["token"]),
   securityMiddleware,
+  validateCSRF,
   validateAuth.resetPassword,
   resetPassword
 );

@@ -11,6 +11,7 @@ documentation/SECURITY_CHECKLIST.md
 documentation/JWT_SECURITY_FIXES.md
 documentation/PASSWORD_SECURITY_COMPLETE.md
 documentation/EMAIL_TROUBLESHOOTING.md
+documentation/FILE_UPLOAD_SECURITY.md
 security-audit-*.md
 penetration-test-*.md
 vulnerability-report-*.md
