@@ -609,7 +609,8 @@ export const announcementValidationSchemas = {
   // Create announcement validation
   createAnnouncement: Joi.object({
     title: commonValidations.shortText.min(3).max(200).required(),
-    content: commonValidations.safeText.min(10).max(5000).required(),
+    message: commonValidations.safeText.min(10).max(5000).required(),
+    clubId: commonValidations.mongoId.optional().allow('', null),
     priority: Joi.string()
       .valid("low", "medium", "high", "urgent")
       .default("medium"),
@@ -623,7 +624,8 @@ export const announcementValidationSchemas = {
   // Update announcement validation
   updateAnnouncement: Joi.object({
     title: commonValidations.shortText.min(3).max(200).optional(),
-    content: commonValidations.safeText.min(10).max(5000).optional(),
+    message: commonValidations.safeText.min(10).max(5000).optional(),
+    clubId: commonValidations.mongoId.optional().allow('', null),
     priority: Joi.string().valid("low", "medium", "high", "urgent").optional(),
     expiresAt: commonValidations.date.min("now").optional(),
     targetAudience: Joi.string()

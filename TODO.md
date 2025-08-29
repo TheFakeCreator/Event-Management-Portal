@@ -1,0 +1,1 @@
+- [ ] Fix the collaborators input in the edit event page in both admin and normal.

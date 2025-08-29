@@ -1,0 +1,295 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto px-4 py-8 mt-16">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+      <i class="fas fa-envelope mr-3"></i>Email Queue Management
+    </h1>
+    <p class="text-gray-600 dark:text-dark-text-secondary">
+      Monitor and manage the email notification system
+    </p>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <% 
+    let totalPending = 0, totalSent = 0, totalFailed = 0, totalProcessing = 0;
+    if (stats.statusBreakdown) {
+      stats.statusBreakdown.forEach(stat => {
+        if (stat._id === 'pending') totalPending = stat.count;
+        else if (stat._id === 'sent') totalSent = stat.count;
+        else if (stat._id === 'failed') totalFailed = stat.count;
+        else if (stat._id === 'processing') totalProcessing = stat.count;
+      });
+    }
+    %>
+    
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <div class="flex items-center">
+        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+          <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Pending</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-dark-text-primary"><%= totalPending %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <div class="flex items-center">
+        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+          <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Sent</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-dark-text-primary"><%= totalSent %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <div class="flex items-center">
+        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+          <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Failed</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-dark-text-primary"><%= totalFailed %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <div class="flex items-center">
+        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+          <i class="fas fa-chart-line text-blue-600 dark:text-blue-400 text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Recent Activity</p>
+          <p class="text-2xl font-bold text-gray-800 dark:text-dark-text-primary"><%= stats.recentActivity || 0 %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rate Limit Info -->
+  <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border mb-8">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4">
+      <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>Rate Limit Status
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Hourly Usage</p>
+        <div class="flex items-center">
+          <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
+            <div 
+              class="bg-blue-600 h-2 rounded-full" 
+              style="width: <%= Math.min((stats.rateLimit.hourlyCount / stats.rateLimit.maxPerHour) * 100, 100) %>%"
+            ></div>
+          </div>
+          <span class="text-sm font-medium text-gray-800 dark:text-dark-text-primary">
+            <%= stats.rateLimit.hourlyCount %>/<%= stats.rateLimit.maxPerHour %>
+          </span>
+        </div>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-dark-text-secondary">Per Minute Usage</p>
+        <div class="flex items-center">
+          <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
+            <div 
+              class="bg-green-600 h-2 rounded-full" 
+              style="width: <%= Math.min((stats.rateLimit.minuteCount / stats.rateLimit.maxPerMinute) * 100, 100) %>%"
+            ></div>
+          </div>
+          <span class="text-sm font-medium text-gray-800 dark:text-dark-text-primary">
+            <%= stats.rateLimit.minuteCount %>/<%= stats.rateLimit.maxPerMinute %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Management Actions -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Cleanup Section -->
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4">
+        <i class="fas fa-broom text-orange-500 mr-2"></i>Cleanup Old Emails
+      </h2>
+      <p class="text-gray-600 dark:text-dark-text-secondary mb-4">
+        Remove old sent and failed emails to free up database space.
+      </p>
+      <form action="/admin/email-queue/cleanup" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
+            Delete emails older than:
+          </label>
+          <select name="days" class="w-full p-2 border border-gray-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary">
+            <option value="7">7 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="60">60 days</option>
+            <option value="90">90 days</option>
+          </select>
+        </div>
+        <button 
+          type="submit" 
+          class="w-full bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
+          onclick="return confirm('Are you sure you want to cleanup old emails?')"
+        >
+          <i class="fas fa-trash-alt mr-2"></i>Cleanup Emails
+        </button>
+      </form>
+    </div>
+
+    <!-- Retry Failed Section -->
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4">
+        <i class="fas fa-redo text-blue-500 mr-2"></i>Retry Failed Emails
+      </h2>
+      <p class="text-gray-600 dark:text-dark-text-secondary mb-4">
+        Retry sending failed emails that haven't exceeded the maximum retry limit.
+      </p>
+      <form action="/admin/email-queue/retry-failed" method="POST">
+        <button 
+          type="submit" 
+          class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          onclick="return confirm('Are you sure you want to retry all failed emails?')"
+          <%= totalFailed === 0 ? 'disabled' : '' %>
+        >
+          <i class="fas fa-sync-alt mr-2"></i>Retry Failed (<%= totalFailed %>)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recent Emails Table -->
+  <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl border dark:border-dark-border mb-8">
+    <div class="p-6 border-b border-gray-200 dark:border-dark-border">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary">
+        <i class="fas fa-list text-blue-500 mr-2"></i>Recent Emails
+      </h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 dark:bg-dark-card">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Recipient</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Subject</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Retries</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-dark-border">
+          <% if (recentEmails && recentEmails.length > 0) { %>
+            <% recentEmails.forEach(email => { %>
+            <tr class="hover:bg-gray-50 dark:hover:bg-dark-card">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 dark:text-dark-text-primary"><%= email.to %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900 dark:text-dark-text-primary truncate max-w-xs">
+                  <%= email.subject %>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% 
+                let statusClass = '';
+                let statusIcon = '';
+                switch(email.status) {
+                  case 'sent':
+                    statusClass = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+                    statusIcon = 'fas fa-check';
+                    break;
+                  case 'failed':
+                    statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+                    statusIcon = 'fas fa-exclamation-triangle';
+                    break;
+                  case 'pending':
+                    statusClass = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                    statusIcon = 'fas fa-clock';
+                    break;
+                  case 'processing':
+                    statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+                    statusIcon = 'fas fa-spinner';
+                    break;
+                }
+                %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= statusClass %>">
+                  <i class="<%= statusIcon %> mr-1"></i>
+                  <%= email.status.charAt(0).toUpperCase() + email.status.slice(1) %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-dark-text-secondary">
+                <%= new Date(email.createdAt).toLocaleString() %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-dark-text-secondary">
+                <%= email.retryCount || 0 %>/3
+              </td>
+            </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-dark-text-secondary">
+                No emails found
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Failed Emails Section -->
+  <% if (failedEmails && failedEmails.length > 0) { %>
+  <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl border dark:border-dark-border">
+    <div class="p-6 border-b border-gray-200 dark:border-dark-border">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-dark-text-primary">
+        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Failed Emails
+      </h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-red-50 dark:bg-red-900/20">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Recipient</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Subject</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Error</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wider">Last Attempt</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-dark-border">
+          <% failedEmails.forEach(email => { %>
+          <tr class="hover:bg-red-50 dark:hover:bg-red-900/10">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900 dark:text-dark-text-primary"><%= email.to %></div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900 dark:text-dark-text-primary truncate max-w-xs">
+                <%= email.subject %>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-red-600 dark:text-red-400 truncate max-w-xs" title="<%= email.error %>">
+                <%= email.error || 'Unknown error' %>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-dark-text-secondary">
+              <%= email.processedAt ? new Date(email.processedAt).toLocaleString() : 'Never' %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<script>
+// Auto-refresh page every 30 seconds
+setTimeout(() => {
+  window.location.reload();
+}, 30000);
+</script>

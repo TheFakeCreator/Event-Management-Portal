@@ -1,29 +1,378 @@
 <% layout("layouts/main") %>
 
-<div class="container mx-auto max-w-2xl py-8">
-  <h1 class="text-2xl font-bold mb-6">Edit Club Details</h1>
-  <form action="/club/<%= club._id %>/edit" method="POST">
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">Name</label>
-      <input type="text" name="name" value="<%= club.name %>" class="w-full border rounded px-3 py-2" required />
+<head>
+  <style>
+    /* Enhanced focus styles for form inputs */
+    .form-input:focus {
+      outline: none;
+      border-color: rgb(59, 130, 246); /* blue-500 */
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .dark .form-input:focus {
+      border-color: rgb(96, 165, 250); /* blue-400 */
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    }
+
+    /* Improved hover states for dark mode */
+    .dark .form-input:hover {
+      border-color: rgb(92, 133, 242); /* primary-400 */
+    }
+
+    /* Better visual feedback for buttons */
+    .btn-focus:focus {
+      outline: none;
+      ring: 3px;
+      ring-color: rgba(59, 130, 246, 0.3);
+      ring-offset: 2px;
+    }
+
+    .dark .btn-focus:focus {
+      ring-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .btn-focus:active {
+      transform: translateY(1px);
+    }
+
+    /* Enhanced preview image styling */
+    .preview-image {
+      transition: all 0.3s ease;
+    }
+
+    .preview-image:hover {
+      filter: brightness(1.05);
+    }
+
+    .dark .preview-image:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Improved remove button styling */
+    .remove-domain:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<div
+  class="max-w-6xl mx-auto p-4 sm:p-6 md:p-10 transition-colors duration-300"
+>
+  <h1
+    class="text-3xl sm:text-4xl font-extrabold text-center text-blue-600 dark:text-primary-400 mb-6 sm:mb-8 transition-colors duration-300"
+  >
+    Edit Club
+  </h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+    <!-- Edit Form -->
+    <div
+      class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-dark-border transition-colors duration-300"
+    >
+      <h2
+        class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 sm:mb-6 transition-colors duration-300"
+      >
+        Update Club Details
+      </h2>
+      <form
+        action="/club/<%= club._id %>/edit"
+        method="POST"
+        class="space-y-4 sm:space-y-6"
+      >
+        <div class="space-y-4 sm:space-y-6">
+          <div>
+            <label
+              for="clubName"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              Club Name:
+            </label>
+            <input
+              type="text"
+              id="clubName"
+              name="name"
+              class="form-input mt-2 w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+              value="<%= club.name %>"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              for="description"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              Description:
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows="3"
+              class="form-input mt-2 w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none resize-vertical transition-colors duration-300"
+              required
+            >
+<%= club.description %></textarea
+            >
+          </div>
+
+          <div>
+            <label
+              for="about"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              About:
+            </label>
+            <textarea
+              id="about"
+              name="about"
+              rows="5"
+              class="form-input mt-2 w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none resize-vertical transition-colors duration-300"
+            >
+<%= club.about %></textarea
+            >
+          </div>
+
+          <div>
+            <label
+              for="imageUrl"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              Image URL:
+            </label>
+            <input
+              type="text"
+              id="imageUrl"
+              name="image"
+              class="form-input mt-2 w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+              value="<%= club.image %>"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              for="bannerUrl"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              Banner URL:
+            </label>
+            <input
+              type="text"
+              id="bannerUrl"
+              name="banner"
+              class="form-input mt-2 w-full p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+              value="<%= club.banner %>"
+            />
+          </div>
+
+          <% if (club.domains) { %>
+          <div>
+            <label
+              for="domains"
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary transition-colors duration-300"
+            >
+              Domains:
+            </label>
+            <div id="domainsContainer" class="mt-2 space-y-2">
+              <% if (club.domains && club.domains.length) { %> <%
+              club.domains.forEach(function(domain, idx) { %>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  name="domains[]"
+                  class="form-input flex-1 p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                  value="<%= domain %>"
+                />
+                <button
+                  type="button"
+                  class="remove-domain bg-red-500 dark:bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 dark:focus:ring-red-400/50"
+                >
+                  &times;
+                </button>
+              </div>
+              <% }) %> <% } else { %>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  name="domains[]"
+                  class="form-input flex-1 p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                  value=""
+                />
+                <button
+                  type="button"
+                  class="remove-domain bg-red-500 dark:bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 dark:focus:ring-red-400/50"
+                >
+                  &times;
+                </button>
+              </div>
+              <% } %>
+            </div>
+            <button
+              type="button"
+              id="addDomainBtn"
+              class="mt-3 bg-green-500 dark:bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-600 dark:hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500/50 dark:focus:ring-green-400/50"
+            >
+              Add Domain
+            </button>
+          </div>
+          <% } %> <% if (club.social) { %>
+          <div>
+            <label
+              class="block text-sm sm:text-lg font-medium text-gray-700 dark:text-dark-text-primary mb-2 transition-colors duration-300"
+            >
+              Social Links:
+            </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                type="email"
+                name="social[email]"
+                placeholder="Email"
+                class="form-input p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-muted rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                value="<%= club.social?.email || '' %>"
+              />
+              <input
+                type="text"
+                name="social[instagram]"
+                placeholder="Instagram"
+                class="form-input p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-muted rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                value="<%= club.social?.instagram || '' %>"
+              />
+              <input
+                type="text"
+                name="social[facebook]"
+                placeholder="Facebook"
+                class="form-input p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-muted rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                value="<%= club.social?.facebook || '' %>"
+              />
+              <input
+                type="text"
+                name="social[linkedin]"
+                placeholder="LinkedIn"
+                class="form-input p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-muted rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+                value="<%= club.social?.linkedin || '' %>"
+              />
+              <input
+                type="text"
+                name="social[discord]"
+                placeholder="Discord"
+                class="form-input p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-muted rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300 md:col-span-2"
+                value="<%= club.social?.discord || '' %>"
+              />
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-4">
+          <button
+            type="submit"
+            class="btn-focus flex-1 sm:flex-none bg-blue-600 dark:bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50 font-medium"
+          >
+            Save Changes
+          </button>
+          <a
+            href="/club/<%= club._id %>/about"
+            class="btn-focus flex-1 sm:flex-none text-center bg-gray-500 dark:bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500/50 dark:focus:ring-gray-400/50 font-medium"
+          >
+            Cancel
+          </a>
+        </div>
+      </form>
     </div>
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">Description</label>
-      <textarea name="description" class="w-full border rounded px-3 py-2" rows="3" required><%= club.description %></textarea>
+
+    <!-- Club Preview -->
+    <div
+      class="bg-white dark:bg-dark-surface shadow-lg dark:shadow-2xl rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-dark-border transition-colors duration-300"
+    >
+      <h2
+        class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-dark-text-primary mb-4 sm:mb-6 transition-colors duration-300"
+      >
+        Preview
+      </h2>
+      <div
+        class="bg-white dark:bg-dark-card shadow-md rounded-lg p-4 transition transform hover:scale-[102%] hover:shadow-lg dark:hover:shadow-gray-900/50 border border-gray-100 dark:border-dark-border"
+      >
+        <!-- Club Image Preview -->
+        <img
+          id="previewImage"
+          src="<%= club.image %>"
+          alt="<%= club.name %> Banner"
+          class="preview-image w-full h-40 object-cover rounded-lg transition-all duration-300"
+        />
+
+        <!-- Club Details -->
+        <h3
+          class="text-lg sm:text-xl font-semibold mt-3 text-gray-800 dark:text-dark-text-primary transition-colors duration-300"
+        >
+          <%= club.name %>
+        </h3>
+        <p
+          class="text-gray-600 dark:text-dark-text-secondary mt-1 text-sm sm:text-base transition-colors duration-300"
+        >
+          <%= club.description %>
+        </p>
+      </div>
     </div>
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">About</label>
-      <textarea name="about" class="w-full border rounded px-3 py-2" rows="5"><%= club.about %></textarea>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">Image URL</label>
-      <input type="text" name="image" value="<%= club.image %>" class="w-full border rounded px-3 py-2" required />
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1 font-semibold">Banner URL</label>
-      <input type="text" name="banner" value="<%= club.banner %>" class="w-full border rounded px-3 py-2" />
-    </div>
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded">Save Changes</button>
-    <a href="/club/<%= club._id %>/about" class="ml-4 text-blue-600 hover:underline">Cancel</a>
-  </form>
+  </div>
 </div>
+
+<script>
+  // Update preview image when banner URL changes
+  document.getElementById("bannerUrl").addEventListener("input", function () {
+    const newImageUrl = this.value;
+    const previewImage = document.getElementById("previewImage");
+
+    // Update the preview image
+    previewImage.src = newImageUrl || "<%= club.image %>";
+  });
+
+  // Update preview image when image URL changes
+  document.getElementById("imageUrl").addEventListener("input", function () {
+    const newImageUrl = this.value;
+    const previewImage = document.getElementById("previewImage");
+
+    // Update the preview image
+    previewImage.src = newImageUrl;
+  });
+
+  <% if (club.domains) { %>
+  // Add domain functionality
+  document
+    .getElementById("addDomainBtn")
+    .addEventListener("click", function () {
+      const container = document.getElementById("domainsContainer");
+      const div = document.createElement("div");
+      div.className = "flex gap-2";
+      div.innerHTML = `
+        <input
+          type="text"
+          name="domains[]"
+          class="form-input flex-1 p-2 sm:p-3 border border-gray-300 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text-primary rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 focus:outline-none transition-colors duration-300"
+          value=""
+        />
+        <button
+          type="button"
+          class="remove-domain bg-red-500 dark:bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-600 dark:hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 dark:focus:ring-red-400/50"
+        >
+          &times;
+        </button>
+      `;
+      container.appendChild(div);
+    });
+
+  // Remove domain functionality
+  document
+    .getElementById("domainsContainer")
+    .addEventListener("click", function (e) {
+      if (e.target.classList.contains("remove-domain")) {
+        const parent = e.target.closest("div");
+        if (
+          parent &&
+          document.querySelectorAll("#domainsContainer input").length > 1
+        ) {
+          parent.remove();
+        }
+      }
+    });
+  <% } %>
+</script>

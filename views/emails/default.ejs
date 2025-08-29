@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= subject || 'Email from Event Management Portal' %></title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 30px;
+            white-space: pre-line;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">Event Management Portal</div>
+        </div>
+
+        <div class="content">
+            <p>Hello <%= username || 'User' %>,</p>
+            
+            <%= message || 'Thank you for using our Event Management Portal.' %>
+            
+            <p>Best regards,<br>
+            Event Management Portal Team</p>
+        </div>
+
+        <div class="footer">
+            <p>© <%= new Date().getFullYear() %> Event Management Portal. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

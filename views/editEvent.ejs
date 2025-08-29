@@ -316,72 +316,81 @@
       class="w-full bg-blue-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 transition duration-300"
     >
       Update Event
-    </button>
-  </form>
+    </button>  </form>
 </div>
 
+<!-- Pass data to JavaScript -->
+<% 
+  var collaboratorsForJS = (event.collaborators || []).map(function(c) {
+    return { id: (c._id || c.id || '').toString(), name: c.name || '' };
+  });
+  var eventLeadsForJS = (event.eventLeads || []).map(function(lead) {
+    return { id: lead._id.toString(), name: lead.name || '', email: lead.email || '' };
+  });
+  var sponsorsForJS = event.sponsors || [];
+%>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const select = document.getElementById("collaborators-select");
-    const container = document.getElementById("collaborators-container");
-    const hiddenInput = document.getElementById("collaborators-hidden");
-    // Pre-populate collaborators from server-side EJS
-    let collaborators = [];
-    try {      collaborators = JSON.parse(`<%- safe.safeJSON(event.collaborators ? event.collaborators.map(c => ({ id: (c._id && c._id.toString ? c._id.toString() : c._id || ''), name: c.name || '' })) : []) %>`);
-      // Remove any with missing id or name
-      collaborators = collaborators.filter(c => c.id && c.name);
-    } catch (e) { collaborators = []; }
+  window.eventCollaborators = JSON.parse('<%- JSON.stringify(collaboratorsForJS) %>');
+  window.eventLeads = JSON.parse('<%- JSON.stringify(eventLeadsForJS) %>');
+  window.eventSponsors = JSON.parse('<%- JSON.stringify(sponsorsForJS) %>');
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // --- Collaborators Section ---
+    var select = document.getElementById("collaborators-select");
+    var container = document.getElementById("collaborators-container");
+    var hiddenInput = document.getElementById("collaborators-hidden");
+    // Always use string ids for comparison
+    var collaborators = Array.isArray(window.eventCollaborators) ? window.eventCollaborators.map(function(c) { return { id: c.id.toString(), name: c.name }; }) : [];
 
     function updateCollaborators() {
       container.innerHTML = "";
-      collaborators.forEach((collaborator) => {
-        const tag = document.createElement("span");
+      collaborators.forEach(function(collaborator) {
+        var tag = document.createElement("span");
         tag.className =
-          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer transition-colors duration-300 hover:bg-blue-600 dark:bg-primary-700 dark:hover:bg-primary-600";
-        tag.innerHTML = `${collaborator.name} <span class=\"ml-2 font-bold\">&times;</span>`;
-        tag.addEventListener("click", () =>
-          removeCollaborator(collaborator.id)
-        );
+          "bg-blue-500 text-white px-3 py-1 rounded-full text-sm cursor-pointer transition-colors duration-300 hover:bg-blue-600 dark:bg-primary-700 dark:hover:bg-primary-600 flex items-center gap-1";
+        tag.innerHTML = collaborator.name + " <button type='button' class='ml-2 font-bold focus:outline-none' aria-label='Remove'>&times;</button>";
+        tag.querySelector("button").addEventListener("click", function(e) {
+          e.stopPropagation();
+          removeCollaborator(collaborator.id);
+        });
         container.appendChild(tag);
       });
-      container.appendChild(select);
-      hiddenInput.value = JSON.stringify(collaborators.map((c) => c.id));
+      hiddenInput.value = JSON.stringify(collaborators.map(function(c) { return c.id; }));
+      // Disable already-selected options (compare as string)
+      for (var i = 0; i < select.options.length; i++) {
+        var opt = select.options[i];
+        if (!opt.value || opt.value === "") continue;
+        opt.disabled = collaborators.some(function(c) { return c.id === opt.value.toString(); });
+      }
     }
 
-    select.addEventListener("change", () => {
-      const selectedClubId = select.value;
-      const selectedClubName = select.options[select.selectedIndex].text;
-      // Prevent adding invalid or placeholder values
+    select.addEventListener("change", function() {
+      var selectedClubId = select.value;
+      var selectedClubName = select.options[select.selectedIndex].text;
       if (
         selectedClubId &&
         selectedClubId !== "" &&
-        selectedClubId !== "na" &&
-        !collaborators.find((c) => c.id === selectedClubId)
+        !collaborators.find(function(c) { return c.id === selectedClubId; })
       ) {
-        addCollaborator(selectedClubId, selectedClubName);
+        collaborators.push({ id: selectedClubId, name: selectedClubName });
+        updateCollaborators();
         select.value = "";
       }
     });
 
-    function addCollaborator(id, name) {
-      collaborators.push({ id, name });
+    function removeCollaborator(id) {
+      collaborators = collaborators.filter(function(c) { return c.id !== id; });
       updateCollaborators();
     }
 
-    function removeCollaborator(id) {
-      collaborators = collaborators.filter((c) => c.id !== id);
-      updateCollaborators();
-    }    updateCollaborators(); // Initial render
+    updateCollaborators();
 
     // Event Leads functionality
     const eventLeadsSelect = document.getElementById("eventLeads-select");
     const eventLeadsContainer = document.getElementById("eventLeads-container");
-    const eventLeadsHidden = document.getElementById("eventLeads-hidden");
-    let eventLeads = [];    // Load existing event leads
-    try {      eventLeads = JSON.parse(`<%- safe.safeJSON(event.eventLeads ? event.eventLeads.map(lead => ({ id: lead._id.toString(), name: lead.name, email: lead.email })) : []) %>`);
-    } catch (e) { 
-      eventLeads = []; 
-    }
+    const eventLeadsHidden = document.getElementById("eventLeads-hidden");    let eventLeads = window.eventLeads || [];
 
     eventLeadsSelect.addEventListener("change", (e) => {
       const selectedUserId = e.target.value;
@@ -434,11 +443,7 @@
     const sponsorWebsite = document.getElementById("sponsor-website");
     const sponsorDescription = document.getElementById("sponsor-description");
     const addSponsorBtn = document.getElementById("add-sponsor-btn");
-    const cancelSponsorBtn = document.getElementById("cancel-sponsor-btn");
-    let sponsors = [];
-    try {      sponsors = JSON.parse(`<%- safe.safeJSON(event.sponsors || []) %>`);
-      sponsors = sponsors.filter(s => s && s.name);
-    } catch (e) { sponsors = []; }
+    const cancelSponsorBtn = document.getElementById("cancel-sponsor-btn");    let sponsors = window.eventSponsors || [];
 
     showSponsorFormBtn.addEventListener("click", () => {
       sponsorFormWrapper.classList.remove("hidden");

@@ -127,6 +127,16 @@ export const getEventDetails = async (req, res) => {
       return res.redirect("/event");
     }
 
+    // Debug collaborators
+    console.log(
+      "Event collaborators:",
+      JSON.stringify(event.collaborators, null, 2)
+    );
+    console.log(
+      "Collaborators count:",
+      event.collaborators ? event.collaborators.length : "undefined"
+    );
+
     let alreadyRegistered = false;
     if (req.user) {
       alreadyRegistered = await EventRegistration.exists({
@@ -145,7 +155,10 @@ export const getEventDetails = async (req, res) => {
       isAuthenticated: req.isAuthenticated,
       registeredUsersCount,
       creator:
-        req.user && event.createdBy.toString() == req.user._id.toString()
+        req.user &&
+        (event.createdBy.toString() == req.user._id.toString() ||
+          req.user.role === "admin" ||
+          req.user.role === "moderator")
           ? true
           : false,
       alreadyRegistered,
@@ -309,12 +322,11 @@ export const deleteEvent = async (req, res) => {
     if (!event) {
       req.flash("error", "Event not found");
       return res.redirect("/event");
-    }
-
-    // Check if the user is authorized to delete the event
+    } // Check if the user is authorized to delete the event
     if (
       event.createdBy.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
+      req.user.role !== "admin" &&
+      req.user.role !== "moderator"
     ) {
       req.flash("error", "You are not authorized to delete this event.");
       return res.redirect(`/event/${id}`);
@@ -416,11 +428,11 @@ export const getEditEvent = async (req, res) => {
       .populate("moderators", "name email");
     if (!event) {
       return res.status(404).send("Event not found");
-    }
-    // Only allow the creator or admin to edit
+    } // Only allow the creator, admin, or moderator to edit
     if (
       event.createdBy.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
+      req.user.role !== "admin" &&
+      req.user.role !== "moderator"
     ) {
       return res.status(403).send("You are not authorized to edit this event.");
     }
@@ -467,7 +479,8 @@ export const editEvent = async (req, res) => {
     }
     if (
       event.createdBy.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
+      req.user.role !== "admin" &&
+      req.user.role !== "moderator"
     ) {
       req.flash("error", "You are not authorized to edit this event.");
       return res.redirect(`/event/${id}`);

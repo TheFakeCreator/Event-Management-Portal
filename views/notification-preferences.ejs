@@ -1,0 +1,215 @@
+<% layout('layouts/main') %>
+
+<div class="container mx-auto px-4 py-8 mt-16">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-8">
+      <i class="fas fa-bell mr-3"></i>Notification Preferences
+    </h1>
+
+    <div class="bg-white dark:bg-dark-surface shadow-lg rounded-xl p-6 border dark:border-dark-border">
+      <p class="text-gray-600 dark:text-dark-text-secondary mb-6">
+        Manage how you receive notifications from the Event Management Portal. 
+        You can customize which types of emails you want to receive.
+      </p>
+
+      <form action="/notifications/preferences" method="POST" class="space-y-6">
+        <!-- Master Email Toggle -->
+        <div class="border-b border-gray-200 dark:border-dark-border pb-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-dark-text-primary">
+                Email Notifications
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                Master control for all email notifications
+              </p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="emailNotifications" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.emailNotifications !== false ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Individual Notification Types -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-dark-text-primary">
+            Notification Types
+          </h3>
+
+          <!-- Event Reminders -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-calendar-alt text-blue-500 text-xl"></i>
+              <div>
+                <h4 class="font-medium text-gray-800 dark:text-dark-text-primary">
+                  Event Reminders
+                </h4>
+                <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  Get notified about upcoming events you've registered for
+                </p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="eventReminders" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.eventReminders !== false ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <!-- Club Updates -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-users text-green-500 text-xl"></i>
+              <div>
+                <h4 class="font-medium text-gray-800 dark:text-dark-text-primary">
+                  Club Updates
+                </h4>
+                <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  Receive announcements from clubs you're a member of
+                </p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="clubUpdates" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.clubUpdates !== false ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <!-- General Announcements -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-bullhorn text-yellow-500 text-xl"></i>
+              <div>
+                <h4 class="font-medium text-gray-800 dark:text-dark-text-primary">
+                  General Announcements
+                </h4>
+                <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  Important portal-wide announcements and updates
+                </p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="generalAnnouncements" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.generalAnnouncements !== false ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <!-- Recruitment Updates -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-briefcase text-purple-500 text-xl"></i>
+              <div>
+                <h4 class="font-medium text-gray-800 dark:text-dark-text-primary">
+                  Recruitment Updates
+                </h4>
+                <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  Updates about job applications and recruitment status
+                </p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="recruitmentUpdates" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.recruitmentUpdates !== false ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <!-- Weekly Digest -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-newspaper text-indigo-500 text-xl"></i>
+              <div>
+                <h4 class="font-medium text-gray-800 dark:text-dark-text-primary">
+                  Weekly Digest
+                </h4>
+                <p class="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  Weekly summary of portal activities and upcoming events
+                </p>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="weeklyDigest" 
+                class="sr-only peer"
+                <%= user.notificationPreferences?.weeklyDigest === true ? 'checked' : '' %>
+              >
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end pt-6 border-t border-gray-200 dark:border-dark-border">
+          <button 
+            type="submit"
+            class="px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors font-medium"
+          >
+            <i class="fas fa-save mr-2"></i>Save Preferences
+          </button>
+        </div>
+      </form>
+
+      <!-- Info Box -->
+      <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div class="flex items-start space-x-3">
+          <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+          <div class="text-sm text-blue-700 dark:text-blue-300">
+            <p class="font-semibold mb-1">Important Notes:</p>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Disabling email notifications will stop all email communications</li>
+              <li>Critical security notifications will always be sent regardless of preferences</li>
+              <li>Changes take effect immediately</li>
+              <li>You can update these preferences anytime</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Enable/disable individual toggles based on master toggle
+document.querySelector('input[name="emailNotifications"]').addEventListener('change', function() {
+  const isEnabled = this.checked;
+  const individualToggles = document.querySelectorAll('input[type="checkbox"]:not([name="emailNotifications"])');
+  
+  individualToggles.forEach(toggle => {
+    toggle.disabled = !isEnabled;
+    toggle.closest('.p-4').style.opacity = isEnabled ? '1' : '0.5';
+  });
+});
+
+// Initialize state on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const masterToggle = document.querySelector('input[name="emailNotifications"]');
+  if (masterToggle && !masterToggle.checked) {
+    masterToggle.dispatchEvent(new Event('change'));
+  }
+});
+</script>

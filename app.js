@@ -22,6 +22,7 @@ import cors from "cors";
 import passport from "passport";
 import helmet from "helmet";
 import "./jobs/eventReminder.js";
+import "./jobs/emailQueueProcessor.js"; // Initialize email queue processor
 
 // Middleware Imports
 import errorHandler from "./middlewares/errorHandler.js";
@@ -38,6 +39,8 @@ import clubRouter from "./routes/club.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import recruitmentRouter from "./routes/recruitment.routes.js";
 import announcementRouter from "./routes/announcement.routes.js";
+import notificationRouter from "./routes/notification.routes.js";
+import debugRouter from "./routes/debug.routes.js";
 dotenv.config();
 
 // App constants
@@ -153,6 +156,8 @@ app.use("/auth", authRouter);
 app.use("/club", clubRouter);
 app.use("/recruitment", recruitmentRouter);
 app.use("/announcements", announcementRouter);
+app.use("/notifications", notificationRouter);
+app.use("/debug", debugRouter);
 app.use("/api", uploadRoutes);
 app.use("/announcements", announcementRouter);
 app.use("/api/events", eventRouter);

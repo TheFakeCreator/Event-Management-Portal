@@ -1,5 +1,8 @@
 import Announcement from "../models/announcement.model.js";
 import Club from "../models/club.model.js";
+import User from "../models/user.model.js";
+import EventRegistration from "../models/eventRegistration.model.js";
+import { queueBulkEmails } from "../utils/bulkEmailService.js";
 
 export const getAllAnnouncements = async (req, res) => {
   try {
@@ -8,15 +11,18 @@ export const getAllAnnouncements = async (req, res) => {
         .populate("postedBy", "name email")
         .populate("club", "name")
         .sort({ createdAt: -1 }),
+      // Always fetch clubs for admin users, regardless of authentication status
       req.user && req.user.role === "admin"
         ? Club.find().select("name").sort("name")
-        : Promise.resolve(null), // Ensure a promise is always passed
+        : Promise.resolve([]), // Return empty array instead of null
     ]);
+
+    console.log(`📋 Announcements page: Found ${announcements.length} announcements and ${clubs?.length || 0} clubs for user role: ${req.user?.role}`);
 
     res.render("announcements", {
       title: "Announcements",
       announcements,
-      clubs,
+      clubs: clubs || [],
       user: req.user,
       isAuthenticated: req.isAuthenticated,
     });
@@ -44,13 +50,90 @@ export const createAnnouncement = async (req, res) => {
 
     await announcement.save();
 
+    // Send notification emails asynchronously
+    try {
+      await sendAnnouncementNotifications(announcement, req.user);
+    } catch (emailError) {
+      console.error("Error sending announcement notifications:", emailError);
+      // Don't fail the announcement creation if email fails
+    }
+
+    req.flash("success", "Announcement created successfully! Email notifications are being sent.");
     res.redirect("/announcements");
   } catch (error) {
     console.error("Error creating announcement:", error);
+    req.flash("error", "Error creating announcement. Please try again.");
     res.status(500).render("error", {
       message: "Error creating announcement",
       error,
     });
+  }
+};
+
+// Helper function to send announcement notifications
+const sendAnnouncementNotifications = async (announcement, poster) => {
+  try {
+    console.log(`📢 Preparing to send announcement notifications for: "${announcement.title}"`);
+    
+    let recipients = [];
+    let clubInfo = null;    if (announcement.club) {
+      // Club-specific announcement - get club members
+      const club = await Club.findById(announcement.club).populate('currentMembers', 'name email emailVerified notificationPreferences');
+      if (club) {
+        clubInfo = { name: club.name, id: club._id };
+        // Filter for users who want club notifications
+        recipients = club.currentMembers.filter(member => 
+          member.emailVerified && 
+          member.notificationPreferences?.emailNotifications !== false &&
+          member.notificationPreferences?.clubUpdates !== false
+        );
+        console.log(`🎯 Club announcement: ${recipients.length} club members will be notified`);
+      }
+    } else {
+      // General announcement - get all users who want general notifications
+      const users = await User.find({
+        emailVerified: true,
+        'notificationPreferences.emailNotifications': { $ne: false },
+        'notificationPreferences.generalAnnouncements': { $ne: false }
+      }, 'name email');
+      
+      recipients = users;
+      console.log(`📋 General announcement: ${recipients.length} users will be notified`);
+    }
+
+    if (recipients.length === 0) {
+      console.log("⚠️ No recipients found for announcement notifications");
+      return;
+    }
+
+    // Prepare email data
+    const emailData = {
+      title: announcement.title,
+      message: announcement.message,
+      clubName: clubInfo?.name,
+      postedBy: poster.name,
+      timestamp: announcement.createdAt,
+    };
+
+    const subject = clubInfo 
+      ? `New Announcement from ${clubInfo.name}: ${announcement.title}`
+      : `New Announcement: ${announcement.title}`;
+
+    // Queue bulk emails
+    const result = await queueBulkEmails(
+      recipients,
+      subject,
+      'announcement',
+      emailData,
+      { priority: 'high' }
+    );
+
+    console.log(`✅ Announcement notifications queued: ${result.message}`);
+    return result;
+
+  } catch (error) {
+    console.error("Error in sendAnnouncementNotifications:", error);
+    throw error;
   }
 };
 

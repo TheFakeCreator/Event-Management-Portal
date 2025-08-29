@@ -108,8 +108,7 @@ const userSchema = new Schema(
     lastPasswordChange: {
       type: Date,
       default: Date.now,
-    },
-    passwordHistory: [
+    },    passwordHistory: [
       {
         hash: String,
         createdAt: {
@@ -118,6 +117,43 @@ const userSchema = new Schema(
         },
       },
     ],
+    // Email and Notification Preferences
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpires: {
+      type: Date,
+    },
+    notificationPreferences: {
+      emailNotifications: {
+        type: Boolean,
+        default: true,
+      },
+      eventReminders: {
+        type: Boolean,
+        default: true,
+      },
+      clubUpdates: {
+        type: Boolean,
+        default: true,
+      },
+      generalAnnouncements: {
+        type: Boolean,
+        default: true,
+      },
+      recruitmentUpdates: {
+        type: Boolean,
+        default: true,
+      },
+      weeklyDigest: {
+        type: Boolean,
+        default: false,
+      },
+    },
   },
   { timestamps: true } // Adds createdAt & updatedAt automatically
 );

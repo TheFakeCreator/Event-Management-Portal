@@ -36,6 +36,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```env
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your_app_password_here
+EMAIL_FROM="Event Management Portal <noreply@yourportal.com>"
 ```
 
 **Required**: For email verification and notifications.
@@ -51,6 +52,28 @@ EMAIL_PASS=your_app_password_here
 - **Outlook**: Use your regular password with `smtp.live.com`
 - **Yahoo**: Generate app password, use `smtp.mail.yahoo.com`
 - **Custom SMTP**: Configure additional SMTP settings in `configs/nodemailer.js`
+
+### Email Queue and Rate Limiting
+
+```env
+# Email rate limiting (optional - defaults provided)
+EMAIL_RATE_LIMIT_HOUR=500
+EMAIL_RATE_LIMIT_MINUTE=10
+
+# Enable/disable email queue processing
+ENABLE_EMAIL_QUEUE=true
+
+# Email queue processing settings
+EMAIL_QUEUE_BATCH_SIZE=10
+EMAIL_QUEUE_RETRY_DELAY=300000
+
+# Background job settings
+ENABLE_CRON_JOBS=true
+ENABLE_EVENT_REMINDERS=true
+ENABLE_WEEKLY_DIGEST=false
+```
+
+**Optional**: Controls email sending rates and queue processing behavior.
 
 ### Google OAuth Configuration
 
