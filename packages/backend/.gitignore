@@ -1,0 +1,44 @@
+# Backend specific ignores
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+logs/
+*.log
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads
+uploads/
+public/uploads/
+
+# Cache
+.cache/
+
+# Testing
+coverage/
+test-results/
+
+# TypeScript
+*.tsbuildinfo
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+tmp/
+temp/

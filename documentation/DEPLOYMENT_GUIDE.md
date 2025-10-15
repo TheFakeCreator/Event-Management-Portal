@@ -243,13 +243,13 @@ CMD ["npm", "start"]
 
 ```yaml
 # docker-compose.yml
-version: "3.8"
+version: '3.8'
 
 services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
     env_file:
@@ -263,7 +263,7 @@ services:
   mongodb:
     image: mongo:6.0
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -276,8 +276,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
@@ -395,8 +395,8 @@ CLOUDINARY_API_SECRET=prod_api_secret
 
 ```javascript
 // In app.js - Add security middleware
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 
 // Helmet for security headers
 app.use(
@@ -404,9 +404,9 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-        fontSrc: ["'self'", "fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "res.cloudinary.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+        fontSrc: ["'self'", 'fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'res.cloudinary.com'],
         scriptSrc: ["'self'"],
       },
     },
@@ -425,7 +425,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
 });
-app.use("/auth", authLimiter);
+app.use('/auth', authLimiter);
 ```
 
 #### 2. Database Security
@@ -445,7 +445,7 @@ const connectDB = async () => {
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error("Database connection error:", error);
+    console.error('Database connection error:', error);
     process.exit(1);
   }
 };
@@ -540,13 +540,11 @@ sudo systemctl status event-portal
 ### MongoDB Atlas (Recommended)
 
 1. **Create Cluster**:
-
    - Go to [MongoDB Atlas](https://cloud.mongodb.com/)
    - Create new project and cluster
    - Choose appropriate tier
 
 2. **Security Setup**:
-
    - Create database user
    - Configure IP whitelist
    - Enable authentication
@@ -619,9 +617,9 @@ pm2 restart event-portal
 
 ```javascript
 // Add to app.js
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
-    status: "OK",
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV,
@@ -633,23 +631,23 @@ app.get("/health", (req, res) => {
 
 ```javascript
 // Enhanced logging for production
-import winston from "winston";
+import winston from 'winston';
 
 const logger = winston.createLogger({
-  level: "info",
+  level: 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { service: "event-portal" },
+  defaultMeta: { service: 'event-portal' },
   transports: [
-    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
-    new winston.transports.File({ filename: "logs/combined.log" }),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' }),
   ],
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
       format: winston.format.simple(),
@@ -729,8 +727,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: '18'
+          cache: 'npm'
       - run: npm ci
       - run: npm test
 
@@ -775,7 +773,6 @@ jobs:
 ## Post-Deployment Tasks
 
 1. **Test All Features**:
-
    - User registration and login
    - Event creation and registration
    - File uploads
@@ -783,14 +780,12 @@ jobs:
    - Admin functions
 
 2. **Performance Optimization**:
-
    - Enable gzip compression
    - Configure CDN if needed
    - Optimize images
    - Database indexing
 
 3. **Security Audit**:
-
    - Run security scans
    - Check for vulnerabilities
    - Review access logs

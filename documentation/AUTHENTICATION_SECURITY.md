@@ -56,7 +56,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL: '/auth/google/callback',
     },
     async (accessToken, refreshToken, profile, done) => {
       // User profile processing logic
@@ -118,14 +118,14 @@ const isValid = await bcrypt.compare(password, user.password);
 const token = jwt.sign(
   { userId: user._id, role: user.role },
   process.env.JWT_SECRET,
-  { expiresIn: "7d" }
+  { expiresIn: '7d' }
 );
 
 // Cookie options
-res.cookie("token", token, {
+res.cookie('token', token, {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 });
 ```
@@ -213,15 +213,15 @@ Public (No authentication required)
 // Authentication check
 const isAuthenticated = (req, res, next) => {
   const token = req.cookies.token;
-  if (!token) return res.redirect("/auth/login");
+  if (!token) return res.redirect('/auth/login');
   // Token validation logic
 };
 
 // Admin authorization
 const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).render("error", {
-      message: "Access denied",
+  if (req.user.role !== 'admin') {
+    return res.status(403).render('error', {
+      message: 'Access denied',
     });
   }
   next();
@@ -232,12 +232,12 @@ const isClubModerator = async (req, res, next) => {
   const clubId = req.params.id;
   const userId = req.user.id;
 
-  if (req.user.role === "admin") return next();
+  if (req.user.role === 'admin') return next();
 
   const club = await Club.findById(clubId);
   if (!club.moderators.includes(userId)) {
-    return res.status(403).render("error", {
-      message: "Access denied",
+    return res.status(403).render('error', {
+      message: 'Access denied',
     });
   }
   next();
@@ -406,7 +406,7 @@ Error: User not found in database
 
 ```javascript
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS?.split(",") || "http://localhost:3000",
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || 'http://localhost:3000',
   credentials: true,
   optionsSuccessStatus: 200,
 };

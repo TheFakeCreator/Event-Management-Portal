@@ -1952,7 +1952,7 @@ class EventManagementAPI {
 
   async request(method, endpoint, data = null) {
     const headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${this.token}`,
     };
 
@@ -1968,11 +1968,11 @@ class EventManagementAPI {
 
   // Authentication
   async login(email, password) {
-    return this.request("POST", "/auth/login", { email, password });
+    return this.request('POST', '/auth/login', { email, password });
   }
 
   async signup(name, email, password, role) {
-    return this.request("POST", "/auth/signup", {
+    return this.request('POST', '/auth/signup', {
       name,
       email,
       password,
@@ -1982,29 +1982,29 @@ class EventManagementAPI {
 
   // Events
   async getEvents(page = 1, limit = 10) {
-    return this.request("GET", `/events?page=${page}&limit=${limit}`);
+    return this.request('GET', `/events?page=${page}&limit=${limit}`);
   }
 
   async createEvent(eventData) {
-    return this.request("POST", "/events", eventData);
+    return this.request('POST', '/events', eventData);
   }
 
   async registerForEvent(eventId) {
-    return this.request("POST", `/events/${eventId}/register`);
+    return this.request('POST', `/events/${eventId}/register`);
   }
 
   // Clubs
   async getClubs(page = 1, limit = 10) {
-    return this.request("GET", `/clubs?page=${page}&limit=${limit}`);
+    return this.request('GET', `/clubs?page=${page}&limit=${limit}`);
   }
 
   async joinClub(clubId) {
-    return this.request("POST", `/clubs/${clubId}/join`);
+    return this.request('POST', `/clubs/${clubId}/join`);
   }
 }
 
 // Usage
-const api = new EventManagementAPI("http://localhost:3000", "your-jwt-token");
+const api = new EventManagementAPI('http://localhost:3000', 'your-jwt-token');
 const events = await api.getEvents();
 ```
 

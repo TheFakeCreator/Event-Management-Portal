@@ -75,7 +75,6 @@ The system has four distinct user roles with different permissions:
 ### Sign Up
 
 1. **Using Email**:
-
    - Click "Sign Up" on the homepage
    - Fill in: Name, Username, Email, Password
    - Submit the form
@@ -91,7 +90,6 @@ The system has four distinct user roles with different permissions:
 ### Login
 
 1. **Email/Password**:
-
    - Enter email and password
    - Click "Login"
    - Redirected to dashboard or requested page
@@ -124,7 +122,6 @@ Your dashboard displays:
 ### Profile Management
 
 1. **Edit Profile**:
-
    - Click username → "Edit Profile"
    - Update personal information
    - Upload new profile picture
@@ -153,7 +150,6 @@ To request a role upgrade:
 ### Browsing Events
 
 1. **View All Events**:
-
    - Click "Events" in navigation
    - Browse by category or club
    - Use search functionality
@@ -168,7 +164,6 @@ To request a role upgrade:
 ### Event Registration
 
 1. **Register for Event**:
-
    - Open event details page
    - Click "Register" button
    - Fill in any required information
@@ -210,7 +205,6 @@ To request a role upgrade:
 ### Browsing Clubs
 
 1. **View All Clubs**:
-
    - Click "Clubs" in navigation
    - Browse club cards
    - Search by name or category
@@ -228,14 +222,12 @@ To request a role upgrade:
 ### Club Management (Club Moderators/Admins)
 
 1. **Edit Club Information**:
-
    - Go to club page
    - Click "Edit" (visible to moderators)
    - Update about section using Markdown
    - Save changes
 
 2. **Gallery Management**:
-
    - Upload new images to gallery
    - Add captions to images
    - Delete unwanted images
@@ -265,7 +257,6 @@ To request a role upgrade:
 ### Browsing Recruitments
 
 1. **View Available Positions**:
-
    - Click "Recruitments" in navigation
    - Browse by club or position type
    - Filter by status (open/closed)
@@ -279,7 +270,6 @@ To request a role upgrade:
 ### Applying to Recruitments
 
 1. **Submit Application**:
-
    - Open recruitment details
    - Click "Apply" button
    - Fill in application form
@@ -306,7 +296,6 @@ To request a role upgrade:
 ### Managing Recruitments (Club Moderators/Admins)
 
 1. **View Applications**:
-
    - Go to club page → "Recruitments" tab
    - Click "View Responses"
    - Review all submitted applications
@@ -335,13 +324,11 @@ Admins have access to a comprehensive dashboard with:
 ### User Management
 
 1. **View All Users**:
-
    - Navigate to "Admin" → "Users"
    - Search and filter users
    - View user details and roles
 
 2. **Role Assignment**:
-
    - Go to "Admin" → "Roles"
    - Select user and new role
    - Confirm assignment
@@ -354,7 +341,6 @@ Admins have access to a comprehensive dashboard with:
 ### Club Management
 
 1. **Create New Clubs**:
-
    - Add club information
    - Assign initial moderators
    - Set up club structure
@@ -367,7 +353,6 @@ Admins have access to a comprehensive dashboard with:
 ### System Settings
 
 1. **Site Configuration**:
-
    - Update site name and description
    - Configure contact information
    - Set feature toggles
@@ -392,7 +377,6 @@ Admins have access to a comprehensive dashboard with:
 ### Event Management
 
 1. **Create Events**:
-
    - Use event creation form
    - Set event parameters
    - Manage registrations
@@ -409,28 +393,24 @@ Admins have access to a comprehensive dashboard with:
 ### Common Issues
 
 1. **Cannot Login**:
-
    - Check email and password
    - Try password reset
    - Check email verification status
    - Contact admin if issues persist
 
 2. **Email Not Received**:
-
    - Check spam/junk folder
    - Verify email address is correct
    - Request new verification email
    - Contact support
 
 3. **Registration Issues**:
-
    - Check event availability
    - Verify registration requirements
    - Ensure account is verified
    - Try again or contact moderators
 
 4. **Upload Problems**:
-
    - Check file size limits
    - Verify file format (JPEG, PNG)
    - Try different browser
@@ -445,13 +425,11 @@ Admins have access to a comprehensive dashboard with:
 ### Getting Help
 
 1. **Contact Information**:
-
    - Check "About" page for contact details
    - Use contact form if available
    - Email administrators directly
 
 2. **Feature Requests**:
-
    - Submit through proper channels
    - Provide detailed descriptions
    - Include use case examples

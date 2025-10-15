@@ -1,57 +1,56 @@
 {
-  "name": "event-management-portal",
+  "name": "event-management-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Event Management Portal - TypeScript Monorepo with Next.js Frontend and Express Backend",
+  "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.18.3",
   "scripts": {
-    "test": "jest",
-    "start": "cross-env DEBUG=development:* nodemon app.js",
-    "server": "nodemon app.js",
-    "dev:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css --watch",
-    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css --minify",
-    "dev": "concurrently \"npm run server\" \"npm run dev:css\""
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "clean": "turbo clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "type-check": "turbo type-check",
+    "prepare": "husky",
+    "commit": "cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@fullcalendar/core": "^6.1.15",
-    "@fullcalendar/daygrid": "^6.1.15",
-    "@fullcalendar/interaction": "^6.1.15",
-    "bcrypt": "^6.0.0",
-    "cloudinary": "^1.41.3",
-    "concurrently": "^9.1.2",
-    "connect-flash": "^0.1.1",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "debug": "^4.4.0",
-    "dotenv": "^16.4.7",
-    "ejs": "^3.1.10",
-    "ejs-mate": "^4.0.0",
-    "express": "^4.21.2",
-    "express-session": "^1.18.1",
-    "joi": "^17.13.3",
-    "jsonwebtoken": "^9.0.2",
-    "marked": "^15.0.12",
-    "mongoose": "^8.12.1",
-    "multer": "^2.0.1",
-    "multer-storage-cloudinary": "^4.0.0",
-    "node-cron": "^4.1.0",
-    "nodemailer": "^7.0.3",
-    "nodemon": "^3.1.9",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "passport-local": "^1.0.0"
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.2",
-    "autoprefixer": "^10.4.21",
-    "babel-jest": "^29.7.0",
-    "jest": "^29.7.0",
-    "postcss": "^8.5.4",
-    "supertest": "^7.1.0",
-    "tailwindcss": "^3.4.1"
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/js": "^9.37.0",
+    "@types/node": "^24.7.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.8",
+    "typescript": "^5.9.3"
   }
 }

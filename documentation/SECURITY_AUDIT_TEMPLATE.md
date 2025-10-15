@@ -156,7 +156,6 @@ Legend: ✅ Compliant, ❌ Non-compliant, ⚠️ Partially compliant
 ### Immediate Actions (0-7 days)
 
 1. **[Action 1]**
-
    - Priority: Critical
    - Effort: [Low/Medium/High]
    - Resources needed: [Description]

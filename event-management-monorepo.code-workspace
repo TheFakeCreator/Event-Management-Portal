@@ -1,0 +1,51 @@
+{
+    "folders": [
+        {
+            "name": "🏠 Root",
+            "path": "."
+        },
+        {
+            "name": "🎨 Frontend",
+            "path": "./packages/frontend"
+        },
+        {
+            "name": "⚡ Backend",
+            "path": "./packages/backend"
+        },
+        {
+            "name": "📦 Shared",
+            "path": "./packages/shared"
+        }
+    ],
+    "settings": {
+        "typescript.preferences.includePackageJsonAutoImports": "on",
+        "typescript.suggest.autoImports": true,
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit"
+        },
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/.next": true,
+            "**/coverage": true
+        },
+        "search.exclude": {
+            "**/node_modules": true,
+            "**/dist": true,
+            "**/.next": true,
+            "**/coverage": true,
+            "**/pnpm-lock.yaml": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "esbenp.prettier-vscode",
+            "bradlc.vscode-tailwindcss",
+            "ms-vscode.vscode-typescript-next",
+            "dbaeumer.vscode-eslint",
+            "ms-vscode.vscode-json"
+        ]
+    }
+}

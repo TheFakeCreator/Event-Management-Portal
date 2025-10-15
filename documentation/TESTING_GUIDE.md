@@ -46,16 +46,16 @@ This document provides comprehensive testing strategies, procedures, and best pr
 ```javascript
 // jest.config.js
 export default {
-  testEnvironment: "node",
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
-  testMatch: ["<rootDir>/tests/**/*.test.js", "<rootDir>/tests/**/*.spec.js"],
+  testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  testMatch: ['<rootDir>/tests/**/*.test.js', '<rootDir>/tests/**/*.spec.js'],
   collectCoverageFrom: [
-    "routes/**/*.js",
-    "middlewares/**/*.js",
-    "models/**/*.js",
-    "controllers/**/*.js",
-    "!node_modules/**",
-    "!tests/**",
+    'routes/**/*.js',
+    'middlewares/**/*.js',
+    'models/**/*.js',
+    'controllers/**/*.js',
+    '!node_modules/**',
+    '!tests/**',
   ],
   coverageThreshold: {
     global: {
@@ -65,7 +65,7 @@ export default {
       statements: 70,
     },
   },
-  coverageReporters: ["text", "lcov", "html"],
+  coverageReporters: ['text', 'lcov', 'html'],
 };
 ```
 
@@ -75,8 +75,8 @@ export default {
 
 ```javascript
 // tests/setup.js
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer;
 
@@ -107,16 +107,16 @@ beforeEach(async () => {
 
 ```javascript
 // tests/utils/testHelpers.js
-import User from "../../models/User.js";
-import Event from "../../models/Event.js";
-import Club from "../../models/Club.js";
-import jwt from "jsonwebtoken";
+import User from '../../models/User.js';
+import Event from '../../models/Event.js';
+import Club from '../../models/Club.js';
+import jwt from 'jsonwebtoken';
 
 const createTestUser = async (overrides = {}) => {
   const userData = {
-    username: "testuser",
-    email: "test@example.com",
-    password: "TestPass123!",
+    username: 'testuser',
+    email: 'test@example.com',
+    password: 'TestPass123!',
     emailVerified: true,
     ...overrides,
   };
@@ -129,17 +129,17 @@ const createTestUser = async (overrides = {}) => {
 const createAuthToken = (user) => {
   return jwt.sign(
     { userId: user._id, role: user.role },
-    process.env.JWT_SECRET || "test-secret",
-    { expiresIn: "1h" }
+    process.env.JWT_SECRET || 'test-secret',
+    { expiresIn: '1h' }
   );
 };
 
 const createTestEvent = async (createdBy, overrides = {}) => {
   const eventData = {
-    title: "Test Event",
-    description: "Test event description",
+    title: 'Test Event',
+    description: 'Test event description',
     date: new Date(Date.now() + 86400000), // Tomorrow
-    location: "Test Location",
+    location: 'Test Location',
     capacity: 50,
     createdBy: createdBy._id,
     ...overrides,
@@ -152,9 +152,9 @@ const createTestEvent = async (createdBy, overrides = {}) => {
 
 const createTestClub = async (createdBy, overrides = {}) => {
   const clubData = {
-    name: "Test Club",
-    description: "Test club description",
-    category: "Technology",
+    name: 'Test Club',
+    description: 'Test club description',
+    category: 'Technology',
     createdBy: createdBy._id,
     moderators: [createdBy._id],
     ...overrides,
@@ -176,53 +176,53 @@ export { createTestUser, createAuthToken, createTestEvent, createTestClub };
 
 ```javascript
 // tests/models/User.test.js
-import User from "../../models/User.js";
-import { createTestUser } from "../utils/testHelpers.js";
+import User from '../../models/User.js';
+import { createTestUser } from '../utils/testHelpers.js';
 
-describe("User Model", () => {
-  describe("User Creation", () => {
-    test("should create a valid user", async () => {
+describe('User Model', () => {
+  describe('User Creation', () => {
+    test('should create a valid user', async () => {
       const user = await createTestUser();
-      expect(user.username).toBe("testuser");
-      expect(user.email).toBe("test@example.com");
-      expect(user.role).toBe("user");
+      expect(user.username).toBe('testuser');
+      expect(user.email).toBe('test@example.com');
+      expect(user.role).toBe('user');
       expect(user.emailVerified).toBe(true);
     });
 
-    test("should hash password before saving", async () => {
-      const user = await createTestUser({ password: "plaintext" });
-      expect(user.password).not.toBe("plaintext");
+    test('should hash password before saving', async () => {
+      const user = await createTestUser({ password: 'plaintext' });
+      expect(user.password).not.toBe('plaintext');
       expect(user.password.length).toBeGreaterThan(10);
     });
 
-    test("should reject invalid email format", async () => {
+    test('should reject invalid email format', async () => {
       await expect(
-        createTestUser({ email: "invalid-email" })
+        createTestUser({ email: 'invalid-email' })
       ).rejects.toThrow();
     });
 
-    test("should reject duplicate username", async () => {
-      await createTestUser({ username: "duplicate" });
+    test('should reject duplicate username', async () => {
+      await createTestUser({ username: 'duplicate' });
       await expect(
-        createTestUser({ username: "duplicate", email: "other@example.com" })
+        createTestUser({ username: 'duplicate', email: 'other@example.com' })
       ).rejects.toThrow();
     });
   });
 
-  describe("User Methods", () => {
-    test("should verify correct password", async () => {
-      const user = await createTestUser({ password: "TestPass123!" });
-      const isValid = await user.comparePassword("TestPass123!");
+  describe('User Methods', () => {
+    test('should verify correct password', async () => {
+      const user = await createTestUser({ password: 'TestPass123!' });
+      const isValid = await user.comparePassword('TestPass123!');
       expect(isValid).toBe(true);
     });
 
-    test("should reject incorrect password", async () => {
-      const user = await createTestUser({ password: "TestPass123!" });
-      const isValid = await user.comparePassword("wrongpassword");
+    test('should reject incorrect password', async () => {
+      const user = await createTestUser({ password: 'TestPass123!' });
+      const isValid = await user.comparePassword('wrongpassword');
       expect(isValid).toBe(false);
     });
 
-    test("should generate verification token", async () => {
+    test('should generate verification token', async () => {
       const user = await createTestUser();
       const token = user.generateVerificationToken();
       expect(token).toBeDefined();
@@ -237,29 +237,29 @@ describe("User Model", () => {
 
 ```javascript
 // tests/models/Event.test.js
-import Event from "../../models/Event.js";
-import { createTestUser, createTestEvent } from "../utils/testHelpers.js";
+import Event from '../../models/Event.js';
+import { createTestUser, createTestEvent } from '../utils/testHelpers.js';
 
-describe("Event Model", () => {
+describe('Event Model', () => {
   let testUser;
 
   beforeEach(async () => {
     testUser = await createTestUser();
   });
 
-  describe("Event Creation", () => {
-    test("should create a valid event", async () => {
+  describe('Event Creation', () => {
+    test('should create a valid event', async () => {
       const event = await createTestEvent(testUser);
-      expect(event.title).toBe("Test Event");
+      expect(event.title).toBe('Test Event');
       expect(event.createdBy).toEqual(testUser._id);
-      expect(event.status).toBe("active");
+      expect(event.status).toBe('active');
     });
 
-    test("should require title and description", async () => {
-      await expect(createTestEvent(testUser, { title: "" })).rejects.toThrow();
+    test('should require title and description', async () => {
+      await expect(createTestEvent(testUser, { title: '' })).rejects.toThrow();
     });
 
-    test("should validate date is in future", async () => {
+    test('should validate date is in future', async () => {
       const pastDate = new Date(Date.now() - 86400000); // Yesterday
       await expect(
         createTestEvent(testUser, { date: pastDate })
@@ -267,12 +267,12 @@ describe("Event Model", () => {
     });
   });
 
-  describe("Event Methods", () => {
-    test("should register user for event", async () => {
+  describe('Event Methods', () => {
+    test('should register user for event', async () => {
       const event = await createTestEvent(testUser);
       const attendee = await createTestUser({
-        username: "attendee",
-        email: "attendee@example.com",
+        username: 'attendee',
+        email: 'attendee@example.com',
       });
 
       await event.registerUser(attendee._id);
@@ -280,26 +280,26 @@ describe("Event Model", () => {
       expect(event.registrations[0].user).toEqual(attendee._id);
     });
 
-    test("should check if event is full", async () => {
+    test('should check if event is full', async () => {
       const event = await createTestEvent(testUser, { capacity: 1 });
       const attendee = await createTestUser({
-        username: "attendee",
-        email: "attendee@example.com",
+        username: 'attendee',
+        email: 'attendee@example.com',
       });
 
       await event.registerUser(attendee._id);
       expect(event.isFull()).toBe(true);
     });
 
-    test("should get registered user count", async () => {
+    test('should get registered user count', async () => {
       const event = await createTestEvent(testUser);
       const attendee1 = await createTestUser({
-        username: "attendee1",
-        email: "attendee1@example.com",
+        username: 'attendee1',
+        email: 'attendee1@example.com',
       });
       const attendee2 = await createTestUser({
-        username: "attendee2",
-        email: "attendee2@example.com",
+        username: 'attendee2',
+        email: 'attendee2@example.com',
       });
 
       await event.registerUser(attendee1._id);
@@ -321,16 +321,16 @@ import {
   isAuthenticated,
   isAdmin,
   isClubModerator,
-} from "../../middlewares/auth.js";
+} from '../../middlewares/auth.js';
 import {
   createTestUser,
   createAuthToken,
   createTestClub,
-} from "../utils/testHelpers.js";
+} from '../utils/testHelpers.js';
 
-describe("Authentication Middleware", () => {
-  describe("isAuthenticated", () => {
-    test("should allow access with valid token", async () => {
+describe('Authentication Middleware', () => {
+  describe('isAuthenticated', () => {
+    test('should allow access with valid token', async () => {
       const user = await createTestUser();
       const token = createAuthToken(user);
 
@@ -348,34 +348,34 @@ describe("Authentication Middleware", () => {
       expect(next).toHaveBeenCalled();
     });
 
-    test("should redirect to login without token", async () => {
+    test('should redirect to login without token', async () => {
       const req = { cookies: {} };
       const res = { redirect: jest.fn() };
       const next = jest.fn();
 
       await isAuthenticated(req, res, next);
 
-      expect(res.redirect).toHaveBeenCalledWith("/auth/login");
+      expect(res.redirect).toHaveBeenCalledWith('/auth/login');
       expect(next).not.toHaveBeenCalled();
     });
 
-    test("should redirect to login with invalid token", async () => {
-      const req = { cookies: { token: "invalid-token" } };
+    test('should redirect to login with invalid token', async () => {
+      const req = { cookies: { token: 'invalid-token' } };
       const res = { redirect: jest.fn() };
       const next = jest.fn();
 
       await isAuthenticated(req, res, next);
 
-      expect(res.redirect).toHaveBeenCalledWith("/auth/login");
+      expect(res.redirect).toHaveBeenCalledWith('/auth/login');
       expect(next).not.toHaveBeenCalled();
     });
   });
 
-  describe("isAdmin", () => {
-    test("should allow access for admin user", async () => {
-      const admin = await createTestUser({ role: "admin" });
+  describe('isAdmin', () => {
+    test('should allow access for admin user', async () => {
+      const admin = await createTestUser({ role: 'admin' });
 
-      const req = { user: { role: "admin", id: admin._id } };
+      const req = { user: { role: 'admin', id: admin._id } };
       const res = {};
       const next = jest.fn();
 
@@ -384,10 +384,10 @@ describe("Authentication Middleware", () => {
       expect(next).toHaveBeenCalled();
     });
 
-    test("should deny access for non-admin user", async () => {
-      const user = await createTestUser({ role: "user" });
+    test('should deny access for non-admin user', async () => {
+      const user = await createTestUser({ role: 'user' });
 
-      const req = { user: { role: "user", id: user._id } };
+      const req = { user: { role: 'user', id: user._id } };
       const res = {
         status: jest.fn().mockReturnThis(),
         render: jest.fn(),
@@ -398,20 +398,20 @@ describe("Authentication Middleware", () => {
 
       expect(res.status).toHaveBeenCalledWith(403);
       expect(res.render).toHaveBeenCalledWith(
-        "error",
-        expect.objectContaining({ message: "Access denied" })
+        'error',
+        expect.objectContaining({ message: 'Access denied' })
       );
       expect(next).not.toHaveBeenCalled();
     });
   });
 
-  describe("isClubModerator", () => {
-    test("should allow access for club moderator", async () => {
-      const moderator = await createTestUser({ role: "moderator" });
+  describe('isClubModerator', () => {
+    test('should allow access for club moderator', async () => {
+      const moderator = await createTestUser({ role: 'moderator' });
       const club = await createTestClub(moderator);
 
       const req = {
-        user: { role: "moderator", id: moderator._id },
+        user: { role: 'moderator', id: moderator._id },
         params: { id: club._id },
       };
       const res = {};
@@ -422,16 +422,16 @@ describe("Authentication Middleware", () => {
       expect(next).toHaveBeenCalled();
     });
 
-    test("should allow access for admin", async () => {
-      const admin = await createTestUser({ role: "admin" });
+    test('should allow access for admin', async () => {
+      const admin = await createTestUser({ role: 'admin' });
       const moderator = await createTestUser({
-        username: "moderator",
-        email: "mod@example.com",
+        username: 'moderator',
+        email: 'mod@example.com',
       });
       const club = await createTestClub(moderator);
 
       const req = {
-        user: { role: "admin", id: admin._id },
+        user: { role: 'admin', id: admin._id },
         params: { id: club._id },
       };
       const res = {};
@@ -453,118 +453,118 @@ describe("Authentication Middleware", () => {
 
 ```javascript
 // tests/routes/auth.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser } from '../utils/testHelpers.js';
 
-describe("Authentication Routes", () => {
-  describe("POST /auth/signup", () => {
-    test("should register new user successfully", async () => {
+describe('Authentication Routes', () => {
+  describe('POST /auth/signup', () => {
+    test('should register new user successfully', async () => {
       const userData = {
-        username: "newuser",
-        email: "newuser@example.com",
-        password: "NewPass123!",
-        confirmPassword: "NewPass123!",
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: 'NewPass123!',
+        confirmPassword: 'NewPass123!',
       };
 
       const response = await request(app)
-        .post("/auth/signup")
+        .post('/auth/signup')
         .send(userData)
         .expect(302);
 
-      expect(response.headers.location).toBe("/auth/login");
+      expect(response.headers.location).toBe('/auth/login');
     });
 
-    test("should reject registration with invalid email", async () => {
+    test('should reject registration with invalid email', async () => {
       const userData = {
-        username: "newuser",
-        email: "invalid-email",
-        password: "NewPass123!",
-        confirmPassword: "NewPass123!",
+        username: 'newuser',
+        email: 'invalid-email',
+        password: 'NewPass123!',
+        confirmPassword: 'NewPass123!',
       };
 
       const response = await request(app)
-        .post("/auth/signup")
+        .post('/auth/signup')
         .send(userData)
         .expect(400);
 
-      expect(response.text).toContain("Invalid email format");
+      expect(response.text).toContain('Invalid email format');
     });
 
-    test("should reject registration with weak password", async () => {
+    test('should reject registration with weak password', async () => {
       const userData = {
-        username: "newuser",
-        email: "newuser@example.com",
-        password: "weak",
-        confirmPassword: "weak",
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: 'weak',
+        confirmPassword: 'weak',
       };
 
       const response = await request(app)
-        .post("/auth/signup")
+        .post('/auth/signup')
         .send(userData)
         .expect(400);
 
-      expect(response.text).toContain("Password too weak");
+      expect(response.text).toContain('Password too weak');
     });
   });
 
-  describe("POST /auth/login", () => {
+  describe('POST /auth/login', () => {
     let testUser;
 
     beforeEach(async () => {
       testUser = await createTestUser();
     });
 
-    test("should login with valid credentials", async () => {
+    test('should login with valid credentials', async () => {
       const response = await request(app)
-        .post("/auth/login")
+        .post('/auth/login')
         .send({
           login: testUser.email,
-          password: "TestPass123!",
+          password: 'TestPass123!',
         })
         .expect(302);
 
-      expect(response.headers.location).toBe("/");
-      expect(response.headers["set-cookie"]).toBeDefined();
+      expect(response.headers.location).toBe('/');
+      expect(response.headers['set-cookie']).toBeDefined();
     });
 
-    test("should reject login with invalid password", async () => {
+    test('should reject login with invalid password', async () => {
       const response = await request(app)
-        .post("/auth/login")
+        .post('/auth/login')
         .send({
           login: testUser.email,
-          password: "wrongpassword",
+          password: 'wrongpassword',
         })
         .expect(400);
 
-      expect(response.text).toContain("Invalid credentials");
+      expect(response.text).toContain('Invalid credentials');
     });
 
-    test("should reject login for non-existent user", async () => {
+    test('should reject login for non-existent user', async () => {
       const response = await request(app)
-        .post("/auth/login")
+        .post('/auth/login')
         .send({
-          login: "nonexistent@example.com",
-          password: "TestPass123!",
+          login: 'nonexistent@example.com',
+          password: 'TestPass123!',
         })
         .expect(400);
 
-      expect(response.text).toContain("User not found");
+      expect(response.text).toContain('User not found');
     });
   });
 
-  describe("POST /auth/logout", () => {
-    test("should logout user and clear cookie", async () => {
+  describe('POST /auth/logout', () => {
+    test('should logout user and clear cookie', async () => {
       const user = await createTestUser();
       const token = createAuthToken(user);
 
       const response = await request(app)
-        .post("/auth/logout")
-        .set("Cookie", `token=${token}`)
+        .post('/auth/logout')
+        .set('Cookie', `token=${token}`)
         .expect(302);
 
-      expect(response.headers.location).toBe("/");
-      expect(response.headers["set-cookie"][0]).toContain("token=;");
+      expect(response.headers.location).toBe('/');
+      expect(response.headers['set-cookie'][0]).toContain('token=;');
     });
   });
 });
@@ -574,134 +574,134 @@ describe("Authentication Routes", () => {
 
 ```javascript
 // tests/routes/events.test.js
-import request from "supertest";
-import app from "../../app.js";
+import request from 'supertest';
+import app from '../../app.js';
 import {
   createTestUser,
   createAuthToken,
   createTestEvent,
-} from "../utils/testHelpers.js";
+} from '../utils/testHelpers.js';
 
-describe("Event Routes", () => {
+describe('Event Routes', () => {
   let testUser, authToken;
 
   beforeEach(async () => {
-    testUser = await createTestUser({ role: "moderator" });
+    testUser = await createTestUser({ role: 'moderator' });
     authToken = createAuthToken(testUser);
   });
 
-  describe("GET /events", () => {
-    test("should display events list", async () => {
+  describe('GET /events', () => {
+    test('should display events list', async () => {
       await createTestEvent(testUser);
 
-      const response = await request(app).get("/events").expect(200);
+      const response = await request(app).get('/events').expect(200);
 
-      expect(response.text).toContain("Test Event");
+      expect(response.text).toContain('Test Event');
     });
 
-    test("should filter events by category", async () => {
-      await createTestEvent(testUser, { category: "Technology" });
+    test('should filter events by category', async () => {
+      await createTestEvent(testUser, { category: 'Technology' });
       await createTestEvent(testUser, {
-        title: "Sports Event",
-        category: "Sports",
+        title: 'Sports Event',
+        category: 'Sports',
       });
 
       const response = await request(app)
-        .get("/events?category=Technology")
+        .get('/events?category=Technology')
         .expect(200);
 
-      expect(response.text).toContain("Test Event");
-      expect(response.text).not.toContain("Sports Event");
+      expect(response.text).toContain('Test Event');
+      expect(response.text).not.toContain('Sports Event');
     });
   });
 
-  describe("POST /events/create", () => {
-    test("should create event with valid data", async () => {
+  describe('POST /events/create', () => {
+    test('should create event with valid data', async () => {
       const eventData = {
-        title: "New Event",
-        description: "Event description",
+        title: 'New Event',
+        description: 'Event description',
         date: new Date(Date.now() + 86400000).toISOString(),
-        location: "Event Location",
+        location: 'Event Location',
         capacity: 100,
-        category: "Technology",
+        category: 'Technology',
       };
 
       const response = await request(app)
-        .post("/events/create")
-        .set("Cookie", `token=${authToken}`)
+        .post('/events/create')
+        .set('Cookie', `token=${authToken}`)
         .send(eventData)
         .expect(302);
 
-      expect(response.headers.location).toBe("/events");
+      expect(response.headers.location).toBe('/events');
     });
 
-    test("should require authentication", async () => {
+    test('should require authentication', async () => {
       const eventData = {
-        title: "New Event",
-        description: "Event description",
+        title: 'New Event',
+        description: 'Event description',
       };
 
       const response = await request(app)
-        .post("/events/create")
+        .post('/events/create')
         .send(eventData)
         .expect(302);
 
-      expect(response.headers.location).toBe("/auth/login");
+      expect(response.headers.location).toBe('/auth/login');
     });
 
-    test("should validate required fields", async () => {
+    test('should validate required fields', async () => {
       const response = await request(app)
-        .post("/events/create")
-        .set("Cookie", `token=${authToken}`)
+        .post('/events/create')
+        .set('Cookie', `token=${authToken}`)
         .send({})
         .expect(400);
 
-      expect(response.text).toContain("Title is required");
+      expect(response.text).toContain('Title is required');
     });
   });
 
-  describe("POST /events/:id/register", () => {
+  describe('POST /events/:id/register', () => {
     let event;
 
     beforeEach(async () => {
       event = await createTestEvent(testUser);
     });
 
-    test("should register user for event", async () => {
+    test('should register user for event', async () => {
       const attendee = await createTestUser({
-        username: "attendee",
-        email: "attendee@example.com",
+        username: 'attendee',
+        email: 'attendee@example.com',
       });
       const attendeeToken = createAuthToken(attendee);
 
       const response = await request(app)
         .post(`/events/${event._id}/register`)
-        .set("Cookie", `token=${attendeeToken}`)
+        .set('Cookie', `token=${attendeeToken}`)
         .expect(302);
 
       expect(response.headers.location).toBe(`/events/${event._id}`);
     });
 
-    test("should not allow double registration", async () => {
+    test('should not allow double registration', async () => {
       const attendee = await createTestUser({
-        username: "attendee",
-        email: "attendee@example.com",
+        username: 'attendee',
+        email: 'attendee@example.com',
       });
       const attendeeToken = createAuthToken(attendee);
 
       // First registration
       await request(app)
         .post(`/events/${event._id}/register`)
-        .set("Cookie", `token=${attendeeToken}`)
+        .set('Cookie', `token=${attendeeToken}`)
         .expect(302);
 
       // Attempt second registration
       const response = await request(app)
         .post(`/events/${event._id}/register`)
-        .set("Cookie", `token=${attendeeToken}`)
+        .set('Cookie', `token=${attendeeToken}`)
         .expect(400);
 
-      expect(response.text).toContain("Already registered");
+      expect(response.text).toContain('Already registered');
     });
   });
 });
@@ -713,16 +713,16 @@ describe("Event Routes", () => {
 
 ```javascript
 // tests/integration/userOperations.test.js
-import User from "../../models/User.js";
-import { createTestUser } from "../utils/testHelpers.js";
+import User from '../../models/User.js';
+import { createTestUser } from '../utils/testHelpers.js';
 
-describe("User Database Operations", () => {
-  describe("User CRUD Operations", () => {
-    test("should create and retrieve user", async () => {
+describe('User Database Operations', () => {
+  describe('User CRUD Operations', () => {
+    test('should create and retrieve user', async () => {
       const userData = {
-        username: "testuser",
-        email: "test@example.com",
-        password: "TestPass123!",
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'TestPass123!',
       };
 
       const user = new User(userData);
@@ -733,19 +733,19 @@ describe("User Database Operations", () => {
       expect(retrievedUser.email).toBe(userData.email);
     });
 
-    test("should update user profile", async () => {
+    test('should update user profile', async () => {
       const user = await createTestUser();
 
-      user.bio = "Updated bio";
-      user.interests = ["Technology", "Sports"];
+      user.bio = 'Updated bio';
+      user.interests = ['Technology', 'Sports'];
       await user.save();
 
       const updatedUser = await User.findById(user._id);
-      expect(updatedUser.bio).toBe("Updated bio");
-      expect(updatedUser.interests).toEqual(["Technology", "Sports"]);
+      expect(updatedUser.bio).toBe('Updated bio');
+      expect(updatedUser.interests).toEqual(['Technology', 'Sports']);
     });
 
-    test("should delete user", async () => {
+    test('should delete user', async () => {
       const user = await createTestUser();
       const userId = user._id;
 
@@ -756,13 +756,13 @@ describe("User Database Operations", () => {
     });
   });
 
-  describe("User Relationships", () => {
-    test("should populate user events", async () => {
-      const user = await createTestUser({ role: "moderator" });
+  describe('User Relationships', () => {
+    test('should populate user events', async () => {
+      const user = await createTestUser({ role: 'moderator' });
       const event = await createTestEvent(user);
 
       const populatedUser = await User.findById(user._id).populate(
-        "createdEvents"
+        'createdEvents'
       );
 
       expect(populatedUser.createdEvents).toHaveLength(1);
@@ -834,77 +834,77 @@ export {
 
 ```javascript
 // tests/e2e/auth.e2e.test.js
-import { page, waitForSelector, clickAndWait } from "./setup.js";
+import { page, waitForSelector, clickAndWait } from './setup.js';
 
-describe("Authentication E2E Tests", () => {
-  const baseUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+describe('Authentication E2E Tests', () => {
+  const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
-  describe("User Registration", () => {
-    test("should register new user successfully", async () => {
+  describe('User Registration', () => {
+    test('should register new user successfully', async () => {
       await page().goto(`${baseUrl}/auth/signup`);
 
-      await page().type("#username", "testuser");
-      await page().type("#email", "test@example.com");
-      await page().type("#password", "TestPass123!");
-      await page().type("#confirmPassword", "TestPass123!");
+      await page().type('#username', 'testuser');
+      await page().type('#email', 'test@example.com');
+      await page().type('#password', 'TestPass123!');
+      await page().type('#confirmPassword', 'TestPass123!');
 
-      await clickAndWait("#signup-btn");
+      await clickAndWait('#signup-btn');
 
-      await waitForSelector(".success-message");
+      await waitForSelector('.success-message');
       const successMessage = await page().$eval(
-        ".success-message",
+        '.success-message',
         (el) => el.textContent
       );
-      expect(successMessage).toContain("Registration successful");
+      expect(successMessage).toContain('Registration successful');
     });
 
-    test("should show validation errors for invalid input", async () => {
+    test('should show validation errors for invalid input', async () => {
       await page().goto(`${baseUrl}/auth/signup`);
 
-      await page().type("#username", "a"); // Too short
-      await page().type("#email", "invalid-email");
-      await page().type("#password", "weak");
+      await page().type('#username', 'a'); // Too short
+      await page().type('#email', 'invalid-email');
+      await page().type('#password', 'weak');
 
-      await page().click("#signup-btn");
+      await page().click('#signup-btn');
 
-      await waitForSelector(".error-message");
+      await waitForSelector('.error-message');
       const errorMessage = await page().$eval(
-        ".error-message",
+        '.error-message',
         (el) => el.textContent
       );
-      expect(errorMessage).toContain("Username must be at least 3 characters");
+      expect(errorMessage).toContain('Username must be at least 3 characters');
     });
   });
 
-  describe("User Login", () => {
-    test("should login with valid credentials", async () => {
+  describe('User Login', () => {
+    test('should login with valid credentials', async () => {
       // Assume user already exists
       await page().goto(`${baseUrl}/auth/login`);
 
-      await page().type("#login", "test@example.com");
-      await page().type("#password", "TestPass123!");
+      await page().type('#login', 'test@example.com');
+      await page().type('#password', 'TestPass123!');
 
-      await clickAndWait("#login-btn");
+      await clickAndWait('#login-btn');
 
-      await waitForSelector(".user-menu");
+      await waitForSelector('.user-menu');
       const currentUrl = page().url();
       expect(currentUrl).toBe(`${baseUrl}/`);
     });
 
-    test("should show error for invalid credentials", async () => {
+    test('should show error for invalid credentials', async () => {
       await page().goto(`${baseUrl}/auth/login`);
 
-      await page().type("#login", "wrong@example.com");
-      await page().type("#password", "wrongpassword");
+      await page().type('#login', 'wrong@example.com');
+      await page().type('#password', 'wrongpassword');
 
-      await page().click("#login-btn");
+      await page().click('#login-btn');
 
-      await waitForSelector(".error-message");
+      await waitForSelector('.error-message');
       const errorMessage = await page().$eval(
-        ".error-message",
+        '.error-message',
         (el) => el.textContent
       );
-      expect(errorMessage).toContain("Invalid credentials");
+      expect(errorMessage).toContain('Invalid credentials');
     });
   });
 });
@@ -914,80 +914,80 @@ describe("Authentication E2E Tests", () => {
 
 ```javascript
 // tests/e2e/events.e2e.test.js
-import { page, waitForSelector, clickAndWait } from "./setup.js";
+import { page, waitForSelector, clickAndWait } from './setup.js';
 
-describe("Event Management E2E Tests", () => {
-  const baseUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+describe('Event Management E2E Tests', () => {
+  const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
   beforeEach(async () => {
     // Login as moderator
     await page().goto(`${baseUrl}/auth/login`);
-    await page().type("#login", "moderator@example.com");
-    await page().type("#password", "ModeratorPass123!");
-    await clickAndWait("#login-btn");
+    await page().type('#login', 'moderator@example.com');
+    await page().type('#password', 'ModeratorPass123!');
+    await clickAndWait('#login-btn');
   });
 
-  describe("Event Creation", () => {
-    test("should create new event successfully", async () => {
+  describe('Event Creation', () => {
+    test('should create new event successfully', async () => {
       await page().goto(`${baseUrl}/events/create`);
 
-      await page().type("#title", "Test Event");
-      await page().type("#description", "This is a test event");
-      await page().type("#location", "Test Location");
-      await page().type("#capacity", "50");
+      await page().type('#title', 'Test Event');
+      await page().type('#description', 'This is a test event');
+      await page().type('#location', 'Test Location');
+      await page().type('#capacity', '50');
 
       // Set date to tomorrow
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      const dateString = tomorrow.toISOString().split("T")[0];
-      await page().type("#date", dateString);
+      const dateString = tomorrow.toISOString().split('T')[0];
+      await page().type('#date', dateString);
 
-      await page().select("#category", "Technology");
+      await page().select('#category', 'Technology');
 
-      await clickAndWait("#create-event-btn");
+      await clickAndWait('#create-event-btn');
 
-      await waitForSelector(".success-message");
+      await waitForSelector('.success-message');
       const successMessage = await page().$eval(
-        ".success-message",
+        '.success-message',
         (el) => el.textContent
       );
-      expect(successMessage).toContain("Event created successfully");
+      expect(successMessage).toContain('Event created successfully');
     });
 
-    test("should validate required fields", async () => {
+    test('should validate required fields', async () => {
       await page().goto(`${baseUrl}/events/create`);
 
-      await page().click("#create-event-btn");
+      await page().click('#create-event-btn');
 
-      await waitForSelector(".error-message");
+      await waitForSelector('.error-message');
       const errorMessage = await page().$eval(
-        ".error-message",
+        '.error-message',
         (el) => el.textContent
       );
-      expect(errorMessage).toContain("Title is required");
+      expect(errorMessage).toContain('Title is required');
     });
   });
 
-  describe("Event Registration", () => {
-    test("should register for event successfully", async () => {
+  describe('Event Registration', () => {
+    test('should register for event successfully', async () => {
       await page().goto(`${baseUrl}/events`);
 
-      await clickAndWait(".event-card:first-child .view-details-btn");
-      await clickAndWait("#register-btn");
+      await clickAndWait('.event-card:first-child .view-details-btn');
+      await clickAndWait('#register-btn');
 
-      await waitForSelector(".success-message");
+      await waitForSelector('.success-message');
       const successMessage = await page().$eval(
-        ".success-message",
+        '.success-message',
         (el) => el.textContent
       );
-      expect(successMessage).toContain("Registration successful");
+      expect(successMessage).toContain('Registration successful');
     });
 
-    test("should show registration button for non-registered users", async () => {
+    test('should show registration button for non-registered users', async () => {
       await page().goto(`${baseUrl}/events`);
-      await clickAndWait(".event-card:first-child .view-details-btn");
+      await clickAndWait('.event-card:first-child .view-details-btn');
 
-      const registerBtn = await page().$("#register-btn");
+      const registerBtn = await page().$('#register-btn');
       expect(registerBtn).toBeTruthy();
     });
   });
@@ -1002,13 +1002,13 @@ describe("Event Management E2E Tests", () => {
 
 ```javascript
 // tests/performance/database.perf.test.js
-import { createTestUser, createTestEvent } from "../utils/testHelpers.js";
-import User from "../../models/User.js";
-import Event from "../../models/Event.js";
+import { createTestUser, createTestEvent } from '../utils/testHelpers.js';
+import User from '../../models/User.js';
+import Event from '../../models/Event.js';
 
-describe("Database Performance Tests", () => {
-  describe("User Operations", () => {
-    test("should handle bulk user creation", async () => {
+describe('Database Performance Tests', () => {
+  describe('User Operations', () => {
+    test('should handle bulk user creation', async () => {
       const startTime = Date.now();
       const users = [];
 
@@ -1016,7 +1016,7 @@ describe("Database Performance Tests", () => {
         users.push({
           username: `user${i}`,
           email: `user${i}@example.com`,
-          password: "TestPass123!",
+          password: 'TestPass123!',
         });
       }
 
@@ -1026,12 +1026,12 @@ describe("Database Performance Tests", () => {
       expect(endTime - startTime).toBeLessThan(5000); // Less than 5 seconds
     });
 
-    test("should efficiently query users with pagination", async () => {
+    test('should efficiently query users with pagination', async () => {
       // Create test users
       const users = Array.from({ length: 50 }, (_, i) => ({
         username: `user${i}`,
         email: `user${i}@example.com`,
-        password: "TestPass123!",
+        password: 'TestPass123!',
       }));
       await User.insertMany(users);
 
@@ -1047,9 +1047,9 @@ describe("Database Performance Tests", () => {
     });
   });
 
-  describe("Event Operations", () => {
-    test("should handle event search efficiently", async () => {
-      const user = await createTestUser({ role: "moderator" });
+  describe('Event Operations', () => {
+    test('should handle event search efficiently', async () => {
+      const user = await createTestUser({ role: 'moderator' });
 
       // Create multiple events
       const events = Array.from({ length: 50 }, (_, i) => ({
@@ -1059,15 +1059,15 @@ describe("Database Performance Tests", () => {
         location: `Location ${i}`,
         capacity: 50,
         createdBy: user._id,
-        category: i % 2 === 0 ? "Technology" : "Sports",
+        category: i % 2 === 0 ? 'Technology' : 'Sports',
       }));
       await Event.insertMany(events);
 
       const startTime = Date.now();
       const searchResults = await Event.find({
         $or: [
-          { title: { $regex: "Event", $options: "i" } },
-          { description: { $regex: "Event", $options: "i" } },
+          { title: { $regex: 'Event', $options: 'i' } },
+          { description: { $regex: 'Event', $options: 'i' } },
         ],
       }).limit(10);
       const endTime = Date.now();
@@ -1083,26 +1083,26 @@ describe("Database Performance Tests", () => {
 
 ```javascript
 // tests/performance/api.perf.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("API Performance Tests", () => {
+describe('API Performance Tests', () => {
   let authToken;
   let user;
 
   beforeAll(async () => {
-    user = await createTestUser({ role: "admin" });
+    user = await createTestUser({ role: 'admin' });
     authToken = createAuthToken(user);
   });
 
-  describe("Authentication Endpoints", () => {
-    test("login endpoint should respond quickly", async () => {
+  describe('Authentication Endpoints', () => {
+    test('login endpoint should respond quickly', async () => {
       const startTime = Date.now();
 
-      const response = await request(app).post("/api/auth/login").send({
+      const response = await request(app).post('/api/auth/login').send({
         email: user.email,
-        password: "TestPass123!",
+        password: 'TestPass123!',
       });
 
       const endTime = Date.now();
@@ -1111,11 +1111,11 @@ describe("API Performance Tests", () => {
       expect(endTime - startTime).toBeLessThan(500); // Less than 500ms
     });
 
-    test("should handle concurrent login requests", async () => {
+    test('should handle concurrent login requests', async () => {
       const promises = Array.from({ length: 10 }, () =>
-        request(app).post("/api/auth/login").send({
+        request(app).post('/api/auth/login').send({
           email: user.email,
-          password: "TestPass123!",
+          password: 'TestPass123!',
         })
       );
 
@@ -1130,13 +1130,13 @@ describe("API Performance Tests", () => {
     });
   });
 
-  describe("Events Endpoints", () => {
-    test("events listing should be performant", async () => {
+  describe('Events Endpoints', () => {
+    test('events listing should be performant', async () => {
       const startTime = Date.now();
 
       const response = await request(app)
-        .get("/api/events")
-        .set("Authorization", `Bearer ${authToken}`);
+        .get('/api/events')
+        .set('Authorization', `Bearer ${authToken}`);
 
       const endTime = Date.now();
 
@@ -1144,12 +1144,12 @@ describe("API Performance Tests", () => {
       expect(endTime - startTime).toBeLessThan(300); // Less than 300ms
     });
 
-    test("should handle pagination efficiently", async () => {
+    test('should handle pagination efficiently', async () => {
       const startTime = Date.now();
 
       const response = await request(app)
-        .get("/api/events?page=1&limit=10")
-        .set("Authorization", `Bearer ${authToken}`);
+        .get('/api/events?page=1&limit=10')
+        .set('Authorization', `Bearer ${authToken}`);
 
       const endTime = Date.now();
 
@@ -1165,27 +1165,27 @@ describe("API Performance Tests", () => {
 
 ```javascript
 // tests/performance/stress.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("Stress Tests", () => {
+describe('Stress Tests', () => {
   let authToken;
   let user;
   beforeAll(async () => {
-    user = await createTestUser({ role: "admin" });
+    user = await createTestUser({ role: 'admin' });
     authToken = createAuthToken(user);
   });
 
-  test("should handle high number of concurrent requests", async () => {
+  test('should handle high number of concurrent requests', async () => {
     const numberOfRequests = 50;
     const promises = [];
 
     for (let i = 0; i < numberOfRequests; i++) {
       promises.push(
         request(app)
-          .get("/api/events")
-          .set("Authorization", `Bearer ${authToken}`)
+          .get('/api/events')
+          .set('Authorization', `Bearer ${authToken}`)
       );
     }
 
@@ -1206,18 +1206,18 @@ describe("Stress Tests", () => {
     );
   });
 
-  test("should handle rapid user registration attempts", async () => {
+  test('should handle rapid user registration attempts', async () => {
     const numberOfRegistrations = 20;
     const promises = [];
 
     for (let i = 0; i < numberOfRegistrations; i++) {
       promises.push(
         request(app)
-          .post("/api/auth/signup")
+          .post('/api/auth/signup')
           .send({
             username: `stressuser${i}`,
             email: `stressuser${i}@example.com`,
-            password: "TestPass123!",
+            password: 'TestPass123!',
           })
       );
     }
@@ -1243,19 +1243,19 @@ describe("Stress Tests", () => {
 
 ```javascript
 // tests/performance/memory.test.js
-const { createTestUser, createTestEvent } = require("../utils/testHelpers");
-const User = require("../../models/User");
-const Event = require("../../models/Event");
+const { createTestUser, createTestEvent } = require('../utils/testHelpers');
+const User = require('../../models/User');
+const Event = require('../../models/Event');
 
-describe("Memory Usage Tests", () => {
-  test("should not leak memory during bulk operations", async () => {
+describe('Memory Usage Tests', () => {
+  test('should not leak memory during bulk operations', async () => {
     const initialMemory = process.memoryUsage();
 
     // Create many users
     const users = Array.from({ length: 100 }, (_, i) => ({
       username: `memuser${i}`,
       email: `memuser${i}@example.com`,
-      password: "TestPass123!",
+      password: 'TestPass123!',
     }));
 
     await User.insertMany(users);
@@ -1319,13 +1319,13 @@ class PerformanceMonitor {
   }
 
   logMetrics() {
-    console.log("\n=== Performance Metrics ===");
+    console.log('\n=== Performance Metrics ===');
     Object.entries(this.metrics).forEach(([name, metric]) => {
       console.log(`${name}:`);
       console.log(`  Duration: ${metric.duration}ms`);
       console.log(`  Memory Delta: ${Math.round(metric.memoryDelta / 1024)}KB`);
     });
-    console.log("===========================\n");
+    console.log('===========================\n');
   }
 }
 
@@ -1336,21 +1336,21 @@ Usage example:
 
 ```javascript
 // In your test files
-import PerformanceMonitor from "../utils/performanceMonitor.js";
+import PerformanceMonitor from '../utils/performanceMonitor.js';
 
-describe("Performance monitored tests", () => {
+describe('Performance monitored tests', () => {
   const monitor = new PerformanceMonitor();
 
   afterAll(() => {
     monitor.logMetrics();
   });
 
-  test("should monitor database operations", async () => {
-    monitor.startTimer("userCreation");
+  test('should monitor database operations', async () => {
+    monitor.startTimer('userCreation');
 
     const user = await createTestUser();
 
-    const metrics = monitor.endTimer("userCreation");
+    const metrics = monitor.endTimer('userCreation');
 
     expect(metrics.duration).toBeLessThan(1000); // Less than 1 second
     expect(metrics.memoryDelta).toBeLessThan(5 * 1024 * 1024); // Less than 5MB
@@ -1451,19 +1451,19 @@ Visual regression testing ensures that UI changes don't unintentionally break th
 
 ```javascript
 // tests/visual/setup.js
-import puppeteer from "puppeteer";
-import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs";
-import fs from "fs";
-import path from "path";
+import puppeteer from 'puppeteer';
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
+import fs from 'fs';
+import path from 'path';
 
 class VisualTester {
   constructor() {
     this.browser = null;
     this.page = null;
-    this.baselinePath = path.join(__dirname, "baselines");
-    this.actualPath = path.join(__dirname, "actual");
-    this.diffPath = path.join(__dirname, "diff");
+    this.baselinePath = path.join(__dirname, 'baselines');
+    this.actualPath = path.join(__dirname, 'actual');
+    this.diffPath = path.join(__dirname, 'diff');
 
     // Ensure directories exist
     [this.baselinePath, this.actualPath, this.diffPath].forEach((dir) => {
@@ -1476,7 +1476,7 @@ class VisualTester {
   async setup() {
     this.browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-dev-shm-usage"],
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
     });
     this.page = await this.browser.newPage();
     await this.page.setViewport({ width: 1280, height: 720 });
@@ -1554,10 +1554,10 @@ export default VisualTester;
 
 ```javascript
 // tests/visual/pages.visual.test.js
-import VisualTester from "./setup.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import VisualTester from './setup.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("Visual Regression Tests", () => {
+describe('Visual Regression Tests', () => {
   let visualTester;
   let testUser;
   let authToken;
@@ -1565,7 +1565,7 @@ describe("Visual Regression Tests", () => {
   beforeAll(async () => {
     visualTester = new VisualTester();
     await visualTester.setup();
-    testUser = await createTestUser({ role: "user" });
+    testUser = await createTestUser({ role: 'user' });
     authToken = createAuthToken(testUser);
   });
 
@@ -1573,76 +1573,76 @@ describe("Visual Regression Tests", () => {
     await visualTester.teardown();
   });
 
-  describe("Authentication Pages", () => {
-    test("login page should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/auth/login");
-      await visualTester.page.waitForSelector(".login-form");
+  describe('Authentication Pages', () => {
+    test('login page should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/auth/login');
+      await visualTester.page.waitForSelector('.login-form');
 
-      await visualTester.takeScreenshot("login-page");
-      const result = await visualTester.compareScreenshots("login-page");
+      await visualTester.takeScreenshot('login-page');
+      const result = await visualTester.compareScreenshots('login-page');
 
       expect(result.match).toBe(true);
     });
 
-    test("signup page should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/auth/signup");
-      await visualTester.page.waitForSelector(".signup-form");
+    test('signup page should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/auth/signup');
+      await visualTester.page.waitForSelector('.signup-form');
 
-      await visualTester.takeScreenshot("signup-page");
-      const result = await visualTester.compareScreenshots("signup-page");
+      await visualTester.takeScreenshot('signup-page');
+      const result = await visualTester.compareScreenshots('signup-page');
 
       expect(result.match).toBe(true);
     });
   });
 
-  describe("Dashboard Pages", () => {
+  describe('Dashboard Pages', () => {
     beforeEach(async () => {
       // Set authentication cookie
       await visualTester.page.setCookie({
-        name: "token",
+        name: 'token',
         value: authToken,
-        domain: "localhost",
+        domain: 'localhost',
       });
     });
 
-    test("user dashboard should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/dashboard");
-      await visualTester.page.waitForSelector(".dashboard-content");
+    test('user dashboard should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/dashboard');
+      await visualTester.page.waitForSelector('.dashboard-content');
 
-      await visualTester.takeScreenshot("user-dashboard");
-      const result = await visualTester.compareScreenshots("user-dashboard");
+      await visualTester.takeScreenshot('user-dashboard');
+      const result = await visualTester.compareScreenshots('user-dashboard');
 
       expect(result.match).toBe(true);
     });
 
-    test("events listing should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/events");
-      await visualTester.page.waitForSelector(".events-container");
+    test('events listing should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/events');
+      await visualTester.page.waitForSelector('.events-container');
 
-      await visualTester.takeScreenshot("events-listing");
-      const result = await visualTester.compareScreenshots("events-listing");
+      await visualTester.takeScreenshot('events-listing');
+      const result = await visualTester.compareScreenshots('events-listing');
 
       expect(result.match).toBe(true);
     });
   });
 
-  describe("Component Visual Tests", () => {
-    test("navigation header should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/");
-      await visualTester.page.waitForSelector("nav");
+  describe('Component Visual Tests', () => {
+    test('navigation header should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/');
+      await visualTester.page.waitForSelector('nav');
 
-      await visualTester.takeScreenshot("navigation-header", "nav");
-      const result = await visualTester.compareScreenshots("navigation-header");
+      await visualTester.takeScreenshot('navigation-header', 'nav');
+      const result = await visualTester.compareScreenshots('navigation-header');
 
       expect(result.match).toBe(true);
     });
 
-    test("footer should match baseline", async () => {
-      await visualTester.page.goto("http://localhost:3000/");
-      await visualTester.page.waitForSelector("footer");
+    test('footer should match baseline', async () => {
+      await visualTester.page.goto('http://localhost:3000/');
+      await visualTester.page.waitForSelector('footer');
 
-      await visualTester.takeScreenshot("footer", "footer");
-      const result = await visualTester.compareScreenshots("footer");
+      await visualTester.takeScreenshot('footer', 'footer');
+      const result = await visualTester.compareScreenshots('footer');
 
       expect(result.match).toBe(true);
     });
@@ -1654,9 +1654,9 @@ describe("Visual Regression Tests", () => {
 
 ```javascript
 // tests/visual/responsive.visual.test.js
-import VisualTester from "./setup.js";
+import VisualTester from './setup.js';
 
-describe("Responsive Visual Tests", () => {
+describe('Responsive Visual Tests', () => {
   let visualTester;
 
   beforeAll(async () => {
@@ -1669,10 +1669,10 @@ describe("Responsive Visual Tests", () => {
   });
 
   const viewports = [
-    { name: "mobile", width: 375, height: 667 },
-    { name: "tablet", width: 768, height: 1024 },
-    { name: "desktop", width: 1280, height: 720 },
-    { name: "wide", width: 1920, height: 1080 },
+    { name: 'mobile', width: 375, height: 667 },
+    { name: 'tablet', width: 768, height: 1024 },
+    { name: 'desktop', width: 1280, height: 720 },
+    { name: 'wide', width: 1920, height: 1080 },
   ];
 
   viewports.forEach(({ name, width, height }) => {
@@ -1682,8 +1682,8 @@ describe("Responsive Visual Tests", () => {
       });
 
       test(`homepage should match baseline on ${name}`, async () => {
-        await visualTester.page.goto("http://localhost:3000/");
-        await visualTester.page.waitForSelector("main");
+        await visualTester.page.goto('http://localhost:3000/');
+        await visualTester.page.waitForSelector('main');
 
         await visualTester.takeScreenshot(`homepage-${name}`);
         const result = await visualTester.compareScreenshots(
@@ -1694,8 +1694,8 @@ describe("Responsive Visual Tests", () => {
       });
 
       test(`events page should match baseline on ${name}`, async () => {
-        await visualTester.page.goto("http://localhost:3000/events");
-        await visualTester.page.waitForSelector(".events-container");
+        await visualTester.page.goto('http://localhost:3000/events');
+        await visualTester.page.waitForSelector('.events-container');
 
         await visualTester.takeScreenshot(`events-${name}`);
         const result = await visualTester.compareScreenshots(`events-${name}`);
@@ -1715,8 +1715,8 @@ Accessibility testing ensures the application is usable by people with disabilit
 
 ```javascript
 // tests/accessibility/setup.js
-import { AxePuppeteer } from "@axe-core/puppeteer";
-import puppeteer from "puppeteer";
+import { AxePuppeteer } from '@axe-core/puppeteer';
+import puppeteer from 'puppeteer';
 
 class AccessibilityTester {
   constructor() {
@@ -1727,7 +1727,7 @@ class AccessibilityTester {
   async setup() {
     this.browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-dev-shm-usage"],
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
     });
     this.page = await this.browser.newPage();
     await this.page.setViewport({ width: 1280, height: 720 });
@@ -1743,7 +1743,7 @@ class AccessibilityTester {
     await this.page.goto(url);
 
     // Wait for page to load
-    (await this.page.waitForLoadState?.("networkidle")) ||
+    (await this.page.waitForLoadState?.('networkidle')) ||
       (await this.page.waitForTimeout(1000));
 
     const axe = new AxePuppeteer(this.page);
@@ -1772,7 +1772,7 @@ class AccessibilityTester {
       helpUrl: violation.helpUrl,
       nodes: violation.nodes.length,
       selectors: violation.nodes
-        .map((node) => node.target.join(", "))
+        .map((node) => node.target.join(', '))
         .slice(0, 3),
     }));
   }
@@ -1785,10 +1785,10 @@ export default AccessibilityTester;
 
 ```javascript
 // tests/accessibility/pages.a11y.test.js
-import AccessibilityTester from "./setup.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import AccessibilityTester from './setup.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("Accessibility Tests", () => {
+describe('Accessibility Tests', () => {
   let a11yTester;
   let testUser;
   let authToken;
@@ -1797,7 +1797,7 @@ describe("Accessibility Tests", () => {
     a11yTester = new AccessibilityTester();
     await a11yTester.setup();
 
-    testUser = await createTestUser({ role: "user" });
+    testUser = await createTestUser({ role: 'user' });
     authToken = createAuthToken(testUser);
   });
 
@@ -1805,105 +1805,105 @@ describe("Accessibility Tests", () => {
     await a11yTester.teardown();
   });
 
-  describe("Public Pages", () => {
-    test("homepage should be accessible", async () => {
+  describe('Public Pages', () => {
+    test('homepage should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
 
       if (results.violations.length > 0) {
         console.log(
-          "Accessibility violations:",
+          'Accessibility violations:',
           a11yTester.formatViolations(results.violations)
         );
       }
     });
 
-    test("login page should be accessible", async () => {
+    test('login page should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/auth/login",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/auth/login',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
     });
 
-    test("signup page should be accessible", async () => {
+    test('signup page should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/auth/signup",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/auth/signup',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
     });
   });
 
-  describe("Authenticated Pages", () => {
+  describe('Authenticated Pages', () => {
     beforeEach(async () => {
       // Set authentication cookie
       await a11yTester.page.setCookie({
-        name: "token",
+        name: 'token',
         value: authToken,
-        domain: "localhost",
+        domain: 'localhost',
       });
     });
 
-    test("dashboard should be accessible", async () => {
+    test('dashboard should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/dashboard",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/dashboard',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
     });
 
-    test("events page should be accessible", async () => {
+    test('events page should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/events",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/events',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
     });
 
-    test("create event form should be accessible", async () => {
+    test('create event form should be accessible', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/events/create",
-        { tags: ["wcag2a", "wcag2aa"] }
+        'http://localhost:3000/events/create',
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
     });
   });
 
-  describe("Form Accessibility", () => {
-    test("forms should have proper labels and structure", async () => {
+  describe('Form Accessibility', () => {
+    test('forms should have proper labels and structure', async () => {
       const results = await a11yTester.runAccessibilityTests(
-        "http://localhost:3000/auth/login",
+        'http://localhost:3000/auth/login',
         {
-          tags: ["wcag2a", "wcag2aa"],
-          include: ["form", "input", "label", "button"],
+          tags: ['wcag2a', 'wcag2aa'],
+          include: ['form', 'input', 'label', 'button'],
         }
       );
 
       expect(results.violations).toHaveLength(0);
     });
 
-    test("error messages should be accessible", async () => {
-      await a11yTester.page.goto("http://localhost:3000/auth/login");
+    test('error messages should be accessible', async () => {
+      await a11yTester.page.goto('http://localhost:3000/auth/login');
 
       // Trigger validation errors
       await a11yTester.page.click("button[type='submit']");
-      await a11yTester.page.waitForSelector(".error-message", {
+      await a11yTester.page.waitForSelector('.error-message', {
         timeout: 5000,
       });
 
       const results = await a11yTester.runAccessibilityTests(
         a11yTester.page.url(),
-        { tags: ["wcag2a", "wcag2aa"] }
+        { tags: ['wcag2a', 'wcag2aa'] }
       );
 
       expect(results.violations).toHaveLength(0);
@@ -1916,9 +1916,9 @@ describe("Accessibility Tests", () => {
 
 ```javascript
 // tests/accessibility/keyboard.a11y.test.js
-import AccessibilityTester from "./setup.js";
+import AccessibilityTester from './setup.js';
 
-describe("Keyboard Navigation Tests", () => {
+describe('Keyboard Navigation Tests', () => {
   let a11yTester;
 
   beforeAll(async () => {
@@ -1930,36 +1930,36 @@ describe("Keyboard Navigation Tests", () => {
     await a11yTester.teardown();
   });
 
-  test("should navigate login form with keyboard", async () => {
-    await a11yTester.page.goto("http://localhost:3000/auth/login");
+  test('should navigate login form with keyboard', async () => {
+    await a11yTester.page.goto('http://localhost:3000/auth/login');
 
     // Tab through form elements
-    await a11yTester.page.keyboard.press("Tab"); // Email field
+    await a11yTester.page.keyboard.press('Tab'); // Email field
     let activeElement = await a11yTester.page.evaluate(() =>
-      document.activeElement.getAttribute("name")
+      document.activeElement.getAttribute('name')
     );
-    expect(activeElement).toBe("email");
+    expect(activeElement).toBe('email');
 
-    await a11yTester.page.keyboard.press("Tab"); // Password field
+    await a11yTester.page.keyboard.press('Tab'); // Password field
     activeElement = await a11yTester.page.evaluate(() =>
-      document.activeElement.getAttribute("name")
+      document.activeElement.getAttribute('name')
     );
-    expect(activeElement).toBe("password");
+    expect(activeElement).toBe('password');
 
-    await a11yTester.page.keyboard.press("Tab"); // Submit button
+    await a11yTester.page.keyboard.press('Tab'); // Submit button
     activeElement = await a11yTester.page.evaluate(() =>
-      document.activeElement.getAttribute("type")
+      document.activeElement.getAttribute('type')
     );
-    expect(activeElement).toBe("submit");
+    expect(activeElement).toBe('submit');
   });
 
-  test("should navigate main navigation with keyboard", async () => {
-    await a11yTester.page.goto("http://localhost:3000/");
+  test('should navigate main navigation with keyboard', async () => {
+    await a11yTester.page.goto('http://localhost:3000/');
 
     // Focus first navigation item
-    await a11yTester.page.focus("nav a:first-child");
+    await a11yTester.page.focus('nav a:first-child');
 
-    const navItems = await a11yTester.page.$$eval("nav a", (links) =>
+    const navItems = await a11yTester.page.$$eval('nav a', (links) =>
       links.map((link) => link.textContent.trim())
     );
 
@@ -1970,7 +1970,7 @@ describe("Keyboard Navigation Tests", () => {
       expect(navItems).toContain(activeText);
 
       if (i < navItems.length - 1) {
-        await a11yTester.page.keyboard.press("Tab");
+        await a11yTester.page.keyboard.press('Tab');
       }
     }
   });
@@ -1985,55 +1985,55 @@ Security testing ensures the application is protected against common vulnerabili
 
 ```javascript
 // tests/security/auth.security.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser } from '../utils/testHelpers.js';
 
-describe("Authentication Security Tests", () => {
-  describe("Password Security", () => {
-    test("should reject weak passwords", async () => {
-      const weakPasswords = ["123", "password", "admin", "qwerty"];
+describe('Authentication Security Tests', () => {
+  describe('Password Security', () => {
+    test('should reject weak passwords', async () => {
+      const weakPasswords = ['123', 'password', 'admin', 'qwerty'];
 
       for (const password of weakPasswords) {
-        const response = await request(app).post("/api/auth/signup").send({
-          username: "testuser",
-          email: "test@example.com",
+        const response = await request(app).post('/api/auth/signup').send({
+          username: 'testuser',
+          email: 'test@example.com',
           password: password,
         });
 
         expect(response.status).toBe(400);
-        expect(response.body.error).toContain("password");
+        expect(response.body.error).toContain('password');
       }
     });
 
-    test("should enforce password complexity", async () => {
-      const response = await request(app).post("/api/auth/signup").send({
-        username: "testuser",
-        email: "test@example.com",
-        password: "weak",
+    test('should enforce password complexity', async () => {
+      const response = await request(app).post('/api/auth/signup').send({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'weak',
       });
 
       expect(response.status).toBe(400);
       expect(response.body.error).toMatch(/password.*requirements/i);
     });
 
-    test("should hash passwords properly", async () => {
+    test('should hash passwords properly', async () => {
       const user = await createTestUser();
 
       // Password should be hashed, not plain text
-      expect(user.password).not.toBe("TestPass123!");
+      expect(user.password).not.toBe('TestPass123!');
       expect(user.password).toMatch(/^\$2[aby]\$\d+\$/); // bcrypt hash pattern
     });
   });
 
-  describe("Rate Limiting", () => {
-    test("should rate limit login attempts", async () => {
-      const email = "test@example.com";
-      const password = "wrongpassword";
+  describe('Rate Limiting', () => {
+    test('should rate limit login attempts', async () => {
+      const email = 'test@example.com';
+      const password = 'wrongpassword';
 
       // Make multiple failed login attempts
       const promises = Array.from({ length: 10 }, () =>
-        request(app).post("/api/auth/login").send({ email, password })
+        request(app).post('/api/auth/login').send({ email, password })
       );
 
       const responses = await Promise.all(promises);
@@ -2043,14 +2043,14 @@ describe("Authentication Security Tests", () => {
       expect(rateLimitedResponses.length).toBeGreaterThan(0);
     });
 
-    test("should rate limit signup attempts", async () => {
+    test('should rate limit signup attempts', async () => {
       const promises = Array.from({ length: 15 }, (_, i) =>
         request(app)
-          .post("/api/auth/signup")
+          .post('/api/auth/signup')
           .send({
             username: `user${i}`,
             email: `user${i}@example.com`,
-            password: "TestPass123!",
+            password: 'TestPass123!',
           })
       );
 
@@ -2062,33 +2062,33 @@ describe("Authentication Security Tests", () => {
     });
   });
 
-  describe("JWT Security", () => {
-    test("should reject invalid JWT tokens", async () => {
+  describe('JWT Security', () => {
+    test('should reject invalid JWT tokens', async () => {
       const invalidTokens = [
-        "invalid.token.here",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature",
-        "",
-        "Bearer ",
+        'invalid.token.here',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature',
+        '',
+        'Bearer ',
       ];
 
       for (const token of invalidTokens) {
         const response = await request(app)
-          .get("/api/user/profile")
-          .set("Authorization", `Bearer ${token}`);
+          .get('/api/user/profile')
+          .set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(401);
       }
     });
 
-    test("should reject expired JWT tokens", async () => {
+    test('should reject expired JWT tokens', async () => {
       // This would require setting up a test with an expired token
       // Implementation depends on your JWT library and setup
       const expiredToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.invalid";
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.invalid';
 
       const response = await request(app)
-        .get("/api/user/profile")
-        .set("Authorization", `Bearer ${expiredToken}`);
+        .get('/api/user/profile')
+        .set('Authorization', `Bearer ${expiredToken}`);
 
       expect(response.status).toBe(401);
     });
@@ -2100,19 +2100,19 @@ describe("Authentication Security Tests", () => {
 
 ```javascript
 // tests/security/input-validation.security.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("Input Validation Security Tests", () => {
+describe('Input Validation Security Tests', () => {
   let authToken;
   let user;
   beforeAll(async () => {
-    user = await createTestUser({ role: "moderator" });
+    user = await createTestUser({ role: 'moderator' });
     authToken = createAuthToken(user);
   });
 
-  describe("XSS Prevention", () => {
+  describe('XSS Prevention', () => {
     const xssPayloads = [
       "<script>alert('xss')</script>",
       "<img src='x' onerror='alert(1)'>",
@@ -2121,11 +2121,11 @@ describe("Input Validation Security Tests", () => {
       "';alert('xss');//",
     ];
 
-    test("should prevent XSS in event creation", async () => {
+    test('should prevent XSS in event creation', async () => {
       for (const payload of xssPayloads) {
         const response = await request(app)
-          .post("/api/events")
-          .set("Authorization", `Bearer ${authToken}`)
+          .post('/api/events')
+          .set('Authorization', `Bearer ${authToken}`)
           .send({
             title: payload,
             description: payload,
@@ -2136,28 +2136,28 @@ describe("Input Validation Security Tests", () => {
 
         // Should either reject the input or sanitize it
         if (response.status === 201) {
-          expect(response.body.event.title).not.toContain("<script");
-          expect(response.body.event.description).not.toContain("<script");
-          expect(response.body.event.location).not.toContain("<script");
+          expect(response.body.event.title).not.toContain('<script');
+          expect(response.body.event.description).not.toContain('<script');
+          expect(response.body.event.location).not.toContain('<script');
         } else {
           expect(response.status).toBe(400);
         }
       }
     });
 
-    test("should prevent XSS in user profile updates", async () => {
+    test('should prevent XSS in user profile updates', async () => {
       for (const payload of xssPayloads) {
         const response = await request(app)
-          .put("/api/user/profile")
-          .set("Authorization", `Bearer ${authToken}`)
+          .put('/api/user/profile')
+          .set('Authorization', `Bearer ${authToken}`)
           .send({
             username: payload,
             bio: payload,
           });
 
         if (response.status === 200) {
-          expect(response.body.user.username).not.toContain("<script");
-          expect(response.body.user.bio).not.toContain("<script");
+          expect(response.body.user.username).not.toContain('<script');
+          expect(response.body.user.bio).not.toContain('<script');
         } else {
           expect(response.status).toBe(400);
         }
@@ -2165,7 +2165,7 @@ describe("Input Validation Security Tests", () => {
     });
   });
 
-  describe("SQL Injection Prevention", () => {
+  describe('SQL Injection Prevention', () => {
     const sqlPayloads = [
       "'; DROP TABLE users; --",
       "1' OR '1'='1",
@@ -2173,35 +2173,35 @@ describe("Input Validation Security Tests", () => {
       "1' UNION SELECT * FROM users --",
     ];
 
-    test("should prevent SQL injection in search queries", async () => {
+    test('should prevent SQL injection in search queries', async () => {
       for (const payload of sqlPayloads) {
         const response = await request(app)
           .get(`/api/events/search?q=${encodeURIComponent(payload)}`)
-          .set("Authorization", `Bearer ${authToken}`);
+          .set('Authorization', `Bearer ${authToken}`);
 
         // Should not return database error or unauthorized data
         expect(response.status).not.toBe(500);
         if (response.status === 200) {
-          expect(response.body).toHaveProperty("events");
+          expect(response.body).toHaveProperty('events');
           expect(Array.isArray(response.body.events)).toBe(true);
         }
       }
     });
   });
 
-  describe("NoSQL Injection Prevention", () => {
+  describe('NoSQL Injection Prevention', () => {
     const nosqlPayloads = [
       { $ne: null },
-      { $gt: "" },
-      { $regex: ".*" },
-      { $where: "function() { return true; }" },
+      { $gt: '' },
+      { $regex: '.*' },
+      { $where: 'function() { return true; }' },
     ];
 
-    test("should prevent NoSQL injection in user queries", async () => {
+    test('should prevent NoSQL injection in user queries', async () => {
       for (const payload of nosqlPayloads) {
-        const response = await request(app).post("/api/auth/login").send({
+        const response = await request(app).post('/api/auth/login').send({
           email: payload,
-          password: "anypassword",
+          password: 'anypassword',
         });
 
         // Should not bypass authentication
@@ -2216,44 +2216,44 @@ describe("Input Validation Security Tests", () => {
 
 ```javascript
 // tests/security/authorization.security.test.js
-import request from "supertest";
-import app from "../../app.js";
-import { createTestUser, createAuthToken } from "../utils/testHelpers.js";
+import request from 'supertest';
+import app from '../../app.js';
+import { createTestUser, createAuthToken } from '../utils/testHelpers.js';
 
-describe("Authorization Security Tests", () => {
+describe('Authorization Security Tests', () => {
   let normalUser, moderator, admin;
   let normalToken, moderatorToken, adminToken;
 
   beforeAll(async () => {
-    normalUser = await createTestUser({ role: "user" });
-    moderator = await createTestUser({ role: "moderator" });
-    admin = await createTestUser({ role: "admin" });
+    normalUser = await createTestUser({ role: 'user' });
+    moderator = await createTestUser({ role: 'moderator' });
+    admin = await createTestUser({ role: 'admin' });
     normalToken = createAuthToken(normalUser);
     moderatorToken = createAuthToken(moderator);
     adminToken = createAuthToken(admin);
   });
 
-  describe("Role-based Access Control", () => {
-    test("normal users should not access admin endpoints", async () => {
+  describe('Role-based Access Control', () => {
+    test('normal users should not access admin endpoints', async () => {
       const adminEndpoints = [
-        "/api/admin/users",
-        "/api/admin/stats",
-        "/api/admin/system",
+        '/api/admin/users',
+        '/api/admin/stats',
+        '/api/admin/system',
       ];
 
       for (const endpoint of adminEndpoints) {
         const response = await request(app)
           .get(endpoint)
-          .set("Authorization", `Bearer ${normalToken}`);
+          .set('Authorization', `Bearer ${normalToken}`);
 
         expect(response.status).toBe(403);
       }
     });
 
-    test("moderators should not access admin-only endpoints", async () => {
+    test('moderators should not access admin-only endpoints', async () => {
       const response = await request(app)
-        .delete("/api/admin/users/123")
-        .set("Authorization", `Bearer ${moderatorToken}`);
+        .delete('/api/admin/users/123')
+        .set('Authorization', `Bearer ${moderatorToken}`);
 
       expect(response.status).toBe(403);
     });
@@ -2263,23 +2263,23 @@ describe("Authorization Security Tests", () => {
 
       const response = await request(app)
         .get(`/api/user/${otherUser._id}/private`)
-        .set("Authorization", `Bearer ${normalToken}`);
+        .set('Authorization', `Bearer ${normalToken}`);
 
       expect(response.status).toBe(403);
     });
   });
 
-  describe("Resource Ownership", () => {
-    test("users should only edit their own events", async () => {
+  describe('Resource Ownership', () => {
+    test('users should only edit their own events', async () => {
       // Create event as moderator
       const eventResponse = await request(app)
-        .post("/api/events")
-        .set("Authorization", `Bearer ${moderatorToken}`)
+        .post('/api/events')
+        .set('Authorization', `Bearer ${moderatorToken}`)
         .send({
-          title: "Test Event",
-          description: "Test Description",
+          title: 'Test Event',
+          description: 'Test Description',
           date: new Date(),
-          location: "Test Location",
+          location: 'Test Location',
           capacity: 50,
         });
 
@@ -2289,9 +2289,9 @@ describe("Authorization Security Tests", () => {
       // Try to edit as normal user
       const editResponse = await request(app)
         .put(`/api/events/${eventId}`)
-        .set("Authorization", `Bearer ${normalToken}`)
+        .set('Authorization', `Bearer ${normalToken}`)
         .send({
-          title: "Hacked Event",
+          title: 'Hacked Event',
         });
 
       expect(editResponse.status).toBe(403);
@@ -2304,34 +2304,34 @@ describe("Authorization Security Tests", () => {
 
 ```javascript
 // tests/security/headers.security.test.js
-import request from "supertest";
-import app from "../../app.js";
+import request from 'supertest';
+import app from '../../app.js';
 
-describe("Security Headers Tests", () => {
-  test("should include security headers", async () => {
-    const response = await request(app).get("/");
+describe('Security Headers Tests', () => {
+  test('should include security headers', async () => {
+    const response = await request(app).get('/');
 
     // Check for important security headers
-    expect(response.headers).toHaveProperty("x-content-type-options");
-    expect(response.headers["x-content-type-options"]).toBe("nosniff");
+    expect(response.headers).toHaveProperty('x-content-type-options');
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
 
-    expect(response.headers).toHaveProperty("x-frame-options");
-    expect(response.headers["x-frame-options"]).toBe("DENY");
+    expect(response.headers).toHaveProperty('x-frame-options');
+    expect(response.headers['x-frame-options']).toBe('DENY');
 
-    expect(response.headers).toHaveProperty("x-xss-protection");
-    expect(response.headers["x-xss-protection"]).toBe("1; mode=block");
+    expect(response.headers).toHaveProperty('x-xss-protection');
+    expect(response.headers['x-xss-protection']).toBe('1; mode=block');
 
-    expect(response.headers).toHaveProperty("strict-transport-security");
+    expect(response.headers).toHaveProperty('strict-transport-security');
 
     // Check for CSP header
-    expect(response.headers).toHaveProperty("content-security-policy");
+    expect(response.headers).toHaveProperty('content-security-policy');
   });
 
-  test("should not expose sensitive server information", async () => {
-    const response = await request(app).get("/");
+  test('should not expose sensitive server information', async () => {
+    const response = await request(app).get('/');
 
     // Should not expose server version
-    expect(response.headers["x-powered-by"]).toBeUndefined();
+    expect(response.headers['x-powered-by']).toBeUndefined();
 
     // Should not expose detailed server information
     if (response.headers.server) {
@@ -2390,7 +2390,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -2434,18 +2434,18 @@ jobs:
 
 ```javascript
 // Mock external services
-jest.mock("nodemailer", () => ({
+jest.mock('nodemailer', () => ({
   createTransporter: jest.fn(() => ({
-    sendMail: jest.fn().mockResolvedValue({ messageId: "test-id" }),
+    sendMail: jest.fn().mockResolvedValue({ messageId: 'test-id' }),
   })),
 }));
 
 // Mock file uploads
-jest.mock("cloudinary", () => ({
+jest.mock('cloudinary', () => ({
   uploader: {
     upload: jest.fn().mockResolvedValue({
-      secure_url: "https://test-url.com/image.jpg",
-      public_id: "test-public-id",
+      secure_url: 'https://test-url.com/image.jpg',
+      public_id: 'test-public-id',
     }),
   },
 }));
@@ -2479,14 +2479,14 @@ jest.mock("cloudinary", () => ({
 
 ```javascript
 // Enable debugging
-import debug from "debug";
-const debugLogger = debug("app:test");
+import debug from 'debug';
+const debugLogger = debug('app:test');
 
 // Add logging to tests
-test("should create user", async () => {
-  debugLogger("Creating test user...");
+test('should create user', async () => {
+  debugLogger('Creating test user...');
   const user = await createTestUser();
-  debugLogger("User created:", user.username);
+  debugLogger('User created:', user.username);
   // ... rest of test
 });
 ```

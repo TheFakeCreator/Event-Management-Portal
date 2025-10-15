@@ -14,7 +14,7 @@ The application uses Gmail SMTP for email delivery with the following configurat
 
 ```javascript
 const transporter = nodemailer.createTransporter({
-  service: "gmail",
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS, // App-specific password
@@ -77,12 +77,12 @@ const emailTemplate = `
 ```javascript
 const verificationEmail = {
   to: user.email,
-  subject: "Verify Your Email Address",
-  template: "email-verification",
+  subject: 'Verify Your Email Address',
+  template: 'email-verification',
   data: {
     username: user.username,
     verificationUrl: `${process.env.BASE_URL}/auth/verify-email?token=${token}`,
-    expiresIn: "24 hours",
+    expiresIn: '24 hours',
   },
 };
 ```
@@ -96,12 +96,12 @@ const verificationEmail = {
 ```javascript
 const resetEmail = {
   to: user.email,
-  subject: "Reset Your Password",
-  template: "password-reset",
+  subject: 'Reset Your Password',
+  template: 'password-reset',
   data: {
     username: user.username,
     resetUrl: `${process.env.BASE_URL}/auth/reset-password?token=${resetToken}`,
-    expiresIn: "1 hour",
+    expiresIn: '1 hour',
   },
 };
 ```
@@ -124,7 +124,7 @@ const resetEmail = {
 const registrationEmail = {
   to: user.email,
   subject: `Registration Confirmed: ${event.title}`,
-  template: "event-registration",
+  template: 'event-registration',
   data: {
     username: user.username,
     eventTitle: event.title,
@@ -211,11 +211,11 @@ const registrationEmail = {
 **Purpose**: Send reminders for events happening in the next 24 hours
 
 ```javascript
-const cron = require("node-cron");
+const cron = require('node-cron');
 
 // Daily event reminders at 9:00 AM
-cron.schedule("0 9 * * *", async () => {
-  console.log("Running daily event reminder job...");
+cron.schedule('0 9 * * *', async () => {
+  console.log('Running daily event reminder job...');
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -233,8 +233,8 @@ cron.schedule("0 9 * * *", async () => {
         tomorrow.getDate() + 1
       ),
     },
-    status: "active",
-  }).populate("registrations.user");
+    status: 'active',
+  }).populate('registrations.user');
 
   for (const event of upcomingEvents) {
     await sendEventReminders(event);
@@ -249,8 +249,8 @@ cron.schedule("0 9 * * *", async () => {
 
 ```javascript
 // Weekly digest every Sunday at 8:00 AM
-cron.schedule("0 8 * * 0", async () => {
-  console.log("Running weekly digest job...");
+cron.schedule('0 8 * * 0', async () => {
+  console.log('Running weekly digest job...');
 
   const users = await User.find({
     emailNotifications: true,
@@ -272,8 +272,8 @@ cron.schedule("0 8 * * 0", async () => {
 
 ```javascript
 // Daily cleanup at 2:00 AM
-cron.schedule("0 2 * * *", async () => {
-  console.log("Running token cleanup job...");
+cron.schedule('0 2 * * *', async () => {
+  console.log('Running token cleanup job...');
 
   const expired = new Date();
   expired.setHours(expired.getHours() - 24);
@@ -310,11 +310,11 @@ cron.schedule("0 2 * * *", async () => {
 
 ```javascript
 // Retry failed emails every 30 minutes
-cron.schedule("*/30 * * * *", async () => {
-  console.log("Retrying failed emails...");
+cron.schedule('*/30 * * * *', async () => {
+  console.log('Retrying failed emails...');
 
   const failedEmails = await EmailQueue.find({
-    status: "failed",
+    status: 'failed',
     retryCount: { $lt: 3 },
     nextRetry: { $lte: new Date() },
   });
@@ -332,17 +332,17 @@ cron.schedule("*/30 * * * *", async () => {
 ```javascript
 const cronJobs = {
   eventReminders: {
-    schedule: "0 9 * * *",
-    enabled: process.env.ENABLE_EVENT_REMINDERS === "true",
+    schedule: '0 9 * * *',
+    enabled: process.env.ENABLE_EVENT_REMINDERS === 'true',
     task: sendEventReminders,
   },
   weeklyDigest: {
-    schedule: "0 8 * * 0",
-    enabled: process.env.ENABLE_WEEKLY_DIGEST === "true",
+    schedule: '0 8 * * 0',
+    enabled: process.env.ENABLE_WEEKLY_DIGEST === 'true',
     task: sendWeeklyDigest,
   },
   tokenCleanup: {
-    schedule: "0 2 * * *",
+    schedule: '0 2 * * *',
     enabled: true,
     task: cleanupExpiredTokens,
   },
@@ -371,8 +371,8 @@ const emailQueueSchema = new mongoose.Schema({
   data: { type: Object, default: {} },
   status: {
     type: String,
-    enum: ["pending", "sent", "failed"],
-    default: "pending",
+    enum: ['pending', 'sent', 'failed'],
+    default: 'pending',
   },
   retryCount: { type: Number, default: 0 },
   maxRetries: { type: Number, default: 3 },
@@ -388,7 +388,7 @@ const emailQueueSchema = new mongoose.Schema({
 ```javascript
 const processEmailQueue = async () => {
   const pendingEmails = await EmailQueue.find({
-    status: "pending",
+    status: 'pending',
     $or: [
       { nextRetry: { $exists: false } },
       { nextRetry: { $lte: new Date() } },
@@ -398,12 +398,12 @@ const processEmailQueue = async () => {
   for (const emailJob of pendingEmails) {
     try {
       await sendEmail(emailJob);
-      emailJob.status = "sent";
+      emailJob.status = 'sent';
       emailJob.sentAt = new Date();
     } catch (error) {
       emailJob.retryCount += 1;
       if (emailJob.retryCount >= emailJob.maxRetries) {
-        emailJob.status = "failed";
+        emailJob.status = 'failed';
       } else {
         emailJob.nextRetry = new Date(Date.now() + emailJob.retryCount * 60000);
       }
@@ -414,7 +414,7 @@ const processEmailQueue = async () => {
 };
 
 // Process queue every minute
-cron.schedule("* * * * *", processEmailQueue);
+cron.schedule('* * * * *', processEmailQueue);
 ```
 
 ### 2. Email Rate Limiting
@@ -467,7 +467,7 @@ const rateLimiter = {
 const sendEmail = async (options) => {
   try {
     if (!rateLimiter.canSendEmail()) {
-      throw new Error("Rate limit exceeded");
+      throw new Error('Rate limit exceeded');
     }
 
     const mailOptions = {
@@ -527,10 +527,10 @@ const sendBulkEmail = async (recipients, template, data) => {
 const renderTemplate = async (templateName, data) => {
   const templatePath = path.join(
     __dirname,
-    "../views/emails",
+    '../views/emails',
     `${templateName}.ejs`
   );
-  const template = await fs.readFile(templatePath, "utf8");
+  const template = await fs.readFile(templatePath, 'utf8');
   return ejs.render(template, data);
 };
 ```
@@ -541,11 +541,11 @@ const renderTemplate = async (templateName, data) => {
 const renderTextTemplate = async (templateName, data) => {
   const templatePath = path.join(
     __dirname,
-    "../views/emails/text",
+    '../views/emails/text',
     `${templateName}.txt`
   );
   try {
-    const template = await fs.readFile(templatePath, "utf8");
+    const template = await fs.readFile(templatePath, 'utf8');
     return ejs.render(template, data);
   } catch (error) {
     // Fallback to HTML-to-text conversion
@@ -623,9 +623,9 @@ const handleUnsubscribe = async (req, res) => {
       [`notificationPreferences.${decoded.type}`]: false,
     });
 
-    res.render("unsubscribe-success", { type: decoded.type });
+    res.render('unsubscribe-success', { type: decoded.type });
   } catch (error) {
-    res.render("unsubscribe-error");
+    res.render('unsubscribe-error');
   }
 };
 ```
@@ -672,9 +672,9 @@ const getEmailStats = async (dateRange) => {
     },
     {
       $group: {
-        _id: "$status",
+        _id: '$status',
         count: { $sum: 1 },
-        avgRetries: { $avg: "$retryCount" },
+        avgRetries: { $avg: '$retryCount' },
       },
     },
   ]);
@@ -689,7 +689,7 @@ const getEmailStats = async (dateRange) => {
 
 ```javascript
 const logEmailError = async (error, emailData) => {
-  console.error("Email error:", {
+  console.error('Email error:', {
     error: error.message,
     stack: error.stack,
     email: emailData,
@@ -710,7 +710,7 @@ const logEmailError = async (error, emailData) => {
 ```javascript
 const checkEmailHealth = async () => {
   const recentFailures = await EmailQueue.countDocuments({
-    status: "failed",
+    status: 'failed',
     createdAt: { $gte: new Date(Date.now() - 3600000) }, // Last hour
   });
 
@@ -718,7 +718,7 @@ const checkEmailHealth = async () => {
 
   if (failureRate > 0.1) {
     // 10% failure rate threshold
-    await sendAdminAlert("High email failure rate detected");
+    await sendAdminAlert('High email failure rate detected');
   }
 };
 ```

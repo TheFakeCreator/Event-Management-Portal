@@ -45,7 +45,7 @@ The implementation includes security checks to prevent open redirect vulnerabili
 
 ```javascript
 // Ensure the redirect URL is safe (doesn't redirect to external sites)
-if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
   return res.redirect(redirectUrl);
 }
 ```
@@ -79,7 +79,6 @@ This ensures:
 ### Manual Testing Steps:
 
 1. **Test Protected Route Redirect:**
-
    - Start the application
    - In a private/incognito browser window, visit `http://localhost:3000/admin/dashboard`
    - You should be redirected to login page with URL: `/auth/login?redirect=%2Fadmin%2Fdashboard`
@@ -87,13 +86,11 @@ This ensures:
    - You should be redirected back to `/admin/dashboard`
 
 2. **Test Direct Login:**
-
    - Visit `http://localhost:3000/auth/login` directly
    - Login with valid credentials
    - You should be redirected to your profile page
 
 3. **Test Google OAuth Redirect:**
-
    - Access a protected route (e.g., `/event/create`)
    - Click "Sign in with Google"
    - Complete Google OAuth

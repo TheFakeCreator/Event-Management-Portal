@@ -1,0 +1,20 @@
+# Shared package specific ignores
+
+# Build outputs
+dist/
+lib/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+coverage/
+test-results/
+
+# Cache
+.cache/
+
+# Temporary files
+tmp/
+temp/
