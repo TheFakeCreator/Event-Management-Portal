@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, User, Settings, LogOut, Bell } from 'lucide-react';
@@ -65,6 +65,35 @@ export function Header() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
+
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    }
+
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsUserMenuOpen(false);
+      }
+    }
+
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isUserMenuOpen]);
 
   const handleSignOut = () => {
     setIsUserMenuOpen(false);
@@ -133,7 +162,7 @@ export function Header() {
                 </Button>
 
                 {/* User Menu */}
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <Button
                     variant="ghost"
                     onClick={toggleUserMenu}
