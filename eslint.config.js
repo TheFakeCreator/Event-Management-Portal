@@ -1,5 +1,5 @@
 // Temporary ESLint Configuration for Migration Phase
-import js from '@eslint/js';
+// import js from '@eslint/js';
 import typescript from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 
