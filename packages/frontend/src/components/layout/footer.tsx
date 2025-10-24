@@ -13,12 +13,9 @@ const footerLinks = {
   company: [
     { label: 'About', href: ROUTES.ABOUT },
     { label: 'Contact', href: ROUTES.CONTACT },
-    { label: 'Careers', href: '/careers' },
     { label: 'Blog', href: '/blog' },
   ],
   support: [
-    { label: 'Help Center', href: '/help' },
-    { label: 'Documentation', href: '/docs' },
     { label: 'Community', href: '/community' },
     { label: 'Status', href: '/status' },
   ],
