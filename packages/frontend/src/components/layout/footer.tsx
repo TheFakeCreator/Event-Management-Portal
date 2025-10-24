@@ -5,7 +5,7 @@ import { ROUTES, APP_CONFIG } from '@/lib/constants';
 
 const footerLinks = {
   product: [
-    { label: 'Features', href: '/#features' },
+    { label: 'Features', href: ROUTES.FEATURES },
     { label: 'Events', href: ROUTES.EVENTS },
     { label: 'Clubs', href: ROUTES.CLUBS },
     { label: 'Pricing', href: '/#pricing' },

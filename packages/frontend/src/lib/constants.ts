@@ -15,6 +15,7 @@ export const ROUTES = {
   REGISTER: '/auth/register',
   FORGOT_PASSWORD: '/auth/forgot-password',
   DASHBOARD: '/dashboard',
+  FEATURES: '/features',
   PROFILE: '/profile',
   SETTINGS: '/settings',
 
