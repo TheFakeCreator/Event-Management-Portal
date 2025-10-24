@@ -224,8 +224,38 @@ export default function DashboardPage() {
         }));
         setLoading(false);
 
-        // Show welcome toast
-        info('Welcome back!', `Good to see you again, ${user.name || 'User'}`);
+        // Show welcome toast once per browser session.
+        // This prevents duplicate toasts when React StrictMode mounts components twice in dev.
+        try {
+          const SESSION_KEY = 'dashboard_welcome_shown_session';
+          if (typeof sessionStorage !== 'undefined') {
+            if (!sessionStorage.getItem(SESSION_KEY)) {
+              info(
+                'Welcome back!',
+                `Good to see you again, ${user.name || 'User'}`
+              );
+              sessionStorage.setItem(SESSION_KEY, '1');
+            }
+          } else {
+            // Fallback: if sessionStorage is unavailable, show once.
+            info(
+              'Welcome back!',
+              `Good to see you again, ${user.name || 'User'}`
+            );
+          }
+        } catch (e) {
+          // If storage access fails, still show the toast but avoid throwing.
+          info(
+            'Welcome back!',
+            `Good to see you again, ${user.name || 'User'}`
+          );
+        }
+
+        // NOTE: If you'd rather show this once per day instead of once per session,
+        // replace sessionStorage above with localStorage and store the ISO date (YYYY-MM-DD):
+        // const KEY = 'dashboard_welcome_last_shown_date';
+        // const today = new Date().toISOString().slice(0, 10);
+        // if (localStorage.getItem(KEY) !== today) { info(...); localStorage.setItem(KEY, today); }
       }, 1000);
     }
     // TODO: Fetch dashboard data from API

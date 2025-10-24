@@ -31,9 +31,13 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Github, href: 'https://github.com', label: 'GitHub' },
+  {
+    icon: Github,
+    href: 'https://github.com/TheFakeCreator/Event-Management-Portal',
+    label: 'GitHub',
+  },
   { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-  { icon: Mail, href: 'mailto:contact@eventmanagement.com', label: 'Email' },
+  { icon: Mail, href: 'mailto:nitrreventportal@gmail.com', label: 'Email' },
 ];
 
 export function Footer() {
