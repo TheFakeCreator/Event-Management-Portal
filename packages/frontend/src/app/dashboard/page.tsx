@@ -433,7 +433,7 @@ export default function DashboardPage() {
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.currentTarget.src =
-                              '/images/placeholder-event.jpg';
+                              '/images/placeholder-event.svg';
                           }}
                         />
                       </div>
@@ -510,7 +510,7 @@ export default function DashboardPage() {
                             alt={club.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              e.currentTarget.src = '/images/default-club.jpg';
+                              e.currentTarget.src = '/images/default-club.svg';
                             }}
                           />
                         ) : (

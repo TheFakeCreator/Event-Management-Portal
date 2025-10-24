@@ -315,7 +315,7 @@ export default function ClubDetailPage() {
                     alt={`${club.name} logo`}
                     className="w-24 h-24 rounded-full object-cover border-4 border-background"
                     onError={(e) => {
-                      e.currentTarget.src = '/images/default-club.jpg';
+                      e.currentTarget.src = '/images/default-club.svg';
                     }}
                   />
                 ) : (
@@ -604,7 +604,7 @@ export default function ClubDetailPage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           onError={(e) => {
                             e.currentTarget.src =
-                              '/images/placeholder-image.jpg';
+                              '/images/placeholder-image.svg';
                           }}
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end">
@@ -633,7 +633,7 @@ export default function ClubDetailPage() {
                               className="w-16 h-16 rounded-full object-cover"
                               onError={(e) => {
                                 e.currentTarget.src =
-                                  '/images/default-avatar.jpg';
+                                  '/images/default-avatar.svg';
                               }}
                             />
                           ) : (

@@ -265,7 +265,7 @@ export default function EventDetailPage() {
                       alt={event.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/placeholder-event.jpg';
+                        e.currentTarget.src = '/images/placeholder-event.svg';
                       }}
                     />
                   </div>
@@ -557,7 +557,7 @@ export default function EventDetailPage() {
                         alt={event.organizer.name}
                         className="w-12 h-12 rounded-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/default-avatar.jpg';
+                          e.currentTarget.src = '/images/default-avatar.svg';
                         }}
                       />
                     ) : (
@@ -592,7 +592,7 @@ export default function EventDetailPage() {
                         alt={event.club.name}
                         className="w-12 h-12 rounded-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/default-club.jpg';
+                          e.currentTarget.src = '/images/default-club.svg';
                         }}
                       />
                     ) : (
