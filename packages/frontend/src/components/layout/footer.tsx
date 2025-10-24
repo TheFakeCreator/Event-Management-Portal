@@ -8,7 +8,7 @@ const footerLinks = {
     { label: 'Features', href: ROUTES.FEATURES },
     { label: 'Events', href: ROUTES.EVENTS },
     { label: 'Clubs', href: ROUTES.CLUBS },
-    { label: 'Pricing', href: '/#pricing' },
+    { label: 'Pricing', href: ROUTES.PRICING },
   ],
   company: [
     { label: 'About', href: ROUTES.ABOUT },
