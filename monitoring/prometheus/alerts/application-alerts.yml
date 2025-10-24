@@ -1,0 +1,215 @@
+# Critical Application Alerts
+# High priority alerts that require immediate attention
+
+groups:
+  - name: event-management-critical
+    rules:
+      # Application availability
+      - alert: ApplicationDown
+        expr: up{job=~"event-management-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Application {{ $labels.job }} is down"
+          description: "{{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://runbooks.example.com/application-down"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+          runbook_url: "https://runbooks.example.com/high-error-rate"
+
+      # Response time degradation
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+          runbook_url: "https://runbooks.example.com/high-response-time"
+
+      # Memory usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90% on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/high-memory-usage"
+
+      # CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 85% on {{ $labels.instance }} for more than 10 minutes"
+          runbook_url: "https://runbooks.example.com/high-cpu-usage"
+
+      # Disk space
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is below 10% on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/low-disk-space"
+
+  - name: event-management-database
+    rules:
+      # MongoDB connection issues
+      - alert: MongoDBDown
+        expr: mongodb_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: database
+        annotations:
+          summary: "MongoDB is down"
+          description: "MongoDB instance {{ $labels.instance }} has been down for more than 1 minute"
+          runbook_url: "https://runbooks.example.com/mongodb-down"
+
+      # High MongoDB connections
+      - alert: MongoDBHighConnections
+        expr: mongodb_connections{state="current"} / mongodb_connections{state="available"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "MongoDB high connection usage"
+          description: "MongoDB connection usage is above 80% ({{ $value | humanizePercentage }})"
+          runbook_url: "https://runbooks.example.com/mongodb-high-connections"
+
+      # Slow MongoDB operations
+      - alert: MongoDBSlowOperations
+        expr: rate(mongodb_op_counters_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "MongoDB slow operations"
+          description: "MongoDB is experiencing {{ $value }} operations per second"
+          runbook_url: "https://runbooks.example.com/mongodb-slow-operations"
+
+      # Redis connection issues
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: cache
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance {{ $labels.instance }} has been down for more than 1 minute"
+          runbook_url: "https://runbooks.example.com/redis-down"
+
+      # High Redis memory usage
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: cache
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is above 90% ({{ $value | humanizePercentage }})"
+          runbook_url: "https://runbooks.example.com/redis-high-memory"
+
+  - name: event-management-business
+    rules:
+      # High event registration rate
+      - alert: HighEventRegistrationRate
+        expr: rate(event_registrations_total[5m]) > 100
+        for: 2m
+        labels:
+          severity: info
+          team: product
+        annotations:
+          summary: "High event registration rate"
+          description: "Event registration rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/high-registration-rate"
+
+      # Failed event registrations
+      - alert: FailedEventRegistrations
+        expr: rate(event_registrations_failed_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High failed event registration rate"
+          description: "Failed registration rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/failed-registrations"
+
+      # Email delivery failures
+      - alert: EmailDeliveryFailures
+        expr: rate(email_send_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High email delivery failure rate"
+          description: "Email delivery failure rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/email-failures"
+
+      # File upload failures
+      - alert: FileUploadFailures
+        expr: rate(file_upload_failures_total[5m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "High file upload failure rate"
+          description: "File upload failure rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/upload-failures"
+
+  - name: event-management-security
+    rules:
+      # Multiple failed login attempts
+      - alert: HighFailedLoginAttempts
+        expr: rate(login_attempts_failed_total[5m]) > 20
+        for: 2m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High failed login attempt rate"
+          description: "Failed login attempt rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/failed-logins"
+
+      # Suspicious user activity
+      - alert: SuspiciousUserActivity
+        expr: rate(suspicious_activity_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Suspicious user activity detected"
+          description: "Suspicious activity rate is {{ $value }} per second"
+          runbook_url: "https://runbooks.example.com/suspicious-activity"

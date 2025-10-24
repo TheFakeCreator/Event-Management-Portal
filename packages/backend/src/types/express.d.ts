@@ -7,6 +7,11 @@ declare global {
       userInfo?: UserType;
       isUserAuthenticated?: boolean;
       flash?: (type: string, message?: string) => string[] | void;
+      devBypassInfo?: {
+        enabled: boolean;
+        userType: string;
+        timestamp: string;
+      };
     }
   }
 }

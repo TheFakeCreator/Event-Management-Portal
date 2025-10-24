@@ -1,14 +1,13 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Get current directory for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load environment variables first
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+// Load environment variables from multiple possible locations
+dotenv.config(); // First try default .env in project root
+dotenv.config({ path: path.join(process.cwd(), '.env') }); // Try current working directory
+dotenv.config({
+  path: path.join(process.cwd(), 'packages', 'backend', '.env'),
+}); // Try backend specific
 
 // Environment variable schema using Zod
 const envSchema = z.object({
@@ -19,7 +18,7 @@ const envSchema = z.object({
     .string()
     .transform(Number)
     .pipe(z.number().min(1).max(65535))
-    .default('3001'),
+    .default('3000'),
 
   // Database
   DATABASE_URL: z.string().url().optional(),
@@ -64,6 +63,8 @@ const envSchema = z.object({
 
   // CORS
   CORS_ORIGIN: z.string().url().default('http://localhost:3000'),
+  // Client URL for building links in emails
+  CLIENT_URL: z.string().url().default('http://localhost:3000'),
 
   // File Upload
   MAX_FILE_SIZE: z

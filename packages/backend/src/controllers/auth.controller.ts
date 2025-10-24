@@ -10,6 +10,7 @@ import {
   ResetPasswordRequest,
   AuthResponse,
   TokenPayload,
+  buildUrl,
 } from '@event-management/shared';
 import { AuthenticatedRequest } from '../types/express.js';
 
@@ -206,20 +207,51 @@ export const registerUser = async (
     // Generate a verification token with enhanced security
     const token = generateVerificationToken(newUser);
 
-    // Create a verification link
-    const verificationUrl = `https://event-management-portal.onrender.com/auth/verify/${token}`;
+    // Create a verification link using configured client URL
+    // prefer validated env variable from env.config
+    import('../configs/env.config.js')
+      .then(({ env: appEnv }) => {
+        /* noop import to ensure types and env are available for runtime; actual value used below synchronously */
+      })
+      .catch(() => {});
 
-    // Send the verification email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Verify your Email',
-      html: `
+    const clientUrl =
+      (process.env.CLIENT_URL as string) || 'http://localhost:3000';
+    const verificationUrl = buildUrl({
+      base: clientUrl,
+      path: `auth/verify/${token}`,
+    });
+
+    // Send the verification email. Failures here should not break user registration
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Verify your Email',
+        html: `
                 <h4>Hello ${name},</h4>
                 <p>Thank you for registering. Please verify your email by clicking the link below:</p>
                 <a href="${verificationUrl}" target="_blank">Verify Email</a>
             `,
-    });
+      });
+    } catch (emailError) {
+      // Log the error and continue — user is created, but verification email couldn't be sent
+      console.error(
+        'Failed to send verification email for user',
+        email,
+        emailError
+      );
+      logSecurityEvent(
+        SECURITY_EVENTS.ACCOUNT_CREATED,
+        {
+          email,
+          username,
+          userId: newUser._id.toString(),
+          emailError: (emailError as Error).message,
+        },
+        req
+      );
+    }
 
     // Log security event
     logSecurityEvent(
@@ -551,7 +583,13 @@ export const forgotPassword = async (
     await user.save();
 
     // Create reset URL
-    const resetUrl = `https://event-management-portal.onrender.com/auth/reset-password/${resetToken}`;
+    const resetBase =
+      (process.env.CLIENT_URL as string) ||
+      'https://event-management-portal.onrender.com';
+    const resetUrl = buildUrl({
+      base: resetBase,
+      path: `auth/reset-password/${resetToken}`,
+    });
 
     // Send reset email
     await transporter.sendMail({

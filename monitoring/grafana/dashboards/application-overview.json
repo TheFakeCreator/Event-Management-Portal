@@ -1,0 +1,363 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Event Management Portal - Application Overview",
+        "tags": [
+            "event-management",
+            "application",
+            "overview"
+        ],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "schemaVersion": 39,
+        "version": 1,
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "timepicker": {},
+        "templating": {
+            "list": [
+                {
+                    "name": "environment",
+                    "type": "query",
+                    "query": "label_values(up, environment)",
+                    "refresh": 1,
+                    "includeAll": true,
+                    "allValue": ".*"
+                }
+            ]
+        },
+        "panels": [
+            {
+                "id": 1,
+                "title": "Application Status",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "up{job=~\"event-management-.*\"}",
+                        "legendFormat": "{{job}}"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "mappings": [
+                            {
+                                "type": "value",
+                                "value": 0,
+                                "text": "DOWN"
+                            },
+                            {
+                                "type": "value",
+                                "value": 1,
+                                "text": "UP"
+                            }
+                        ],
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "id": 2,
+                "title": "Request Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(http_requests_total[5m])) by (job)",
+                        "legendFormat": "{{job}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "requests/sec",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                }
+            },
+            {
+                "id": 3,
+                "title": "Response Time (95th percentile)",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+                        "legendFormat": "95th percentile"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+                        "legendFormat": "50th percentile"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "seconds",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                }
+            },
+            {
+                "id": 4,
+                "title": "Error Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(http_requests_total{status=~\"4..|5..\"}[5m])) by (status)",
+                        "legendFormat": "{{status}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "errors/sec",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                }
+            },
+            {
+                "id": 5,
+                "title": "Active Users",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "active_users_total",
+                        "legendFormat": "Active Users"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 100
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 1000
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 0,
+                    "y": 16
+                }
+            },
+            {
+                "id": 6,
+                "title": "Event Registrations Today",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sum(increase(event_registrations_total[24h]))",
+                        "legendFormat": "Registrations"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 50
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 200
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 6,
+                    "y": 16
+                }
+            },
+            {
+                "id": 7,
+                "title": "Cache Hit Rate",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "redis_cache_hits_total / (redis_cache_hits_total + redis_cache_misses_total) * 100",
+                        "legendFormat": "Hit Rate %"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "percent",
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 70
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 85
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 12,
+                    "y": 16
+                }
+            },
+            {
+                "id": 8,
+                "title": "Database Connections",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "mongodb_connections{state=\"current\"}",
+                        "legendFormat": "Current Connections"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 50
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 6,
+                    "x": 18,
+                    "y": 16
+                }
+            },
+            {
+                "id": 9,
+                "title": "Memory Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+                        "legendFormat": "Memory Usage %"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent",
+                        "max": 100,
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 22
+                }
+            },
+            {
+                "id": 10,
+                "title": "CPU Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+                        "legendFormat": "CPU Usage %"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent",
+                        "max": 100,
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 22
+                }
+            }
+        ]
+    },
+    "overwrite": true
+}

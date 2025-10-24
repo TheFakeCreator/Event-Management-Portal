@@ -1,0 +1,176 @@
+groups:
+  - name: event-management-portal
+    rules:
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} requests per second on {{ $labels.instance }}"
+
+      # High Response Time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s on {{ $labels.instance }}"
+
+      # Database Connection Issues
+      - alert: DatabaseConnectionDown
+        expr: up{job="mongodb"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection is down"
+          description: "MongoDB is unreachable on {{ $labels.instance }}"
+
+      # Redis Connection Issues
+      - alert: RedisConnectionDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connection is down"
+          description: "Redis is unreachable on {{ $labels.instance }}"
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes > 1000000000  # 1GB
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanize }}B on {{ $labels.instance }}"
+
+      # High CPU Usage
+      - alert: HighCpuUsage
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+
+      # Application Down
+      - alert: ApplicationDown
+        expr: up{job="event-management-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Application is down"
+          description: "Event Management Portal backend is down on {{ $labels.instance }}"
+
+      # Low Disk Space
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space usage is above 90% on {{ $labels.instance }}"
+
+      # Event Loop Lag
+      - alert: HighEventLoopLag
+        expr: nodejs_eventloop_lag_seconds > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High event loop lag"
+          description: "Event loop lag is {{ $value }}s on {{ $labels.instance }}"
+
+      # Too Many Open File Descriptors
+      - alert: HighFileDescriptorUsage
+        expr: process_open_fds / process_max_fds > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High file descriptor usage"
+          description: "File descriptor usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+
+  - name: business-metrics
+    rules:
+      # Low Event Creation Rate (might indicate issues)
+      - alert: LowEventCreationRate
+        expr: rate(events_created_total[1h]) < 0.01  # Less than 1 event per 100 minutes
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low event creation rate"
+          description: "Event creation rate is unusually low: {{ $value }} events per second"
+
+      # High Event Registration Failure Rate
+      - alert: HighRegistrationFailureRate
+        expr: rate(event_registrations_failed_total[5m]) / rate(event_registrations_attempted_total[5m]) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High event registration failure rate"
+          description: "Event registration failure rate is {{ $value | humanizePercentage }}"
+
+      # Too Many Active Users (potential scaling issue)
+      - alert: HighActiveUsers
+        expr: active_users_count > 1000
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "High number of active users"
+          description: "Current active users: {{ $value }}"
+
+      # Database Growth Rate
+      - alert: HighDatabaseGrowthRate
+        expr: increase(mongodb_ss_wt_cache_bytes_currently_in_cache[1h]) > 100000000  # 100MB per hour
+        for: 2h
+        labels:
+          severity: info
+        annotations:
+          summary: "High database growth rate"
+          description: "Database is growing at {{ $value | humanize }}B per hour"
+
+  - name: security-alerts
+    rules:
+      # Too Many Failed Login Attempts
+      - alert: HighFailedLoginRate
+        expr: rate(auth_login_attempts_failed_total[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High failed login attempt rate"
+          description: "Failed login rate is {{ $value }} attempts per second"
+
+      # Suspicious JWT Token Usage
+      - alert: HighInvalidTokenRate
+        expr: rate(auth_invalid_tokens_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High invalid JWT token rate"
+          description: "Invalid token rate is {{ $value }} tokens per second"
+
+      # Rate Limiting Triggered
+      - alert: RateLimitingTriggered
+        expr: rate(rate_limit_exceeded_total[5m]) > 1
+        for: 2m
+        labels:
+          severity: info
+        annotations:
+          summary: "Rate limiting frequently triggered"
+          description: "Rate limiting is being triggered {{ $value }} times per second"

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { env, isDevelopment } from './env.config.js';
+import { env } from './env.config.js';
 
 /**
  * Connect to MongoDB database

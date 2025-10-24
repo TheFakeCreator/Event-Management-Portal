@@ -1,0 +1,428 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Event Management Portal - Infrastructure Monitoring",
+        "tags": [
+            "event-management",
+            "infrastructure",
+            "system"
+        ],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "schemaVersion": 39,
+        "version": 1,
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "templating": {
+            "list": [
+                {
+                    "name": "instance",
+                    "type": "query",
+                    "query": "label_values(up, instance)",
+                    "refresh": 1,
+                    "includeAll": true,
+                    "allValue": ".*"
+                }
+            ]
+        },
+        "panels": [
+            {
+                "id": 1,
+                "title": "System Overview",
+                "type": "row",
+                "collapsed": false,
+                "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "id": 2,
+                "title": "CPU Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{instance=~\"$instance\",mode=\"idle\"}[5m])) * 100)",
+                        "legendFormat": "CPU Usage % - {{instance}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent",
+                        "max": 100,
+                        "min": 0
+                    }
+                ],
+                "thresholds": [
+                    {
+                        "value": 80,
+                        "colorMode": "critical",
+                        "op": "gt"
+                    },
+                    {
+                        "value": 60,
+                        "colorMode": "warning",
+                        "op": "gt"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 1
+                }
+            },
+            {
+                "id": 3,
+                "title": "Memory Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "(node_memory_MemTotal_bytes{instance=~\"$instance\"} - node_memory_MemAvailable_bytes{instance=~\"$instance\"}) / node_memory_MemTotal_bytes{instance=~\"$instance\"} * 100",
+                        "legendFormat": "Memory Usage % - {{instance}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent",
+                        "max": 100,
+                        "min": 0
+                    }
+                ],
+                "thresholds": [
+                    {
+                        "value": 90,
+                        "colorMode": "critical",
+                        "op": "gt"
+                    },
+                    {
+                        "value": 70,
+                        "colorMode": "warning",
+                        "op": "gt"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 1
+                }
+            },
+            {
+                "id": 4,
+                "title": "Disk Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "(node_filesystem_size_bytes{instance=~\"$instance\",fstype!=\"tmpfs\"} - node_filesystem_free_bytes{instance=~\"$instance\",fstype!=\"tmpfs\"}) / node_filesystem_size_bytes{instance=~\"$instance\",fstype!=\"tmpfs\"} * 100",
+                        "legendFormat": "{{mountpoint}} - {{instance}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent",
+                        "max": 100,
+                        "min": 0
+                    }
+                ],
+                "thresholds": [
+                    {
+                        "value": 90,
+                        "colorMode": "critical",
+                        "op": "gt"
+                    },
+                    {
+                        "value": 80,
+                        "colorMode": "warning",
+                        "op": "gt"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 9
+                }
+            },
+            {
+                "id": 5,
+                "title": "Network I/O",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(node_network_receive_bytes_total{instance=~\"$instance\"}[5m]) * 8",
+                        "legendFormat": "Receive - {{device}} - {{instance}}"
+                    },
+                    {
+                        "expr": "rate(node_network_transmit_bytes_total{instance=~\"$instance\"}[5m]) * 8 * -1",
+                        "legendFormat": "Transmit - {{device}} - {{instance}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "bits/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 9
+                }
+            },
+            {
+                "id": 6,
+                "title": "Container Metrics",
+                "type": "row",
+                "collapsed": false,
+                "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 17
+                }
+            },
+            {
+                "id": 7,
+                "title": "Container CPU Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])) by (name) * 100",
+                        "legendFormat": "{{name}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "percent"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 18
+                }
+            },
+            {
+                "id": 8,
+                "title": "Container Memory Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(container_memory_working_set_bytes{name!=\"\"}) by (name) / 1024 / 1024",
+                        "legendFormat": "{{name}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "MB"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 18
+                }
+            },
+            {
+                "id": 9,
+                "title": "Database Metrics",
+                "type": "row",
+                "collapsed": false,
+                "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 26
+                }
+            },
+            {
+                "id": 10,
+                "title": "MongoDB Connections",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "mongodb_connections{state=\"current\"}",
+                        "legendFormat": "Current"
+                    },
+                    {
+                        "expr": "mongodb_connections{state=\"available\"}",
+                        "legendFormat": "Available"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 50
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 8,
+                    "x": 0,
+                    "y": 27
+                }
+            },
+            {
+                "id": 11,
+                "title": "MongoDB Operations",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(mongodb_op_counters_total[5m])",
+                        "legendFormat": "{{type}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "ops/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 6,
+                    "w": 8,
+                    "x": 8,
+                    "y": 27
+                }
+            },
+            {
+                "id": 12,
+                "title": "Redis Memory",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "redis_memory_used_bytes / 1024 / 1024",
+                        "legendFormat": "Used (MB)"
+                    },
+                    {
+                        "expr": "redis_memory_max_bytes / 1024 / 1024",
+                        "legendFormat": "Max (MB)"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "MB",
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 200
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 240
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 8,
+                    "x": 16,
+                    "y": 27
+                }
+            },
+            {
+                "id": 13,
+                "title": "Load Balancer Metrics",
+                "type": "row",
+                "collapsed": false,
+                "gridPos": {
+                    "h": 1,
+                    "w": 24,
+                    "x": 0,
+                    "y": 33
+                }
+            },
+            {
+                "id": 14,
+                "title": "Nginx Requests",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(nginx_http_requests_total[5m])",
+                        "legendFormat": "{{status}} requests/sec"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "requests/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 34
+                }
+            },
+            {
+                "id": 15,
+                "title": "Nginx Connections",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "nginx_connections_active",
+                        "legendFormat": "Active"
+                    },
+                    {
+                        "expr": "nginx_connections_reading",
+                        "legendFormat": "Reading"
+                    },
+                    {
+                        "expr": "nginx_connections_writing",
+                        "legendFormat": "Writing"
+                    },
+                    {
+                        "expr": "nginx_connections_waiting",
+                        "legendFormat": "Waiting"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "connections"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 34
+                }
+            }
+        ]
+    },
+    "overwrite": true
+}

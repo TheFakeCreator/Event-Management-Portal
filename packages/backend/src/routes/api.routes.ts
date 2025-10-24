@@ -1,7 +1,7 @@
 // Main API Router with Versioning
 // Organizes all API routes with proper versioning
 
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { ApiResponse } from '@event-management/shared';
 import {
   createVersionedRouter,
@@ -12,11 +12,13 @@ import {
 } from '../utils/apiVersioning.js';
 
 // Import route modules (will be created/updated)
-// import authRoutes from './auth.routes.js';
-// import userRoutes from './user.routes.js';
-// import eventRoutes from './event.routes.js';
-// import clubRoutes from './club.routes.js';
-// import adminRoutes from './admin.routes.js';
+import authRoutes from './auth.routes.js';
+import userRoutes from './user.routes.js';
+import eventRoutes from './event.routes.js';
+import clubRoutes from './club.routes.js';
+import adminRoutes from './admin.routes.js';
+import devRoutes from './dev.routes.js';
+import { isDevelopment } from '../configs/env.config.js';
 
 /**
  * Main API router with versioning support
@@ -27,10 +29,9 @@ export function createApiRouter(): Router {
   // Apply global API middleware
   apiRouter.use(contentNegotiation());
   apiRouter.use(formatResponse());
-  apiRouter.use(versionCompatibility(['v1']));
 
   // API information endpoint
-  apiRouter.get('/', (req, res) => {
+  apiRouter.get('/', (req: Request, res: Response) => {
     const response: ApiResponse = {
       success: true,
       message: 'Event Management Portal API',
@@ -66,24 +67,31 @@ export function createApiRouter(): Router {
 
   // API v1 routes
   const v1Router = createVersionedRouter('v1');
+  // Apply version compatibility only to v1 routes (keep root info endpoints free of version checks)
+  v1Router.use(versionCompatibility(['v1']));
 
   // Authentication routes
-  // v1Router.use('/auth', authRoutes);
+  v1Router.use('/auth', authRoutes);
 
   // User management routes
-  // v1Router.use('/users', userRoutes);
+  v1Router.use('/users', userRoutes);
 
   // Event management routes
-  // v1Router.use('/events', eventRoutes);
+  v1Router.use('/events', eventRoutes);
 
   // Club management routes
-  // v1Router.use('/clubs', clubRoutes);
+  v1Router.use('/clubs', clubRoutes);
 
   // Admin routes
-  // v1Router.use('/admin', adminRoutes);
+  v1Router.use('/admin', adminRoutes);
+
+  // Development routes (only mounted in development)
+  if (isDevelopment) {
+    v1Router.use('/dev', devRoutes);
+  }
 
   // Temporary placeholder routes for v1
-  v1Router.get('/', (req, res) => {
+  v1Router.get('/', (req: Request, res: Response) => {
     const response: ApiResponse = {
       success: true,
       message: 'Event Management Portal API v1',

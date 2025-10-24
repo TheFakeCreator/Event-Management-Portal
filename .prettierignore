@@ -1,0 +1,39 @@
+# Ignore legacy code and large docs from Prettier during commits
+legacy/
+legacy/**
+
+# Documentation and generated files
+documentation/
+documentation/**
+README.md
+PROJECT_COMPLETION_SUMMARY.md
+PROJECT_HANDOFF_DOCUMENTATION.md
+
+# Node and build artifacts
+node_modules/
+dist/
+build/
+.next/
+coverage/
+.turbo/
+.husky/
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+.next/
+.turbo/
+
+# Legacy code - not part of migration
+legacy/
+
+# Generated files
+coverage/
+*.min.js
+*.d.ts
+
+# Config
+.husky/

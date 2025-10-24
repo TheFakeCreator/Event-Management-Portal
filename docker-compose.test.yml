@@ -1,0 +1,280 @@
+# =============================================================================
+# Docker Compose - Testing Environment
+# Event Management Portal - Comprehensive testing stack
+# =============================================================================
+
+version: '3.8'
+
+networks:
+  test-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  test-mongodb-data:
+  test-redis-data:
+
+
+services:
+  # ===========================================================================
+  # Database Services
+  # ===========================================================================
+
+  mongodb:
+    image: mongo:7.0
+    container_name: test-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test_admin
+      MONGO_INITDB_ROOT_PASSWORD: test_password_secure_2024
+      MONGO_INITDB_DATABASE: test_event_management
+    ports:
+      - "27017:27017"
+    volumes:
+      - test-mongodb-data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - test-network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    command: [ mongod, --quiet, --logpath, /dev/null ]
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: test-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - test-redis-data:/data
+    networks:
+      - test-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  # ===========================================================================
+  # Backend API Service
+  # ===========================================================================
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-test
+      args:
+        NODE_ENV: test
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+        VCS_REF: ${VCS_REF:-unknown}
+        VERSION: ${VERSION:-test}
+    container_name: test-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+
+      # Database Configuration
+      MONGODB_URI: mongodb://test_admin:test_password_secure_2024@mongodb:27017/test_event_management?authSource=admin
+      REDIS_URL: redis://redis:6379
+
+      # Authentication Configuration
+      JWT_SECRET: test_jwt_secret_key_for_ci_pipeline_testing_only_2024
+      JWT_REFRESH_SECRET: test_jwt_refresh_secret_key_for_ci_pipeline_testing_only_2024
+      JWT_EXPIRES_IN: "15m"
+      JWT_REFRESH_EXPIRES_IN: "7d"
+
+      # API Configuration
+      API_VERSION: v1
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 1000
+
+      # Email Configuration (Mock)
+      EMAIL_FROM: "test@eventmanagement.com"
+      EMAIL_HOST: "localhost"
+      EMAIL_PORT: 587
+      EMAIL_SECURE: "false"
+      EMAIL_USER: "test_user"
+      EMAIL_PASS: "test_password"
+
+      # Cloudinary Configuration (Mock)
+      CLOUDINARY_CLOUD_NAME: "test_cloud_name"
+      CLOUDINARY_API_KEY: "123456789012345"
+      CLOUDINARY_API_SECRET: "test_cloudinary_secret_key"
+
+      # Security Configuration
+      BCRYPT_SALT_ROUNDS: 10
+      SESSION_SECRET: "test_session_secret_key_for_testing"
+      CORS_ORIGIN: "http://frontend:3001,http://localhost:3001"
+
+      # Logging Configuration
+      LOG_LEVEL: "info"
+      LOG_FORMAT: "combined"
+
+      # Feature Flags
+      ENABLE_SWAGGER: "true"
+      ENABLE_METRICS: "true"
+
+      # Testing Configuration
+      TEST_DATABASE_NAME: "test_event_management"
+      TEST_USER_EMAIL: "testuser@example.com"
+      TEST_ADMIN_EMAIL: "testadmin@example.com"
+
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src:ro
+      - ./packages/shared/src:/app/packages/shared/src:ro
+    networks:
+      - test-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ===========================================================================
+  # Frontend Application Service
+  # ===========================================================================
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend-test
+      args:
+        NODE_ENV: test
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+        VCS_REF: ${VCS_REF:-unknown}
+        VERSION: ${VERSION:-test}
+
+        # Build-time environment variables
+        NEXT_PUBLIC_APP_NAME: "Event Management Portal (Test)"
+        NEXT_PUBLIC_APP_URL: "http://localhost:3001"
+        NEXT_PUBLIC_API_URL: "http://localhost:3000/api/v1"
+        NEXT_PUBLIC_WS_URL: "ws://localhost:3000"
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "test_cloud_name"
+        NEXT_PUBLIC_ENVIRONMENT: "test"
+        NEXT_PUBLIC_VERSION: "test"
+        NEXT_PUBLIC_SENTRY_DSN: ""
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ""
+
+    container_name: test-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+      PORT: 3001
+
+      # Runtime environment variables
+      NEXT_PUBLIC_APP_NAME: "Event Management Portal (Test)"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3001"
+      NEXT_PUBLIC_API_URL: "http://localhost:3000/api/v1"
+      NEXT_PUBLIC_WS_URL: "ws://localhost:3000"
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "test_cloud_name"
+      NEXT_PUBLIC_ENVIRONMENT: "test"
+
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src:ro
+      - ./packages/shared/src:/app/packages/shared/src:ro
+    networks:
+      - test-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3001/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ===========================================================================
+  # Test Runner Service
+  # ===========================================================================
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test-runner
+    container_name: test-runner
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    environment:
+      NODE_ENV: test
+
+      # Test Configuration
+      BASE_URL: "http://frontend:3001"
+      API_URL: "http://backend:3000"
+
+      # Test Database
+      MONGODB_URI: mongodb://test_admin:test_password_secure_2024@mongodb:27017/test_event_management?authSource=admin
+      REDIS_URL: redis://redis:6379
+
+      # Test User Credentials
+      TEST_USER_EMAIL: "testuser@example.com"
+      TEST_USER_PASSWORD: "TestPassword123!"
+      TEST_ADMIN_EMAIL: "testadmin@example.com"
+      TEST_ADMIN_PASSWORD: "AdminPassword123!"
+
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./coverage:/app/coverage
+      - ./__tests__:/app/__tests__:ro
+      - ./packages:/app/packages:ro
+    networks:
+      - test-network
+    profiles:
+      - testing
+    command: [ "pnpm", "test:e2e" ]
+
+  # ===========================================================================
+  # Monitoring Services (Test Environment)
+  # ===========================================================================
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: test-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=1h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.test.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - test-network
+    profiles:
+      - monitoring
+
+# ===========================================================================
+# Network Configuration
+# ===========================================================================
+
+# Custom network for service isolation and communication
+# Subnet: 172.20.0.0/16 for test environment isolation

@@ -1,0 +1,202 @@
+# =============================================================================
+# GitLeaks Configuration
+# Event Management Portal - Secret detection and prevention
+# =============================================================================
+
+title = "Event Management Portal GitLeaks Config"
+
+# Extend default GitLeaks rules with custom patterns
+extend-path = ""
+
+[extend]
+useDefault = true
+
+# Custom rules for project-specific secrets
+[[rules]]
+id = "mongodb-connection-string"
+description = "MongoDB Connection String with Credentials"
+regex = '''mongodb:\/\/[^:]+:[^@]+@[^\/]+'''
+tags = ["database", "mongodb", "credentials"]
+keywords = ["mongodb://"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT Secret Key"
+regex = '''(?i)(jwt[_-]?secret|jwt[_-]?key|token[_-]?secret)\s*[:=]\s*["\']([^"\']{20,})["\']'''
+tags = ["jwt", "secret", "authentication"]
+keywords = ["jwt_secret", "jwt-secret", "token_secret"]
+
+[[rules]]
+id = "cloudinary-credentials"
+description = "Cloudinary API Credentials"
+regex = '''(?i)(cloudinary[_-]?(api[_-]?key|api[_-]?secret|cloud[_-]?name))\s*[:=]\s*["\']([^"\']{10,})["\']'''
+tags = ["cloudinary", "api", "credentials"]
+keywords = ["cloudinary", "cloud_name", "api_key", "api_secret"]
+
+[[rules]]
+id = "redis-password"
+description = "Redis Password"
+regex = '''redis:\/\/[^:]*:[^@]+@[^\/]+'''
+tags = ["redis", "password", "database"]
+keywords = ["redis://"]
+
+[[rules]]
+id = "email-credentials"
+description = "Email Service Credentials"
+regex = '''(?i)(email[_-]?(user|pass|password)|smtp[_-]?(user|pass|password))\s*[:=]\s*["\']([^"\']{8,})["\']'''
+tags = ["email", "smtp", "credentials"]
+keywords = ["email_user", "email_pass", "smtp_user", "smtp_pass"]
+
+[[rules]]
+id = "session-secret"
+description = "Session Secret Key"
+regex = '''(?i)(session[_-]?secret|express[_-]?session[_-]?secret)\s*[:=]\s*["\']([^"\']{20,})["\']'''
+tags = ["session", "secret", "express"]
+keywords = ["session_secret", "session-secret"]
+
+[[rules]]
+id = "bcrypt-salt"
+description = "Hardcoded Bcrypt Salt"
+regex = '''\$2[abxy]?\$[0-9]{1,2}\$[A-Za-z0-9\.\/]{22}'''
+tags = ["bcrypt", "salt", "password"]
+keywords = ["$2a$", "$2b$", "$2x$", "$2y$"]
+
+[[rules]]
+id = "api-key-generic"
+description = "Generic API Key Pattern"
+regex = '''(?i)(api[_-]?key|access[_-]?key|secret[_-]?key)\s*[:=]\s*["\']([A-Za-z0-9]{20,})["\']'''
+tags = ["api", "key", "secret"]
+keywords = ["api_key", "access_key", "secret_key"]
+
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''-----BEGIN\s+(RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE KEY-----'''
+tags = ["private", "key", "certificate"]
+keywords = ["BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY"]
+
+[[rules]]
+id = "oauth-token"
+description = "OAuth Access Token"
+regex = '''(?i)(oauth|access)[_-]?token\s*[:=]\s*["\']([A-Za-z0-9\-_]{20,})["\']'''
+tags = ["oauth", "token", "access"]
+keywords = ["oauth_token", "access_token"]
+
+# Path-based allowlisting
+[allowlist]
+description = "Allowlisted files and patterns"
+files = [
+    # Documentation and example files
+    '''(.*?)README\.md$''',
+    '''(.*?)EXAMPLE\.md$''',
+    '''(.*?)\.example$''',
+    '''(.*?)\.template$''',
+    '''(.*?)\.sample$''',
+    
+    # Test files with fake credentials
+    '''(.*?)\.test\.(js|ts)$''',
+    '''(.*?)\.spec\.(js|ts)$''',
+    '''__tests__/.*''',
+    '''test/.*''',
+    '''tests/.*''',
+    
+    # Configuration templates
+    '''.env\.example$''',
+    '''.env\.template$''',
+    '''docker-compose\.test\.yml$''',
+    
+    # Package files
+    '''package\.json$''',
+    '''pnpm-lock\.yaml$''',
+    '''yarn\.lock$''',
+    
+    # Build outputs
+    '''dist/.*''',
+    '''build/.*''',
+    '''coverage/.*''',
+    '''node_modules/.*''',
+    
+    # Git and CI files
+    '''\.git/.*''',
+    '''\.github/.*''',
+    
+    # Documentation
+    '''docs/.*''',
+    '''documentation/.*''',
+]
+
+# Regex patterns to allow
+regexes = [
+    # Test and example credentials
+    '''test[_-]?(user|email|password|secret)''',
+    '''example[_-]?(user|email|password|secret)''',
+    '''fake[_-]?(user|email|password|secret)''',
+    '''demo[_-]?(user|email|password|secret)''',
+    '''mock[_-]?(user|email|password|secret)''',
+    
+    # Placeholder patterns
+    '''your[_-]?(secret|key|password)''',
+    '''enter[_-]?(your|secret|key|password)''',
+    '''replace[_-]?(with|your)''',
+    '''changeme''',
+    '''placeholder''',
+    
+    # Development and testing values
+    '''localhost''',
+    '''127\.0\.0\.1''',
+    '''development''',
+    '''dev[_-]?env''',
+    
+    # Common non-secret patterns
+    '''application/json''',
+    '''text/html''',
+    '''utf-8''',
+    '''Bearer\s+\{\{''', # Template tokens
+]
+
+# Paths to exclude from scanning
+paths = [
+    # Dependencies
+    '''node_modules/''',
+    '''vendor/''',
+    
+    # Build outputs
+    '''dist/''',
+    '''build/''',
+    '''.next/''',
+    '''out/''',
+    
+    # Test outputs
+    '''coverage/''',
+    '''test-results/''',
+    '''playwright-report/''',
+    
+    # Logs and temporary files
+    '''logs/''',
+    '''*.log''',
+    '''tmp/''',
+    '''temp/''',
+    
+    # IDE and editor files
+    '''.vscode/''',
+    '''.idea/''',
+    '''*.swp''',
+    '''*.swo''',
+    
+    # OS files
+    '''.DS_Store''',
+    '''Thumbs.db''',
+    
+    # Git files
+    '''.git/''',
+]
+
+# Entropy-based detection configuration
+[[rules]]
+id = "high-entropy-string"
+description = "High Entropy String (Potential Secret)"
+entropy = 4.5
+secretGroup = 1
+regex = '''['"][A-Za-z0-9+/=]{40,}['"]'''
+tags = ["entropy", "secret"]
+keywords = ["password", "secret", "key", "token"]

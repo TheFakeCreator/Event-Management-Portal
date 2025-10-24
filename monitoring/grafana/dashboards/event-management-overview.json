@@ -1,0 +1,299 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Event Management Portal - Overview",
+        "tags": [
+            "event-management",
+            "nodejs",
+            "mongodb"
+        ],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "30s",
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "panels": [
+            {
+                "id": 1,
+                "title": "System Overview",
+                "type": "stat",
+                "gridPos": {
+                    "h": 6,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "up{job=\"event-management-backend\"}",
+                        "legendFormat": "Backend Status"
+                    },
+                    {
+                        "expr": "up{job=\"mongodb\"}",
+                        "legendFormat": "Database Status"
+                    },
+                    {
+                        "expr": "up{job=\"redis\"}",
+                        "legendFormat": "Cache Status"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "mappings": [
+                            {
+                                "type": "value",
+                                "value": "1",
+                                "text": "UP"
+                            },
+                            {
+                                "type": "value",
+                                "value": "0",
+                                "text": "DOWN"
+                            }
+                        ],
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "HTTP Request Rate",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 6
+                },
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total[5m])",
+                        "legendFormat": "{{method}} {{status}}"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Requests/sec",
+                        "min": 0
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "title": "Response Time (95th percentile)",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 6
+                },
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+                        "legendFormat": "95th percentile"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+                        "legendFormat": "50th percentile"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Seconds",
+                        "min": 0
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "title": "Memory Usage",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 0,
+                    "y": 14
+                },
+                "targets": [
+                    {
+                        "expr": "process_resident_memory_bytes",
+                        "legendFormat": "RSS Memory"
+                    },
+                    {
+                        "expr": "nodejs_heap_size_used_bytes",
+                        "legendFormat": "Heap Used"
+                    },
+                    {
+                        "expr": "nodejs_heap_size_total_bytes",
+                        "legendFormat": "Heap Total"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Bytes",
+                        "min": 0
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "title": "CPU Usage",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 14
+                },
+                "targets": [
+                    {
+                        "expr": "rate(process_cpu_seconds_total[5m]) * 100",
+                        "legendFormat": "CPU Usage %"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Percent",
+                        "min": 0,
+                        "max": 100
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "title": "Event Loop Lag",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 14
+                },
+                "targets": [
+                    {
+                        "expr": "nodejs_eventloop_lag_seconds",
+                        "legendFormat": "Event Loop Lag"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Seconds",
+                        "min": 0
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "title": "Business Metrics",
+                "type": "stat",
+                "gridPos": {
+                    "h": 6,
+                    "w": 24,
+                    "x": 0,
+                    "y": 22
+                },
+                "targets": [
+                    {
+                        "expr": "events_total",
+                        "legendFormat": "Total Events"
+                    },
+                    {
+                        "expr": "active_users_count",
+                        "legendFormat": "Active Users"
+                    },
+                    {
+                        "expr": "rate(event_registrations_total[1h]) * 3600",
+                        "legendFormat": "Registrations/hour"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "title": "Database Metrics",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 28
+                },
+                "targets": [
+                    {
+                        "expr": "mongodb_connections{state=\"current\"}",
+                        "legendFormat": "Current Connections"
+                    },
+                    {
+                        "expr": "rate(mongodb_op_counters_total[5m])",
+                        "legendFormat": "{{type}} ops/sec"
+                    }
+                ]
+            },
+            {
+                "id": 9,
+                "title": "Error Rate",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 28
+                },
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total{status=~\"4..\"}[5m])",
+                        "legendFormat": "4xx Errors"
+                    },
+                    {
+                        "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+                        "legendFormat": "5xx Errors"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "Errors/sec",
+                        "min": 0
+                    }
+                ]
+            }
+        ],
+        "templating": {
+            "list": [
+                {
+                    "name": "instance",
+                    "type": "query",
+                    "query": "label_values(up{job=\"event-management-backend\"}, instance)",
+                    "refresh": 1
+                }
+            ]
+        },
+        "annotations": {
+            "list": [
+                {
+                    "name": "Deployments",
+                    "datasource": "prometheus",
+                    "enable": true,
+                    "expr": "changes(process_start_time_seconds[5m]) > 0",
+                    "iconColor": "blue",
+                    "tagKeys": "deployment"
+                }
+            ]
+        }
+    }
+}

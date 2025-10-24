@@ -1,0 +1,92 @@
+version: '3.8'
+
+# Development Docker Compose Override
+# This file extends docker-compose.prod.yml for development use
+# Usage: docker-compose -f docker-compose.prod.yml -f docker-compose.dev.yml up
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+      target: development
+      args:
+        - NODE_ENV=development
+    volumes:
+      # Mount source code for hot reloading
+      - ./packages/frontend:/app/packages/frontend
+      - ./packages/shared:/app/packages/shared
+      - /app/node_modules
+      - /app/packages/frontend/node_modules
+      - /app/packages/shared/node_modules
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+    ports:
+      - "3000:3000" # Expose for direct access during development
+    command: pnpm dev
+
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+      target: development
+      args:
+        - NODE_ENV=development
+    volumes:
+      # Mount source code for hot reloading
+      - ./packages/backend:/app/packages/backend
+      - ./packages/shared:/app/packages/shared
+      - /app/node_modules
+      - /app/packages/backend/node_modules
+      - /app/packages/shared/node_modules
+    environment:
+      - NODE_ENV=development
+      - JWT_SECRET=dev-secret-key-change-in-production
+      - MONGODB_URI=mongodb://mongodb:27017/event_management_dev
+    ports:
+      - "5000:5000" # Expose for direct access during development
+    command: pnpm dev
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    volumes:
+      # Use named volume for development data persistence
+      - mongodb_dev_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=event_management_dev
+
+  redis:
+    volumes:
+      # Use named volume for development data persistence
+      - redis_dev_data:/data
+
+  # Remove production services not needed in development
+  nginx:
+    profiles:
+      - production
+
+  prometheus:
+    profiles:
+      - monitoring
+
+  grafana:
+    profiles:
+      - monitoring
+
+  node-exporter:
+    profiles:
+      - monitoring
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  event_management:
+    driver: bridge

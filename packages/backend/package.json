@@ -5,16 +5,23 @@
   "main": "./dist/app.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc && node dist/app.js",
-    "dev:watch": "nodemon",
-    "start": "node dist/app.js",
-    "clean": "rm -rf dist",
+    "build": "pnpm clean && tsc",
+    "build:prod": "NODE_ENV=production pnpm clean && tsc --project tsconfig.prod.json",
+  "dev": "nodemon",
+  "dev:watch": "nodemon",
+    "start": "node --enable-source-maps dist/app.js",
+    "start:prod": "NODE_ENV=production node --enable-source-maps dist/app.js",
+    "clean": "rimraf dist coverage",
     "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.{ts,js}\"",
     "type-check": "tsc --noEmit",
     "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "healthcheck": "node dist/healthcheck.js"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -26,6 +33,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.10",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },

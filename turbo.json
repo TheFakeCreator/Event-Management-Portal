@@ -1,26 +1,165 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalDependencies": [
+    ".env",
+    ".env.local",
+    ".env.production",
+    "tsconfig.json",
+    "turbo.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI"
+  ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.test.*",
+        "!**/*.spec.*",
+        "!**/__tests__/**",
+        "!**/test/**",
+        "!**/tests/**"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "CLOUDINARY_*",
+        "EMAIL_*"
+      ]
+    },
+    "build:prod": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.test.*",
+        "!**/*.spec.*",
+        "!**/__tests__/**",
+        "!**/test/**",
+        "!**/tests/**"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "CLOUDINARY_*",
+        "EMAIL_*"
+      ]
     },
     "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "NEXTAUTH_SECRET",
+        "NEXTAUTH_URL",
+        "CLOUDINARY_*",
+        "EMAIL_*"
+      ]
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
       "cache": false,
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".eslintrc.*",
+        "eslint.config.*"
+      ]
+    },
+    "lint:fix": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".eslintrc.*",
+        "eslint.config.*"
+      ]
     },
     "type-check": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "tsconfig.json",
+        "tsconfig.*.json"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "jest.config.*",
+        "vitest.config.*",
+        "playwright.config.*"
+      ]
+    },
+    "test:unit": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "jest.config.*",
+        "vitest.config.*"
+      ]
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "playwright.config.*"
+      ]
     },
     "clean": {
       "cache": false
+    },
+    "format": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".prettierrc*",
+        "prettier.config.*"
+      ]
     }
   }
 }

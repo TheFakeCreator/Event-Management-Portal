@@ -7,14 +7,37 @@
   "packageManager": "pnpm@10.18.3",
   "scripts": {
     "build": "turbo build",
+    "build:manual": "node scripts/build.mjs",
+    "build:prod": "NODE_ENV=production turbo build:prod",
     "dev": "turbo dev",
+    "start": "turbo start",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
     "test": "turbo test",
+    "test:unit": "turbo test:unit",
+    "test:e2e": "turbo test:e2e",
     "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "turbo format",
     "type-check": "turbo type-check",
     "prepare": "husky",
-    "commit": "cz"
+    "commit": "cz",
+    "setup": "bash scripts/setup-dev.sh",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "deploy:down": "docker-compose -f docker-compose.prod.yml down",
+    "env:validate": "node scripts/validate-env.js",
+    "env:validate:prod": "node scripts/validate-env.js production",
+    "env:validate:dev": "node scripts/validate-env.js development",
+    "dev:frontend": "pnpm --filter @event-management/frontend dev",
+    "dev:backend": "pnpm --filter @event-management/backend dev",
+    "build:frontend": "pnpm --filter @event-management/frontend build",
+    "build:backend": "pnpm --filter @event-management/backend build",
+    "build:shared": "pnpm --filter @event-management/shared build",
+    "start:frontend": "pnpm --filter @event-management/frontend start",
+    "start:backend": "pnpm --filter @event-management/backend start",
+    "test:frontend": "pnpm --filter @event-management/frontend test",
+    "test:backend": "pnpm --filter @event-management/backend test",
+    "bundle:analyze": "pnpm --filter @event-management/frontend analyze"
   },
   "config": {
     "commitizen": {
@@ -22,13 +45,14 @@
     }
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
+    "packages/**/src/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix --max-warnings=10",
+      "prettier --write --ignore-path .prettierignore"
     ],
-    "*.{json,md}": [
-      "prettier --write"
-    ]
+    "packages/**/src/**/*.{json,md}": [
+      "prettier --write --ignore-path .prettierignore"
+    ],
+    "legacy/**": []
   },
   "author": "",
   "license": "ISC",
@@ -39,16 +63,16 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@eslint/js": "^9.37.0",
-    "@types/node": "^24.7.2",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
+    "@eslint/js": "^9.38.0",
+    "@types/node": "^24.9.1",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^9.37.0",
+    "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.4",
+    "lint-staged": "^16.2.5",
     "prettier": "^3.6.2",
     "turbo": "^2.5.8",
     "typescript": "^5.9.3"

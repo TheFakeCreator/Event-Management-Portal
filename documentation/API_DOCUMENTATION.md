@@ -17,23 +17,63 @@
    - [Upload Routes](#upload-routes)
    - [Public Routes](#public-routes)
 
-## Overview
+# Event Management Portal - API Documentation
 
-The Event Management Portal API provides RESTful endpoints for managing events, clubs, users, and recruitment processes. The API uses JWT-based authentication and role-based authorization.
+## 🚀 Overview
 
-**Base URL:** `http://localhost:3000` (development)
-**API Version:** v1
-**Content-Type:** `application/json`
+The Event Management Portal API provides a comprehensive, production-ready REST API for managing events, users, clubs, announcements, and administrative functions. Built with TypeScript, Express.js, and modern security practices.
 
-## Authentication
+**Base URL:** `https://api.yourdomain.com/api/v1`  
+**API Version:** 1.0.0  
+**Content-Type:** `application/json`  
+**Authentication:** JWT Bearer Token  
+**Rate Limiting:** 100 requests per 15 minutes per IP  
 
-The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require authentication.
+### Key Features
+- ✅ **100% TypeScript** with comprehensive type safety
+- ✅ **Zod Validation** for all request/response schemas
+- ✅ **JWT Authentication** with refresh token support
+- ✅ **Role-Based Access Control** (Admin, Moderator, User)
+- ✅ **Rate Limiting** and security middleware
+- ✅ **Comprehensive Error Handling** with detailed error responses
+- ✅ **OpenAPI/Swagger** documentation with live testing
+- ✅ **Request/Response Logging** with correlation IDs
+- ✅ **Health Checks** and monitoring endpoints
 
-### Authentication Headers
+## 🔐 Authentication & Security
 
+The API uses JWT-based authentication with refresh token rotation for enhanced security.
+
+### Authentication Flow
+
+1. **Login** → Receive access token (15min) + refresh token (7d)
+2. **API Calls** → Include access token in Authorization header
+3. **Token Refresh** → Use refresh token to get new access token
+4. **Logout** → Invalidate both tokens (token blacklisting)
+
+### Authorization Header Format
+```http
+Authorization: Bearer YOUR_JWT_ACCESS_TOKEN
 ```
-Authorization: Bearer <jwt_token>
-```
+
+### Security Features
+
+#### Rate Limiting
+- **Global Rate Limit**: 100 requests per 15 minutes per IP
+- **Auth Endpoints**: 5 requests per 15 minutes per IP
+- **Password Reset**: 3 requests per hour per IP
+
+#### Password Requirements
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter  
+- At least one number
+- At least one special character
+
+#### Account Security
+- **Account Lockout**: 5 failed login attempts → 15-minute lockout
+- **Password Reset**: Secure token-based password reset
+- **Email Verification**: Required for account activation
 
 ### Authentication Flow
 

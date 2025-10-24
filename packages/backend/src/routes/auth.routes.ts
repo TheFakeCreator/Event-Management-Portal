@@ -24,6 +24,8 @@ router.use('/reset-password', passwordResetRateLimit);
 
 // API Routes (JSON responses)
 router.post('/signup', registerUser);
+// Support `/register` path as an alias (frontend uses /auth/register)
+router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/logout', isAuthenticated, (req, res, next) =>
   logoutUser(req as any, res, next)

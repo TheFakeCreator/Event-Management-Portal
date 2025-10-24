@@ -1,0 +1,18 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": false,
+        "removeComments": true,
+        "declaration": true,
+        "declarationMap": false,
+        "incremental": false,
+        "tsBuildInfoFile": null
+    },
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/__tests__/**",
+        "**/test/**",
+        "**/tests/**"
+    ]
+}

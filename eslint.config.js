@@ -16,6 +16,12 @@ export default [
       'public/**',
       '.turbo/**',
       '.husky/**',
+      // Ignore legacy code - not part of migration
+      'legacy/**',
+      // Ignore test setup files with JSX in .js
+      '**/jest.setup.js',
+      '**/jest.polyfills.js',
+      '**/__mocks__/**',
       // Temporarily ignore compiled files
       '**/*.d.ts',
     ],
@@ -51,12 +57,15 @@ export default [
 
   // TypeScript configuration with relaxed rules
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
       globals: {
         console: 'readonly',

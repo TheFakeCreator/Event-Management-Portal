@@ -1,0 +1,356 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Event Management Portal - Business Metrics",
+        "tags": [
+            "event-management",
+            "business",
+            "metrics"
+        ],
+        "style": "dark",
+        "timezone": "browser",
+        "refresh": "1m",
+        "schemaVersion": 39,
+        "version": 1,
+        "time": {
+            "from": "now-24h",
+            "to": "now"
+        },
+        "templating": {
+            "list": [
+                {
+                    "name": "time_range",
+                    "type": "custom",
+                    "options": [
+                        {
+                            "text": "Last 1 hour",
+                            "value": "1h"
+                        },
+                        {
+                            "text": "Last 6 hours",
+                            "value": "6h"
+                        },
+                        {
+                            "text": "Last 24 hours",
+                            "value": "24h"
+                        },
+                        {
+                            "text": "Last 7 days",
+                            "value": "7d"
+                        },
+                        {
+                            "text": "Last 30 days",
+                            "value": "30d"
+                        }
+                    ],
+                    "current": {
+                        "text": "Last 24 hours",
+                        "value": "24h"
+                    }
+                }
+            ]
+        },
+        "panels": [
+            {
+                "id": 1,
+                "title": "Event Registrations",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(event_registrations_total[$time_range]))",
+                        "legendFormat": "Registration Rate"
+                    },
+                    {
+                        "expr": "sum(increase(event_registrations_total[$time_range]))",
+                        "legendFormat": "Total Registrations"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "registrations",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                }
+            },
+            {
+                "id": 2,
+                "title": "User Activity",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(user_logins_total[$time_range]))",
+                        "legendFormat": "Login Rate"
+                    },
+                    {
+                        "expr": "active_users_total",
+                        "legendFormat": "Active Users"
+                    },
+                    {
+                        "expr": "sum(rate(user_registrations_total[$time_range]))",
+                        "legendFormat": "New Users"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "users",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                }
+            },
+            {
+                "id": 3,
+                "title": "Event Statistics",
+                "type": "table",
+                "targets": [
+                    {
+                        "expr": "events_created_total",
+                        "legendFormat": "Total Events Created",
+                        "format": "table"
+                    },
+                    {
+                        "expr": "events_active_total",
+                        "legendFormat": "Active Events",
+                        "format": "table"
+                    },
+                    {
+                        "expr": "events_completed_total",
+                        "legendFormat": "Completed Events",
+                        "format": "table"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 0,
+                    "y": 9
+                }
+            },
+            {
+                "id": 4,
+                "title": "Club Activity",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "clubs_total",
+                        "legendFormat": "Total Clubs"
+                    },
+                    {
+                        "expr": "sum(rate(club_joins_total[$time_range]))",
+                        "legendFormat": "New Members/hr"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "palette-classic"
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 8,
+                    "y": 9
+                }
+            },
+            {
+                "id": 5,
+                "title": "File Uploads",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sum(increase(file_uploads_total[$time_range]))",
+                        "legendFormat": "Total Uploads"
+                    },
+                    {
+                        "expr": "sum(increase(file_upload_failures_total[$time_range]))",
+                        "legendFormat": "Failed Uploads"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 10
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 50
+                                }
+                            ]
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 8,
+                    "x": 16,
+                    "y": 9
+                }
+            },
+            {
+                "id": 6,
+                "title": "Popular Events (by Registrations)",
+                "type": "table",
+                "targets": [
+                    {
+                        "expr": "topk(10, sum by (event_id, event_name) (event_registrations_total))",
+                        "legendFormat": "{{event_name}}",
+                        "format": "table"
+                    }
+                ],
+                "fieldConfig": {
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "Value"
+                            },
+                            "properties": [
+                                {
+                                    "id": "displayName",
+                                    "value": "Registrations"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 10,
+                    "w": 12,
+                    "x": 0,
+                    "y": 17
+                }
+            },
+            {
+                "id": 7,
+                "title": "Email Notifications",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "sum(rate(email_sent_total[$time_range]))",
+                        "legendFormat": "Emails Sent/hour"
+                    },
+                    {
+                        "expr": "sum(rate(email_send_failures_total[$time_range]))",
+                        "legendFormat": "Email Failures/hour"
+                    }
+                ],
+                "yAxes": [
+                    {
+                        "label": "emails/hour",
+                        "show": true
+                    }
+                ],
+                "gridPos": {
+                    "h": 10,
+                    "w": 12,
+                    "x": 12,
+                    "y": 17
+                }
+            },
+            {
+                "id": 8,
+                "title": "Revenue Metrics (if applicable)",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "sum(event_revenue_total)",
+                        "legendFormat": "Total Revenue"
+                    },
+                    {
+                        "expr": "avg(event_average_price)",
+                        "legendFormat": "Average Price"
+                    }
+                ],
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "currencyUSD",
+                        "color": {
+                            "mode": "continuous-GrYlRd"
+                        }
+                    }
+                },
+                "gridPos": {
+                    "h": 6,
+                    "w": 12,
+                    "x": 0,
+                    "y": 27
+                }
+            },
+            {
+                "id": 9,
+                "title": "Geographic Distribution",
+                "type": "piechart",
+                "targets": [
+                    {
+                        "expr": "sum by (country) (user_registrations_by_country_total)",
+                        "legendFormat": "{{country}}"
+                    }
+                ],
+                "gridPos": {
+                    "h": 6,
+                    "w": 12,
+                    "x": 12,
+                    "y": 27
+                }
+            },
+            {
+                "id": 10,
+                "title": "API Usage by Endpoint",
+                "type": "table",
+                "targets": [
+                    {
+                        "expr": "topk(20, sum by (method, endpoint) (rate(http_requests_total[$time_range])))",
+                        "legendFormat": "{{method}} {{endpoint}}",
+                        "format": "table"
+                    }
+                ],
+                "fieldConfig": {
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "Value"
+                            },
+                            "properties": [
+                                {
+                                    "id": "displayName",
+                                    "value": "Requests/sec"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 33
+                }
+            }
+        ]
+    },
+    "overwrite": true
+}

@@ -1,0 +1,11 @@
+email,password,eventName,clubName
+testuser1@example.com,TestPassword123!,Tech Workshop,Technology Club
+testuser2@example.com,TestPassword123!,Music Concert,Music Society
+testuser3@example.com,TestPassword123!,Sports Event,Sports Club
+testuser4@example.com,TestPassword123!,Cultural Festival,Cultural Committee
+testuser5@example.com,TestPassword123!,Coding Competition,Computer Science Club
+testuser6@example.com,TestPassword123!,Art Exhibition,Art Club
+testuser7@example.com,TestPassword123!,Science Fair,Science Society
+testuser8@example.com,TestPassword123!,Business Seminar,Entrepreneurship Club
+testuser9@example.com,TestPassword123!,Dance Competition,Dance Club
+testuser10@example.com,TestPassword123!,Photography Workshop,Photography Club

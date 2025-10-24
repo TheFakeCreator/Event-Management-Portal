@@ -1,0 +1,217 @@
+# Infrastructure Monitoring Alerts
+# System-level alerts for infrastructure components
+
+groups:
+  - name: infrastructure-system
+    rules:
+      # Container health
+      - alert: ContainerKilled
+        expr: increase(container_last_seen[1m]) > 0 and container_last_seen < time() - 60
+        for: 0m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Container killed"
+          description: "Container {{ $labels.name }} was killed"
+          runbook_url: "https://runbooks.example.com/container-killed"
+
+      # Container CPU usage
+      - alert: ContainerHighCPUUsage
+        expr: (sum(rate(container_cpu_usage_seconds_total{name!=""}[3m])) BY (instance, name) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Container high CPU usage"
+          description: "Container {{ $labels.name }} CPU usage is above 80%"
+          runbook_url: "https://runbooks.example.com/container-high-cpu"
+
+      # Container memory usage
+      - alert: ContainerHighMemoryUsage
+        expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Container high memory usage"
+          description: "Container {{ $labels.name }} memory usage is above 80%"
+          runbook_url: "https://runbooks.example.com/container-high-memory"
+
+      # Docker daemon issues
+      - alert: DockerDaemonDown
+        expr: up{job="docker"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Docker daemon is down"
+          description: "Docker daemon on {{ $labels.instance }} is down"
+          runbook_url: "https://runbooks.example.com/docker-daemon-down"
+
+  - name: infrastructure-network
+    rules:
+      # Network connectivity issues
+      - alert: HostNetworkReceiveErrors
+        expr: rate(node_network_receive_errs_total[2m]) / rate(node_network_receive_packets_total[2m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          team: network
+        annotations:
+          summary: "Host network receive errors"
+          description: "Network interface {{ $labels.device }} has {{ $value | humanizePercentage }} receive errors"
+          runbook_url: "https://runbooks.example.com/network-errors"
+
+      - alert: HostNetworkTransmitErrors
+        expr: rate(node_network_transmit_errs_total[2m]) / rate(node_network_transmit_packets_total[2m]) > 0.01
+        for: 2m
+        labels:
+          severity: warning
+          team: network
+        annotations:
+          summary: "Host network transmit errors"
+          description: "Network interface {{ $labels.device }} has {{ $value | humanizePercentage }} transmit errors"
+          runbook_url: "https://runbooks.example.com/network-errors"
+
+      # High network bandwidth usage
+      - alert: HostHighNetworkBandwidth
+        expr: sum by (instance) ((rate(node_network_receive_bytes_total[2m]) + rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024) > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: network
+        annotations:
+          summary: "Host high network bandwidth usage"
+          description: "Network bandwidth usage is {{ $value }}MB/s on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/high-network-bandwidth"
+
+  - name: infrastructure-storage
+    rules:
+      # Filesystem readonly
+      - alert: HostFilesystemReadonly
+        expr: node_filesystem_readonly{fstype!="tmpfs"} == 1
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "Host filesystem readonly"
+          description: "Filesystem {{ $labels.mountpoint }} is readonly on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/filesystem-readonly"
+
+      # High inode usage
+      - alert: HostHighInodeUsage
+        expr: (node_filesystem_files_free{fstype!="tmpfs"} / node_filesystem_files{fstype!="tmpfs"} * 100) < 10
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Host high inode usage"
+          description: "Inode usage is above 90% on {{ $labels.instance }} filesystem {{ $labels.mountpoint }}"
+          runbook_url: "https://runbooks.example.com/high-inode-usage"
+
+      # Disk I/O high
+      - alert: HostHighDiskIOWait
+        expr: avg by (instance) (irate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Host high disk I/O wait"
+          description: "Disk I/O wait time is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.example.com/high-disk-io"
+
+  - name: infrastructure-load-balancer
+    rules:
+      # Nginx high error rate
+      - alert: NginxHighErrorRate
+        expr: rate(nginx_http_requests_total{status=~"4..|5.."}[5m]) / rate(nginx_http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Nginx high error rate"
+          description: "Nginx error rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://runbooks.example.com/nginx-high-errors"
+
+      # Nginx connection issues
+      - alert: NginxHighActiveConnections
+        expr: nginx_connections_active > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Nginx high active connections"
+          description: "Nginx has {{ $value }} active connections"
+          runbook_url: "https://runbooks.example.com/nginx-high-connections"
+
+  - name: infrastructure-ssl
+    rules:
+      # SSL certificate expiry
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 0m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+          runbook_url: "https://runbooks.example.com/ssl-expiry"
+
+      - alert: SSLCertificateExpired
+        expr: probe_ssl_earliest_cert_expiry - time() <= 0
+        for: 0m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "SSL certificate expired"
+          description: "SSL certificate for {{ $labels.instance }} has expired"
+          runbook_url: "https://runbooks.example.com/ssl-expired"
+
+  - name: infrastructure-monitoring
+    rules:
+      # Prometheus targets down
+      - alert: PrometheusTargetMissing
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+          team: monitoring
+        annotations:
+          summary: "Prometheus target missing"
+          description: "Target {{ $labels.job }} on {{ $labels.instance }} is down"
+          runbook_url: "https://runbooks.example.com/target-down"
+
+      # Prometheus configuration reload failure
+      - alert: PrometheusConfigReloadFailure
+        expr: prometheus_config_last_reload_successful != 1
+        for: 5m
+        labels:
+          severity: warning
+          team: monitoring
+        annotations:
+          summary: "Prometheus configuration reload failure"
+          description: "Prometheus configuration reload has failed"
+          runbook_url: "https://runbooks.example.com/config-reload-failure"
+
+      # Grafana dashboard issues
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          team: monitoring
+        annotations:
+          summary: "Grafana is down"
+          description: "Grafana instance is not reachable"
+          runbook_url: "https://runbooks.example.com/grafana-down"

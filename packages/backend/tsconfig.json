@@ -5,7 +5,7 @@
     "rootDir": "./src",
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
@@ -16,10 +16,31 @@
     "incremental": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+  "baseUrl": "../../",
+    "paths": {
+      "@event-management/shared": [
+        "packages/shared/src/index"
+      ],
+      "@event-management/shared/*": [
+        "packages/shared/src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"

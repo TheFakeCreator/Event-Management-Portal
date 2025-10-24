@@ -181,3 +181,61 @@ package-lock.json
 local.md
 notes.md
 todo.md
+
+# Development bypass files (security)
+dev-bypass.json
+dev-user.json
+bypass-*.json
+test-users.json
+
+# Monitoring and performance data
+monitoring/data/
+monitoring/logs/
+performance/reports/
+performance/results/
+lighthouse-reports/
+
+# Docker volumes and data
+docker-data/
+postgres-data/
+redis-data/
+mongodb-data/
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+ssl/
+certs/
+
+# Temporary development files
+*.tmp
+*.temp
+.scratch/
+scratch.*
+
+# OS specific
+*.swp
+*.swo
+.fuse_hidden*
+
+# IDE specific
+.fleet/
+.vscode/settings.json.backup
+
+# Performance and profiling
+*.prof
+*.heapsnapshot
+*.cpuprofile
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# Kubernetes
+*.kubeconfig
+k8s-secrets.*

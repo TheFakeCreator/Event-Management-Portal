@@ -1,0 +1,102 @@
+{
+    "name": "event-management-portal",
+    "level": "info",
+    "formatters": {
+        "console": {
+            "colorize": true,
+            "timestamp": true,
+            "level": true,
+            "message": true,
+            "meta": true
+        },
+        "file": {
+            "timestamp": true,
+            "level": true,
+            "message": true,
+            "meta": true,
+            "json": true
+        }
+    },
+    "transports": {
+        "console": {
+            "level": "debug",
+            "formatter": "console",
+            "handleExceptions": true,
+            "handleRejections": true
+        },
+        "file": {
+            "level": "info",
+            "filename": "logs/app.log",
+            "maxsize": 5242880,
+            "maxFiles": 5,
+            "formatter": "file",
+            "handleExceptions": true,
+            "handleRejections": true
+        },
+        "error": {
+            "level": "error",
+            "filename": "logs/error.log",
+            "maxsize": 5242880,
+            "maxFiles": 5,
+            "formatter": "file",
+            "handleExceptions": true,
+            "handleRejections": true
+        },
+        "audit": {
+            "level": "info",
+            "filename": "logs/audit.log",
+            "maxsize": 5242880,
+            "maxFiles": 10,
+            "formatter": "file"
+        }
+    },
+    "environments": {
+        "development": {
+            "level": "debug",
+            "transports": [
+                "console"
+            ]
+        },
+        "test": {
+            "level": "error",
+            "transports": [
+                "console"
+            ]
+        },
+        "production": {
+            "level": "info",
+            "transports": [
+                "console",
+                "file",
+                "error",
+                "audit"
+            ]
+        }
+    },
+    "metadata": {
+        "service": "event-management-portal",
+        "version": "1.0.0",
+        "environment": "${NODE_ENV}",
+        "hostname": "${HOSTNAME}",
+        "pid": "${PID}"
+    },
+    "filters": {
+        "sanitize": {
+            "password": "***REDACTED***",
+            "token": "***REDACTED***",
+            "secret": "***REDACTED***",
+            "apiKey": "***REDACTED***",
+            "authorization": "***REDACTED***"
+        }
+    },
+    "correlation": {
+        "enabled": true,
+        "header": "x-correlation-id",
+        "property": "correlationId"
+    },
+    "performance": {
+        "enabled": true,
+        "slowQueryThreshold": 1000,
+        "slowRequestThreshold": 5000
+    }
+}

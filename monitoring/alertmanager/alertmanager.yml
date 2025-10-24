@@ -1,0 +1,227 @@
+# Alertmanager Configuration
+# Handles alert routing, grouping, and notifications
+
+global:
+  # SMTP configuration for email alerts
+  smtp_smarthost: '${SMTP_HOST:-localhost:587}'
+  smtp_from: '${ALERT_EMAIL_FROM:-alerts@eventmanagement.com}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+  
+  # Slack webhook URL
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  
+  # PagerDuty integration key
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route tree for alert routing
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'default-receiver'
+  
+  # Route configuration based on severity and team
+  routes:
+    # Critical alerts go to PagerDuty and Slack
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 1s
+      group_interval: 1s
+      repeat_interval: 5m
+      
+    # Security alerts
+    - match:
+        team: security
+      receiver: 'security-team'
+      group_wait: 30s
+      repeat_interval: 15m
+      
+    # Database alerts
+    - match:
+        team: database
+      receiver: 'database-team'
+      group_wait: 30s
+      repeat_interval: 30m
+      
+    # Infrastructure alerts
+    - match:
+        team: platform
+      receiver: 'platform-team'
+      group_wait: 1m
+      repeat_interval: 1h
+      
+    # Business metrics (info level)
+    - match:
+        severity: info
+      receiver: 'business-metrics'
+      group_wait: 5m
+      repeat_interval: 24h
+
+# Alert inhibition rules
+inhibit_rules:
+  # Stop warning alerts when critical alerts are firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+    
+  # Stop individual service alerts when the whole application is down
+  - source_match:
+      alertname: 'ApplicationDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['instance']
+
+# Receiver configurations
+receivers:
+  # Default receiver for non-critical alerts
+  - name: 'default-receiver'
+    email_configs:
+      - to: '${DEFAULT_EMAIL:-devops@eventmanagement.com}'
+        subject: '[Event Management] {{ .GroupLabels.alertname }} - {{ .Status | title }}'
+        body: |
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Environment:** {{ .Labels.environment }}
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          **Runbook:** {{ .Annotations.runbook_url }}
+          {{ end }}
+        headers:
+          Subject: '[Event Management] {{ .GroupLabels.alertname }} - {{ .Status | title }}'
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    pagerduty_configs:
+      - routing_key: '${PAGERDUTY_ROUTING_KEY}'
+        description: '{{ .GroupLabels.alertname }}: {{ .Annotations.summary }}'
+        severity: 'critical'
+        details:
+          environment: '{{ .GroupLabels.environment }}'
+          runbook: '{{ .Annotations.runbook_url }}'
+          
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-critical'
+        color: 'danger'
+        title: '🚨 CRITICAL ALERT: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **Description:** {{ .Annotations.description }}
+          **Environment:** {{ .Labels.environment }}
+          **Runbook:** {{ .Annotations.runbook_url }}
+          {{ end }}
+        actions:
+          - type: button
+            text: 'View in Grafana'
+            url: '${GRAFANA_URL}/d/application-overview'
+          - type: button
+            text: 'Runbook'
+            url: '{{ .Annotations.runbook_url }}'
+            
+    email_configs:
+      - to: '${CRITICAL_EMAIL:-oncall@eventmanagement.com}'
+        subject: '🚨 CRITICAL: [Event Management] {{ .GroupLabels.alertname }}'
+        body: |
+          CRITICAL ALERT TRIGGERED
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Environment: {{ .Labels.environment }}
+          Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          Runbook: {{ .Annotations.runbook_url }}
+          
+          Immediate action required!
+          {{ end }}
+
+  # Security team alerts
+  - name: 'security-team'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-security'
+        color: 'warning'
+        title: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Environment:** {{ .Labels.environment }}
+          {{ end }}
+        
+    email_configs:
+      - to: '${SECURITY_EMAIL:-security@eventmanagement.com}'
+        subject: '🔒 [Security] {{ .GroupLabels.alertname }}'
+        body: |
+          Security Alert Triggered
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Environment: {{ .Labels.environment }}
+          Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          Runbook: {{ .Annotations.runbook_url }}
+          {{ end }}
+
+  # Database team alerts
+  - name: 'database-team'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-database'
+        color: 'warning'
+        title: '💾 Database Alert: {{ .GroupLabels.alertname }}'
+        
+    email_configs:
+      - to: '${DATABASE_EMAIL:-dba@eventmanagement.com}'
+        subject: '💾 [Database] {{ .GroupLabels.alertname }}'
+
+  # Platform team alerts  
+  - name: 'platform-team'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#alerts-platform'
+        color: 'warning'
+        title: '⚙️ Platform Alert: {{ .GroupLabels.alertname }}'
+        
+    email_configs:
+      - to: '${PLATFORM_EMAIL:-platform@eventmanagement.com}'
+        subject: '⚙️ [Platform] {{ .GroupLabels.alertname }}'
+
+  # Business metrics (low priority)
+  - name: 'business-metrics'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#business-metrics'
+        color: 'good'
+        title: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        
+    email_configs:
+      - to: '${BUSINESS_EMAIL:-analytics@eventmanagement.com}'
+        subject: '📊 [Business Metrics] {{ .GroupLabels.alertname }}'
+
+# Time-based muting (optional)
+mute_time_intervals:
+  - name: 'maintenance-window'
+    time_intervals:
+      - times:
+          - start_time: '02:00'
+            end_time: '06:00'
+        weekdays: ['sunday']
+        
+  - name: 'business-hours-only'
+    time_intervals:
+      - times:
+          - start_time: '09:00'
+            end_time: '17:00'
+        weekdays: ['monday:friday']

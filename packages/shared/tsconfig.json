@@ -8,8 +8,17 @@
     "sourceMap": true,
     "noEmit": false,
     "composite": true,
-    "incremental": true
+    "incremental": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES2020",
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

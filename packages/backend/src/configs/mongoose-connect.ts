@@ -73,7 +73,9 @@ export const closeDatabaseConnection = async (): Promise<void> => {
   }
 };
 
-// Auto-connect when this module is imported
-connectToDatabase();
+// NOTE: We intentionally DO NOT auto-connect here anymore.
+// This file provides a helper `connectToDatabase` and `closeDatabaseConnection`.
+// Call `connectToDatabase()` explicitly from your application bootstrap (e.g. app.ts)
+// to avoid hidden side-effects and to make startup/shutdown predictable.
 
 export default mongoose.connection;

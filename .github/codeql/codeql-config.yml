@@ -1,0 +1,164 @@
+# =============================================================================
+# CodeQL Security Analysis Configuration
+# Event Management Portal - Static security analysis settings
+# =============================================================================
+
+name: "Event Management Portal Security Analysis"
+
+# Disable default CodeQL queries and use custom security-focused queries
+disable-default-queries: false
+
+# Additional query packs to include
+queries:
+  - name: security-extended
+    uses: security-extended
+  - name: security-and-quality
+    uses: security-and-quality
+
+# Path filters for analysis
+paths:
+  - packages/backend/src
+  - packages/frontend/src
+  - packages/shared/src
+  - controllers
+  - models
+  - middlewares
+  - routes
+  - utils
+
+# Paths to ignore during analysis
+paths-ignore:
+  - node_modules
+  - dist
+  - build
+  - coverage
+  - test-results
+  - __tests__
+  - "**/*.test.js"
+  - "**/*.test.ts"
+  - "**/*.spec.js"
+  - "**/*.spec.ts"
+  - "**/*.d.ts"
+  - public
+  - docs
+  - documentation
+
+# Build configuration for compiled languages
+build:
+  # Commands to run before analysis (if needed)
+  commands:
+    - "pnpm install --frozen-lockfile"
+    - "pnpm build || echo 'Build failed, analyzing source'"
+
+# Query filters and customization
+query-filters:
+  # Include high and critical severity queries
+  - include:
+      kind: 
+        - problem
+        - path-problem
+      tags:
+        - security
+      severity:
+        - error
+        - warning
+
+# Custom security rules
+rules:
+  # SQL Injection Detection
+  - id: sql-injection
+    name: "Potential SQL Injection"
+    description: "Detects potential SQL injection vulnerabilities"
+    severity: error
+    tags: [security, injection]
+
+  # XSS Detection  
+  - id: xss-vulnerability
+    name: "Cross-Site Scripting (XSS)"
+    description: "Detects potential XSS vulnerabilities"
+    severity: error
+    tags: [security, xss]
+
+  # Insecure Random Number Generation
+  - id: weak-crypto
+    name: "Weak Cryptographic Practices"
+    description: "Detects use of weak cryptographic functions"
+    severity: warning
+    tags: [security, crypto]
+
+  # Hardcoded Secrets
+  - id: hardcoded-secrets
+    name: "Hardcoded Secrets"
+    description: "Detects hardcoded secrets and credentials"
+    severity: error
+    tags: [security, secrets]
+
+  # Path Traversal
+  - id: path-traversal
+    name: "Path Traversal Vulnerability"
+    description: "Detects potential path traversal attacks"
+    severity: error
+    tags: [security, path-traversal]
+
+  # Command Injection
+  - id: command-injection
+    name: "Command Injection"
+    description: "Detects potential command injection vulnerabilities"
+    severity: error
+    tags: [security, injection]
+
+  # LDAP Injection
+  - id: ldap-injection
+    name: "LDAP Injection"
+    description: "Detects potential LDAP injection vulnerabilities"
+    severity: error
+    tags: [security, injection]
+
+# Framework-specific configurations
+framework-configs:
+  express:
+    # Express.js specific security patterns
+    security-middleware: true
+    helmet-usage: true
+    cors-configuration: true
+    
+  mongoose:
+    # MongoDB/Mongoose security patterns
+    injection-prevention: true
+    schema-validation: true
+    
+  jwt:
+    # JWT security patterns
+    secret-management: true
+    token-expiration: true
+    
+  bcrypt:
+    # Password hashing security
+    salt-rounds: 12
+    
+# File extensions to analyze
+extensions:
+  - .js
+  - .jsx  
+  - .ts
+  - .tsx
+  - .json
+  - .yml
+  - .yaml
+
+# Security-focused analysis options
+analysis-options:
+  # Enable data flow analysis for security vulnerabilities
+  dataflow: true
+  
+  # Enable taint tracking for injection vulnerabilities
+  taint-tracking: true
+  
+  # Maximum analysis depth for performance
+  max-depth: 10
+  
+  # Timeout for analysis (in seconds)
+  timeout: 1800
+  
+  # Memory limit for analysis
+  memory-limit: 4G

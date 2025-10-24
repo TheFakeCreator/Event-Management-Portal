@@ -173,13 +173,17 @@ export function createVersionInfoRouter(): Router {
  */
 export function contentNegotiation() {
   return (req: any, res: any, next: any) => {
-    const acceptHeader = req.headers.accept || 'application/json';
-
-    // Default to JSON for API responses
+    // Use Express content negotiation to pick the best response format.
+    // Prefer JSON unless the client explicitly prefers XML or YAML.
     if (!res.locals.responseFormat) {
-      if (acceptHeader.includes('application/xml')) {
+      // Explicitly prefer JSON when the client accepts it. Browsers often list
+      // application/xml in Accept headers which can accidentally cause XML to
+      // be selected. Check JSON first, then XML/YAML, else default to JSON.
+      if (req.accepts('json')) {
+        res.locals.responseFormat = 'json';
+      } else if (req.accepts('xml')) {
         res.locals.responseFormat = 'xml';
-      } else if (acceptHeader.includes('application/yaml')) {
+      } else if (req.accepts('yaml')) {
         res.locals.responseFormat = 'yaml';
       } else {
         res.locals.responseFormat = 'json';

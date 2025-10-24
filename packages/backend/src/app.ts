@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, Application } from 'express';
+import express, { Request, Response, Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -7,15 +7,36 @@ import { env, isDevelopment } from './configs/env.config.js';
 import { setupSwagger } from './configs/swagger.js';
 import { createApiRouter } from './routes/api.routes.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
+import { connectDatabase } from './configs/database.config.js';
 
 const app: Application = express();
 const PORT = env.PORT;
 
 // Security middleware
 app.use(helmet());
+// CORS: support multiple origins (comma-separated in env) and dynamic dev origins
+const allowedOrigins = (env.CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g., mobile apps, curl)
+      if (!origin) return callback(null, true);
+
+      // Allow explicit configured origins
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      // During development, allow localhost on any port (useful when frontend runs on different port)
+      if (isDevelopment && /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+
+      // Otherwise reject
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
@@ -25,8 +46,10 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Setup API documentation
-setupSwagger(app);
+// Setup API documentation in development only
+if (isDevelopment) {
+  setupSwagger(app);
+}
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
@@ -43,23 +66,23 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // API routes will be added here
-app.get('/api', (req: Request, res: Response) => {
-  const response: ApiResponse = {
-    success: true,
-    message: 'Event Management API v1.0.0',
-    data: {
-      endpoints: [
-        '/health - Health check',
-        '/api - API information',
-        '/api-docs - Interactive API documentation',
-        '/api-docs.json - OpenAPI specification',
-        '/api/v1 - API version 1 endpoints',
-        '/api/versions - Version information',
-      ],
-    },
-  };
-  res.json(response);
-});
+// app.get('/api', (req: Request, res: Response) => {
+//   const response: ApiResponse = {
+//     success: true,
+//     message: 'Event Management API v1.0.0',
+//     data: {
+//       endpoints: [
+//         '/health - Health check',
+//         '/api - API information',
+//         '/api-docs - Interactive API documentation',
+//         '/api-docs.json - OpenAPI specification',
+//         '/api/v1 - API version 1 endpoints',
+//         '/api/versions - Version information',
+//       ],
+//     },
+//   };
+//   res.json(response);
+// });
 
 // Mount API routes with versioning
 app.use('/api', createApiRouter());
@@ -70,14 +93,26 @@ app.use(notFoundHandler);
 // Error handler
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
-  console.log(
-    `📖 API documentation available at http://localhost:${PORT}/api-docs`
-  );
-  console.log(`🔍 API information available at http://localhost:${PORT}/api`);
-  console.log(`❤️  Health check available at http://localhost:${PORT}/health`);
-});
+// Start server after establishing database connection
+(async () => {
+  try {
+    await connectDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+      console.log(
+        `📖 API documentation available at http://localhost:${PORT}/api-docs`
+      );
+      console.log(
+        `🔍 API information available at http://localhost:${PORT}/api`
+      );
+      console.log(
+        `❤️  Health check available at http://localhost:${PORT}/health`
+      );
+    });
+  } catch (error) {
+    console.error('Failed to start server due to DB connection error:', error);
+    process.exit(1);
+  }
+})();
 
 export default app;

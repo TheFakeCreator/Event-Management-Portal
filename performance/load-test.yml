@@ -1,0 +1,272 @@
+# =============================================================================
+# Performance Testing Configuration
+# Event Management Portal - Load Testing with Artillery
+# =============================================================================
+
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+    
+    # Ramp-up phase
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: "Ramp-up load"
+    
+    # Sustained load phase
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+    
+    # Peak load phase
+    - duration: 120
+      arrivalRate: 50
+      rampTo: 100
+      name: "Peak load"
+    
+    # Cool-down phase
+    - duration: 60
+      arrivalRate: 100
+      rampTo: 10
+      name: "Cool-down"
+  
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      User-Agent: 'Artillery/Performance-Test'
+  
+  # Performance thresholds
+  ensure:
+    maxErrorRate: 1  # Max 1% error rate
+    maxVusers: 100   # Maximum concurrent users
+    
+  # Plugins for enhanced metrics
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+    
+  # Environment-specific configuration
+  environments:
+    test:
+      target: 'http://localhost:3000'
+    staging:
+      target: 'https://staging.eventmanagement.com'
+    production:
+      target: 'https://eventmanagement.com'
+  
+  # Test data configuration
+  payload:
+    path: "./performance/test-data.csv"
+    fields:
+      - "email"
+      - "password"
+      - "eventName"
+      - "clubName"
+
+# =============================================================================
+# Test Scenarios
+# =============================================================================
+
+scenarios:
+  # ===========================================================================
+  # Authentication Flow Testing
+  # ===========================================================================
+  - name: "User Authentication Flow"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/v1/auth/register"
+          headers:
+            Content-Type: "application/json"
+          json:
+            email: "loadtest-{{ $randomString() }}@example.com"
+            password: "LoadTest123!"
+            firstName: "Load"
+            lastName: "Test"
+            phoneNumber: "+1234567890"
+          capture:
+            - json: "$.data.user.id"
+              as: "userId"
+            - json: "$.data.tokens.access.token"
+              as: "accessToken"
+          expect:
+            - statusCode: 201
+      
+      - post:
+          url: "/api/v1/auth/login"
+          headers:
+            Content-Type: "application/json"
+          json:
+            email: "loadtest-{{ userId }}@example.com"
+            password: "LoadTest123!"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+      
+      - get:
+          url: "/api/v1/auth/profile"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+          expect:
+            - statusCode: 200
+
+  # ===========================================================================
+  # Event Management Flow
+  # ===========================================================================
+  - name: "Event Management Operations"
+    weight: 35
+    flow:
+      # Login first
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.data.tokens.access.token"
+              as: "accessToken"
+          expect:
+            - statusCode: 200
+      
+      # Browse events
+      - get:
+          url: "/api/v1/events"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 1
+      
+      # Get specific event
+      - get:
+          url: "/api/v1/events/{{ $randomInt(1, 100) }}"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+          expect:
+            - statusCode: [200, 404]
+      
+      # Search events
+      - get:
+          url: "/api/v1/events/search?q={{ eventName }}"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+      
+      # Create event (for organizers)
+      - post:
+          url: "/api/v1/events"
+          headers:
+            Authorization: "Bearer {{ accessToken }}"
+            Content-Type: "application/json"
+          json:
+            title: "Load Test Event {{ $randomString() }}"
+            description: "Performance testing event"
+            startDate: "2024-12-31T18:00:00.000Z"
+            endDate: "2024-12-31T22:00:00.000Z"
+            location: "Load Test Venue"
+            maxAttendees: 100
+            registrationDeadline: "2024-12-30T23:59:59.000Z"
+            eventType: "workshop"
+            isPublic: true
+          expect:
+            - statusCode: [201, 403]
+
+  # ===========================================================================
+  # Club Management Flow
+  # ===========================================================================
+  - name: "Club Operations"
+    weight: 20
+    flow:
+      # Browse clubs
+      - get:
+          url: "/api/v1/clubs"
+          expect:
+            - statusCode: 200
+      
+      - think: 1
+      
+      # Get specific club
+      - get:
+          url: "/api/v1/clubs/{{ $randomInt(1, 50) }}"
+          expect:
+            - statusCode: [200, 404]
+      
+      # Search clubs
+      - get:
+          url: "/api/v1/clubs/search?q={{ clubName }}"
+          expect:
+            - statusCode: 200
+
+  # ===========================================================================
+  # Public API Endpoints
+  # ===========================================================================
+  - name: "Public Endpoints"
+    weight: 15
+    flow:
+      # Health check
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+      
+      # API health
+      - get:
+          url: "/api/v1/health"
+          expect:
+            - statusCode: 200
+      
+      # Get public events
+      - get:
+          url: "/api/v1/events/public"
+          expect:
+            - statusCode: 200
+      
+      # Get announcements
+      - get:
+          url: "/api/v1/announcements/public"
+          expect:
+            - statusCode: 200
+
+  # ===========================================================================
+  # Static Content and Assets
+  # ===========================================================================
+  - name: "Static Content Access"
+    weight: 5
+    flow:
+      # Access static assets (simulated)
+      - get:
+          url: "/api/v1/events?limit=10&page=1"
+          expect:
+            - statusCode: 200
+      
+      - think: 0.5
+      
+      - get:
+          url: "/api/v1/clubs?limit=10&page=1"
+          expect:
+            - statusCode: 200
+
+# =============================================================================
+# Performance Monitoring Configuration
+# =============================================================================
+
+# Custom metrics collection
+before:
+  flow:
+    - log: "Starting performance test run"
+
+after:
+  flow:
+    - log: "Performance test completed"
+
+# Error handling and reporting
+processor: "./performance/processor.js"

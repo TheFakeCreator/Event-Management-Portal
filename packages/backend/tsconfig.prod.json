@@ -1,0 +1,20 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "sourceMap": false,
+        "removeComments": true,
+        "declaration": false,
+        "declarationMap": false,
+        "incremental": false,
+        "tsBuildInfoFile": null
+    },
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/__tests__/**",
+        "**/test/**",
+        "**/tests/**",
+        "src/test-utils/**",
+        "jest.config.*"
+    ]
+}

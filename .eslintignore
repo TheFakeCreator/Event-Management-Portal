@@ -1,0 +1,16 @@
+# Ignore legacy code and large docs from ESLint
+legacy/
+legacy/**
+
+# Docs and other large text files
+documentation/
+documentation/**
+
+# Build artifacts
+node_modules/
+dist/
+build/
+.next/
+coverage/
+.turbo/
+.husky/

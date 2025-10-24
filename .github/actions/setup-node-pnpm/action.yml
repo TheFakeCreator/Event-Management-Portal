@@ -1,0 +1,86 @@
+# =============================================================================
+# Reusable Action: Setup Node.js and pnpm
+# Event Management Portal - Standardized environment setup
+# =============================================================================
+
+name: 'Setup Node.js and pnpm'
+description: 'Setup Node.js environment with pnpm and caching for Event Management Portal'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+  pnpm-version:
+    description: 'pnpm version to use'
+    required: false
+    default: '10.18.3'
+  cache-dependency-path:
+    description: 'Path to dependency files for cache key'
+    required: false
+    default: '**/pnpm-lock.yaml'
+  install-dependencies:
+    description: 'Whether to install dependencies'
+    required: false
+    default: 'true'
+  frozen-lockfile:
+    description: 'Use frozen lockfile for dependency installation'
+    required: false
+    default: 'true'
+
+outputs:
+  cache-hit:
+    description: 'Whether cache was hit'
+    value: ${{ steps.pnpm-cache.outputs.cache-hit }}
+  pnpm-store-path:
+    description: 'pnpm store directory path'
+    value: ${{ steps.pnpm-store.outputs.path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Setup pnpm ${{ inputs.pnpm-version }}
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.pnpm-version }}
+        run_install: false
+
+    - name: Get pnpm store directory
+      id: pnpm-store
+      shell: bash
+      run: |
+        echo "path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+    - name: Setup pnpm cache
+      id: pnpm-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-store.outputs.path }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles(inputs.cache-dependency-path) }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      if: inputs.install-dependencies == 'true'
+      shell: bash
+      run: |
+        if [ "${{ inputs.frozen-lockfile }}" == "true" ]; then
+          pnpm install --frozen-lockfile
+        else
+          pnpm install
+        fi
+
+    - name: Verify installation
+      if: inputs.install-dependencies == 'true'
+      shell: bash
+      run: |
+        echo "Node.js version: $(node --version)"
+        echo "pnpm version: $(pnpm --version)"
+        echo "Installed packages:"
+        pnpm list --depth=0 || true
