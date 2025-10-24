@@ -74,6 +74,18 @@ export const useNotificationStore = create<NotificationState>()(
             (notification.type === 'error' ? 6000 : 4000),
         };
 
+        // Deduplicate notifications with same title + message
+        const existing = get().notifications.find(
+          (n) =>
+            n.title === newNotification.title &&
+            n.message === newNotification.message
+        );
+
+        if (existing) {
+          // If already exists, return existing id and don't add duplicate
+          return existing.id;
+        }
+
         set(
           (state) => ({
             notifications: [...state.notifications, newNotification],

@@ -34,12 +34,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       ...toastProps,
     };
 
-    setToasts((prev) => [...prev, newToast]);
+    setToasts((prev) => {
+      // Deduplicate by title + description
+      const exists = prev.some(
+        (t) =>
+          t.title === newToast.title && t.description === newToast.description
+      );
+      if (exists) return prev;
+      return [...prev, newToast];
+    });
 
-    // Auto dismiss after duration
+    // Auto dismiss after duration using setToasts directly (avoid relying on removeToast closure)
     if (newToast.duration && newToast.duration > 0) {
       setTimeout(() => {
-        removeToast(id);
+        setToasts((prev) => prev.filter((t) => t.id !== id));
       }, newToast.duration);
     }
   }, []);
