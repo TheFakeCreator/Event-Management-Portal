@@ -33,7 +33,7 @@ export default function FeaturesPage() {
             This page lists notable features and changes shipped with each
             release. You can edit this file to add the next release notes or
             switch to a content-driven approach (markdown or a small CMS) if
-            you'd like non-developers to publish releases.
+            you&apos;d like non-developers to publish releases.
           </p>
 
           <div className="space-y-8">

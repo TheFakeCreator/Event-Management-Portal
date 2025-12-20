@@ -17,7 +17,7 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-  "baseUrl": "../../",
+    "baseUrl": "../../",
     "paths": {
       "@event-management/shared": [
         "packages/shared/src/index"
@@ -25,7 +25,7 @@
       "@event-management/shared/*": [
         "packages/shared/src/*"
       ]
-    }
+    },
   },
   "include": [
     "src/**/*"

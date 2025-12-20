@@ -33,7 +33,6 @@ const socialLinks = [
     href: 'https://github.com/TheFakeCreator/Event-Management-Portal',
     label: 'GitHub',
   },
-  { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
   { icon: Mail, href: 'mailto:nitrreventportal@gmail.com', label: 'Email' },
 ];
 
@@ -62,17 +61,17 @@ export function Footer() {
 
             {/* Contact Info */}
             <div className="space-y-2 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4" />
                 <span>123 Event Street, City, State 12345</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4" />
                 <span>+1 (555) 123-4567</span>
-              </div>
+              </div> */}
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span>contact@eventmanagement.com</span>
+                <span>nitrreventportal@gmail.com</span>
               </div>
             </div>
           </div>

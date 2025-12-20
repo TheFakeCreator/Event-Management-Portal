@@ -2,8 +2,8 @@ import express, { Request, Response, Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { ApiResponse } from '@event-management/shared';
-import { env, isDevelopment } from './configs/env.config.js';
+import { ApiResponse } from '@event-management/shared'; // Import ApiResponse type
+import { env, isDevelopment } from './configs/env.config.js'; // Import environment configs
 import { setupSwagger } from './configs/swagger.js';
 import { createApiRouter } from './routes/api.routes.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
@@ -64,25 +64,6 @@ app.get('/health', (req: Request, res: Response) => {
   };
   res.json(response);
 });
-
-// API routes will be added here
-// app.get('/api', (req: Request, res: Response) => {
-//   const response: ApiResponse = {
-//     success: true,
-//     message: 'Event Management API v1.0.0',
-//     data: {
-//       endpoints: [
-//         '/health - Health check',
-//         '/api - API information',
-//         '/api-docs - Interactive API documentation',
-//         '/api-docs.json - OpenAPI specification',
-//         '/api/v1 - API version 1 endpoints',
-//         '/api/versions - Version information',
-//       ],
-//     },
-//   };
-//   res.json(response);
-// });
 
 // Mount API routes with versioning
 app.use('/api', createApiRouter());

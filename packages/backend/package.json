@@ -7,8 +7,8 @@
   "scripts": {
     "build": "pnpm clean && tsc",
     "build:prod": "NODE_ENV=production pnpm clean && tsc --project tsconfig.prod.json",
-  "dev": "nodemon",
-  "dev:watch": "nodemon",
+    "dev": "nodemon",
+    "dev:watch": "nodemon",
     "start": "node --enable-source-maps dist/app.js",
     "start:prod": "NODE_ENV=production node --enable-source-maps dist/app.js",
     "clean": "rimraf dist coverage",
@@ -35,7 +35,7 @@
     "nodemon": "^3.1.10",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "@event-management/shared": "workspace:*",

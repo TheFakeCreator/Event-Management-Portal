@@ -27,6 +27,12 @@ import {
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  useEvent,
+  useRegisterForEvent,
+  useUnregisterFromEvent,
+} from '@/hooks/useEvents';
+import { toast } from 'sonner';
 
 // Mock event data (this would come from API)
 const mockEvent = {
@@ -118,24 +124,30 @@ export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
-  const [event, setEvent] = useState(mockEvent);
-  const [loading, setLoading] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+
+  const eventId = params.id as string;
+
+  // Fetch event data using React Query hook
+  const { data: eventData, isLoading, error } = useEvent(eventId);
+  const registerMutation = useRegisterForEvent();
+  const unregisterMutation = useUnregisterFromEvent();
+
   const [isFavorited, setIsFavorited] = useState(false);
   const [activeTab, setActiveTab] = useState<
     'overview' | 'agenda' | 'requirements'
   >('overview');
 
-  const eventId = params.id as string;
+  // Check if user is registered for the event
+  const isRegistered = eventData?.isRegistered || false;
+  const event = eventData || mockEvent;
+  const registering =
+    registerMutation.isPending || unregisterMutation.isPending;
 
   useEffect(() => {
-    // TODO: Fetch event data from API
-    // fetchEvent(eventId)
-
-    // Mock: Check if user is registered
-    setIsRegistered(false); // This would come from API
-    setIsFavorited(false); // This would come from API
+    // Check if event is favorited (can be stored in localStorage or fetched from API)
+    const favorited =
+      localStorage.getItem(`event_favorited_${eventId}`) === 'true';
+    setIsFavorited(favorited);
   }, [eventId]);
 
   const handleRegister = async () => {
@@ -144,49 +156,44 @@ export default function EventDetailPage() {
       return;
     }
 
-    setRegistering(true);
     try {
-      // TODO: API call to register for event
-      console.log('Registering for event:', eventId);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setIsRegistered(true);
-      setEvent((prev) => ({
-        ...prev,
-        registeredParticipants: prev.registeredParticipants + 1,
-      }));
+      await registerMutation.mutateAsync(eventId);
     } catch (error) {
       console.error('Registration failed:', error);
-    } finally {
-      setRegistering(false);
     }
   };
 
   const handleUnregister = async () => {
-    setRegistering(true);
     try {
-      // TODO: API call to unregister from event
-      console.log('Unregistering from event:', eventId);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setIsRegistered(false);
-      setEvent((prev) => ({
-        ...prev,
-        registeredParticipants: prev.registeredParticipants - 1,
-      }));
+      await unregisterMutation.mutateAsync(eventId);
     } catch (error) {
       console.error('Unregistration failed:', error);
-    } finally {
-      setRegistering(false);
     }
   };
 
   const handleFavorite = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      router.push(`${ROUTES.LOGIN}?returnUrl=/events/${eventId}`);
+      return;
+    }
 
     try {
-      // TODO: API call to toggle favorite
-      setIsFavorited(!isFavorited);
+      // Store favorited state in localStorage (can be replaced with API call)
+      const newFavoriteState = !isFavorited;
+      localStorage.setItem(
+        `event_favorited_${eventId}`,
+        String(newFavoriteState)
+      );
+      setIsFavorited(newFavoriteState);
+
+      toast.success(
+        newFavoriteState
+          ? 'Added to favorites - You can find this event in your favorites'
+          : 'Removed from favorites'
+      );
     } catch (error) {
       console.error('Failed to toggle favorite:', error);
+      toast.error('Failed to update favorites');
     }
   };
 
@@ -228,13 +235,34 @@ export default function EventDetailPage() {
     { label: event.title, href: `/events/${eventId}`, current: true },
   ];
 
-  if (loading) {
+  // Show loading state
+  if (isLoading) {
     return (
       <MainLayout>
         <PageWrapper>
           <div className="flex items-center justify-center min-h-[400px]">
             <LoadingSpinner size="lg" />
           </div>
+        </PageWrapper>
+      </MainLayout>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <MainLayout>
+        <PageWrapper>
+          <Card className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Event Not Found</h2>
+            <p className="text-gray-600 mb-4">
+              The event you&apos;re looking for doesn&apos;t exist or has been
+              removed.
+            </p>
+            <Button onClick={() => router.push(ROUTES.EVENTS)}>
+              Browse All Events
+            </Button>
+          </Card>
         </PageWrapper>
       </MainLayout>
     );
@@ -314,7 +342,7 @@ export default function EventDetailPage() {
 
                   {event.tags && event.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag) => (
+                      {event.tags.map((tag: string) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
@@ -400,22 +428,31 @@ export default function EventDetailPage() {
                   <div>
                     <h2 className="text-xl font-semibold mb-4">Event Agenda</h2>
                     <div className="space-y-4">
-                      {event.agenda.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex gap-4 p-4 bg-muted/50 rounded-lg"
-                        >
-                          <div className="text-sm font-medium text-primary min-w-[120px]">
-                            {item.time}
+                      {event.agenda.map(
+                        (
+                          item: {
+                            time: string;
+                            title: string;
+                            description: string;
+                          },
+                          index: number
+                        ) => (
+                          <div
+                            key={index}
+                            className="flex gap-4 p-4 bg-muted/50 rounded-lg"
+                          >
+                            <div className="text-sm font-medium text-primary min-w-[120px]">
+                              {item.time}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium">{item.title}</h4>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {item.description}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium">{item.title}</h4>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {item.description}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   </div>
                 )}
@@ -426,12 +463,14 @@ export default function EventDetailPage() {
                       What You Need
                     </h2>
                     <ul className="space-y-2">
-                      {event.requirements.map((requirement, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                          <span>{requirement}</span>
-                        </li>
-                      ))}
+                      {event.requirements.map(
+                        (requirement: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                            <span>{requirement}</span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
                 )}

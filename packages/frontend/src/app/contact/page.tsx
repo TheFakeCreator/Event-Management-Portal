@@ -120,8 +120,8 @@ export default function ContactPage() {
               {sent ? (
                 <div className="space-y-4">
                   <p className="text-sm">
-                    Thanks — your message was sent. We'll respond as soon as
-                    possible.
+                    Thanks — your message was sent. We&apos;ll respond as soon
+                    as possible.
                   </p>
                   <Button onClick={() => setSent(false)}>
                     Send another message

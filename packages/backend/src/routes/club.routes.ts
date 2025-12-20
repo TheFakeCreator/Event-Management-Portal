@@ -3,7 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { isAuthenticated } from '../middlewares/authMiddleware.js';
 import { isAdmin } from '../middlewares/adminMiddleware.js';
 import { isClubModerator } from '../middlewares/moderatorMiddleware.js';
-import { upload } from '../middlewares/upload.js';
+// import { upload } from '../middlewares/upload.js';
 import {
   getAllClubs,
   getClubById,

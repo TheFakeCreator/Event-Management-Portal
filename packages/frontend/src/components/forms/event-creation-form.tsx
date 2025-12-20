@@ -25,7 +25,8 @@ import {
   Plus,
   X,
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/toast';
+import { validators } from '@/lib/validation';
 import { useEventForm } from '@/hooks/use-form-hooks';
 import { useLoading } from '@/hooks/use-loading';
 import { z } from 'zod';
@@ -64,6 +65,11 @@ interface EventFormData {
   tags: string[];
   images: string[];
   visibility: 'public' | 'private' | 'unlisted';
+  coverImage?: string;
+  organizingClub?: string;
+  collaborators?: string[];
+  eventLeads?: string[];
+  sponsors?: string[];
 }
 
 const eventCategories = [
@@ -97,6 +103,9 @@ const BasicInfoStep: React.FC<{
   onChange: (data: Partial<EventFormData>) => void;
 }> = ({ data, onChange }) => {
   const [newTag, setNewTag] = useState('');
+  const [newCollaborator, setNewCollaborator] = useState('');
+  const [newLead, setNewLead] = useState('');
+  const [newSponsor, setNewSponsor] = useState('');
 
   const addTag = () => {
     if (newTag.trim() && !data.tags?.includes(newTag.trim())) {
@@ -106,6 +115,63 @@ const BasicInfoStep: React.FC<{
       });
       setNewTag('');
     }
+  };
+
+  const addCollaborator = () => {
+    if (
+      newCollaborator.trim() &&
+      !(data.collaborators || []).includes(newCollaborator.trim())
+    ) {
+      onChange({
+        ...data,
+        collaborators: [...(data.collaborators || []), newCollaborator.trim()],
+      });
+      setNewCollaborator('');
+    }
+  };
+
+  const removeCollaborator = (name: string) => {
+    onChange({
+      ...data,
+      collaborators: (data.collaborators || []).filter((c) => c !== name),
+    });
+  };
+
+  const addLead = () => {
+    if (newLead.trim() && !(data.eventLeads || []).includes(newLead.trim())) {
+      onChange({
+        ...data,
+        eventLeads: [...(data.eventLeads || []), newLead.trim()],
+      });
+      setNewLead('');
+    }
+  };
+
+  const removeLead = (name: string) => {
+    onChange({
+      ...data,
+      eventLeads: (data.eventLeads || []).filter((c) => c !== name),
+    });
+  };
+
+  const addSponsor = () => {
+    if (
+      newSponsor.trim() &&
+      !(data.sponsors || []).includes(newSponsor.trim())
+    ) {
+      onChange({
+        ...data,
+        sponsors: [...(data.sponsors || []), newSponsor.trim()],
+      });
+      setNewSponsor('');
+    }
+  };
+
+  const removeSponsor = (name: string) => {
+    onChange({
+      ...data,
+      sponsors: (data.sponsors || []).filter((c) => c !== name),
+    });
   };
 
   const removeTag = (tagToRemove: string) => {
@@ -119,6 +185,7 @@ const BasicInfoStep: React.FC<{
     <div className="space-y-6">
       <Input
         label="Event Title"
+        id="title"
         placeholder="Enter your event title"
         value={data.title || ''}
         onChange={(e) => onChange({ ...data, title: e.target.value })}
@@ -128,6 +195,7 @@ const BasicInfoStep: React.FC<{
 
       <Textarea
         label="Event Description"
+        id="description"
         placeholder="Describe your event in detail..."
         value={data.description || ''}
         onChange={(e) => onChange({ ...data, description: e.target.value })}
@@ -145,6 +213,55 @@ const BasicInfoStep: React.FC<{
         placeholder="Select a category"
         required
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          label="Organizing Club"
+          placeholder="Which club is organizing this event?"
+          value={data.organizingClub || ''}
+          onChange={(e) =>
+            onChange({ ...data, organizingClub: e.target.value })
+          }
+          hint="Optionally associate the event with a club"
+        />
+
+        <div>
+          <label className="text-sm font-medium">Collaborating Clubs</label>
+          <div className="flex space-x-2 mt-2">
+            <Input
+              placeholder="Add club name"
+              value={newCollaborator}
+              onChange={(e) => setNewCollaborator(e.target.value)}
+              onKeyPress={(e) =>
+                e.key === 'Enter' && (e.preventDefault(), addCollaborator())
+              }
+            />
+            <Button type="button" onClick={() => addCollaborator()} size="sm">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          {data.collaborators && data.collaborators.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {data.collaborators.map((c) => (
+                <Badge
+                  key={c}
+                  variant="secondary"
+                  className="flex items-center space-x-1"
+                >
+                  <span>{c}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeCollaborator(c)}
+                    className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Tags */}
       <div className="space-y-3">
@@ -185,6 +302,82 @@ const BasicInfoStep: React.FC<{
         <p className="text-xs text-muted-foreground">
           Add tags to help people find your event
         </p>
+      </div>
+
+      {/* Event leads */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Event Leads</label>
+        <div className="flex space-x-2 mt-2">
+          <Input
+            placeholder="Lead name or email"
+            value={newLead}
+            onChange={(e) => setNewLead(e.target.value)}
+            onKeyPress={(e) =>
+              e.key === 'Enter' && (e.preventDefault(), addLead())
+            }
+          />
+          <Button type="button" onClick={() => addLead()} size="sm">
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+        {data.eventLeads && data.eventLeads.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {data.eventLeads.map((lead) => (
+              <Badge
+                key={lead}
+                variant="secondary"
+                className="flex items-center space-x-1"
+              >
+                <span>{lead}</span>
+                <button
+                  type="button"
+                  onClick={() => removeLead(lead)}
+                  className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Sponsors */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Sponsors</label>
+        <div className="flex space-x-2 mt-2">
+          <Input
+            placeholder="Sponsor name"
+            value={newSponsor}
+            onChange={(e) => setNewSponsor(e.target.value)}
+            onKeyPress={(e) =>
+              e.key === 'Enter' && (e.preventDefault(), addSponsor())
+            }
+          />
+          <Button type="button" onClick={() => addSponsor()} size="sm">
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+        {data.sponsors && data.sponsors.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {data.sponsors.map((s) => (
+              <Badge
+                key={s}
+                variant="secondary"
+                className="flex items-center space-x-1"
+              >
+                <span>{s}</span>
+                <button
+                  type="button"
+                  onClick={() => removeSponsor(s)}
+                  className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -353,6 +546,7 @@ const PricingCapacityStep: React.FC<{
             type="number"
             min="0"
             step="0.01"
+            id="ticketPrice"
             value={data.ticketPrice || ''}
             onChange={(e) =>
               onChange({
@@ -382,6 +576,7 @@ const PricingCapacityStep: React.FC<{
           type="number"
           min="1"
           max="10000"
+          id="maxAttendees"
           value={data.maxAttendees || ''}
           onChange={(e) =>
             onChange({ ...data, maxAttendees: parseInt(e.target.value) || 1 })
@@ -465,6 +660,13 @@ const ImagesReviewStep: React.FC<{
     onChange({ ...data, images: [...(data.images || []), ...uploadedUrls] });
   };
 
+  const handleCoverUpload = (files: UploadedFile[]) => {
+    const first = files.find((f) => f.status === 'uploaded' && f.url);
+    if (first && first.url) {
+      onChange({ ...data, coverImage: first.url });
+    }
+  };
+
   const removeImage = (urlToRemove: string) => {
     onChange({
       ...data,
@@ -483,6 +685,36 @@ const ImagesReviewStep: React.FC<{
           maxFiles={5}
           maxSize={5 * 1024 * 1024} // 5MB
         />
+
+        <div className="mt-6">
+          <h4 className="text-sm font-medium mb-2">Cover Image</h4>
+          <Input
+            label="Cover Image URL"
+            id="coverImage"
+            placeholder="https://example.com/image.jpg"
+            value={data.coverImage || ''}
+            onChange={(e) => onChange({ ...data, coverImage: e.target.value })}
+          />
+
+          <div className="mt-3">
+            <FileUpload
+              onFilesChange={handleCoverUpload}
+              multiple={false}
+              accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
+              maxFiles={1}
+              maxSize={5 * 1024 * 1024}
+            />
+            {data.coverImage && (
+              <div className="mt-3">
+                <img
+                  src={data.coverImage}
+                  alt="Cover preview"
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              </div>
+            )}
+          </div>
+        </div>
 
         {data.images && data.images.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
@@ -582,7 +814,7 @@ const ImagesReviewStep: React.FC<{
 
 export const EventCreationForm: React.FC = () => {
   const router = useRouter();
-  const { toast } = useToast();
+  const { success: toastSuccess, error: toastError } = useToast();
   const { loading: isSubmitting, startLoading, stopLoading } = useLoading();
 
   const {
@@ -630,6 +862,19 @@ export const EventCreationForm: React.FC = () => {
     updateStepData(steps[currentStep].id, data);
   };
 
+  // Build a merged view of all form data for review display
+  const mergedFormDataView: Partial<EventFormData> = Object.values(
+    formData
+  ).reduce((acc, stepData) => ({ ...acc, ...stepData }), {});
+
+  const handleReviewChange = (data: Partial<EventFormData>) => {
+    // Persist review-related changes (images, coverImage) under the 'review' step.
+    // Defer the state update to avoid "setState() during rendering" when this
+    // handler is invoked synchronously from a child component (e.g. FileUpload)
+    // — schedule on next microtask.
+    Promise.resolve().then(() => updateStepData('review', data));
+  };
+
   const validateStep = (stepId: string): boolean => {
     const data = formData[stepId] as Partial<EventFormData>;
 
@@ -654,7 +899,10 @@ export const EventCreationForm: React.FC = () => {
           data?.maxAttendees > 0
         );
       case 'registration':
-        return !!data?.visibility;
+        // Visibility defaults to 'public' when not explicitly set in the UI.
+        // Treat an untouched registration step as valid so the user can proceed
+        // without having to interact with the select if they accept the default.
+        return true;
       case 'review':
         return true;
       default:
@@ -666,30 +914,149 @@ export const EventCreationForm: React.FC = () => {
     startLoading();
 
     try {
-      // Combine all form data
-      const eventData = Object.values(formData).reduce(
+      // Combine all form data into a single object
+      const merged = Object.values(formData).reduce(
         (acc, stepData) => ({ ...acc, ...stepData }),
         {}
       );
 
-      // Here you would typically send the data to your API
-      console.log('Creating event:', eventData);
+      // Build the payload to match the validation schema
+      const payload = {
+        title: merged.title,
+        description: merged.description,
+        category: merged.category,
+        location: {
+          venue: merged.venue,
+          address: merged.address,
+          city: merged.city,
+          state: merged.state,
+          country: merged.country,
+          zipCode: merged.zipCode || '',
+        },
+        dateTime: {
+          startDate: merged.startDate,
+          endDate: merged.endDate,
+          startTime: merged.startTime,
+          endTime: merged.endTime,
+        },
+        pricing: {
+          type: merged.pricingType || 'free',
+          amount: Number(merged.ticketPrice) || 0,
+          currency: merged.currency || 'USD',
+        },
+        capacity: {
+          maxAttendees: Number(merged.maxAttendees) || 0,
+          allowWaitlist: Boolean(merged.allowWaitlist),
+        },
+        registration: {
+          isOpen: Boolean(merged.registrationOpen),
+          deadline: merged.registrationDeadline || undefined,
+          requireApproval: Boolean(merged.requireApproval),
+        },
+        visibility: merged.visibility || 'public',
+        tags: merged.tags || [],
+        images: merged.images || [],
+        // extra fields (coverImage, organizingClub, collaborators, leads, sponsors)
+        coverImage: merged.coverImage,
+        organizingClub: merged.organizingClub,
+        collaborators: merged.collaborators || [],
+        eventLeads: merged.eventLeads || [],
+        sponsors: merged.sponsors || [],
+      };
 
+      // Validate payload with the Zod schema. Use validators helper to get structured errors
+      const validation = await validators.event.validateAsync(payload);
+      if (!validation.success) {
+        // Pick first error path and map to a step
+        const errors = validation.errors ?? {};
+        const firstPath = Object.keys(errors)[0];
+        const pathParts = firstPath ? firstPath.split('.') : [''];
+
+        // map root keys to step ids
+        const mapRootToStepId = (root: string) => {
+          if (['title', 'description', 'category'].includes(root))
+            return 'basic';
+          if (
+            [
+              'location',
+              'dateTime',
+              'startDate',
+              'endDate',
+              'startTime',
+              'endTime',
+            ].includes(root)
+          )
+            return 'location';
+          if (
+            [
+              'pricing',
+              'amount',
+              'currency',
+              'type',
+              'capacity',
+              'maxAttendees',
+              'allowWaitlist',
+            ].includes(root)
+          )
+            return 'pricing';
+          if (
+            [
+              'registration',
+              'visibility',
+              'isOpen',
+              'deadline',
+              'requireApproval',
+            ].includes(root)
+          )
+            return 'registration';
+          if (['tags', 'images'].includes(root)) return 'review';
+          return 'basic';
+        };
+
+        const targetStepId = mapRootToStepId(pathParts[0]);
+        const stepIndex = steps.findIndex((s) => s.id === targetStepId);
+        if (stepIndex >= 0) {
+          goToStep(stepIndex);
+        }
+
+        // Attempt to focus the specific field by id or name
+        setTimeout(() => {
+          const fieldName = pathParts[pathParts.length - 1];
+          const el =
+            document.getElementById(fieldName) ||
+            document.querySelector(`[name="${fieldName}"]`);
+          if (el && (el as HTMLElement).scrollIntoView) {
+            (el as HTMLElement).scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            try {
+              (el as HTMLElement).focus();
+            } catch (e) {
+              // ignore
+            }
+          }
+        }, 250);
+
+        toastError(
+          'Validation error',
+          Object.values(errors)[0] || 'Please review the form fields'
+        );
+        return;
+      }
+
+      // At this point validation passed; proceed to submit to API
+      console.log('Creating event:', payload);
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1200));
 
-      toast({
-        title: 'Event Created!',
-        description: 'Your event has been successfully created.',
-      });
-
+      toastSuccess(
+        'Event Created!',
+        'Your event has been successfully created.'
+      );
       router.push('/dashboard/events');
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to create event. Please try again.',
-        variant: 'destructive',
-      });
+      toastError('Error', 'Failed to create event. Please try again.');
     } finally {
       stopLoading();
     }
@@ -746,8 +1113,10 @@ export const EventCreationForm: React.FC = () => {
       description: 'Upload images and review your event',
       component: (
         <ImagesReviewStep
-          data={formData['review'] || {}}
-          onChange={handleStepChange}
+          // Pass a merged view (all steps) so the review shows the entered info
+          data={mergedFormDataView}
+          // But persist image/cover changes into the 'review' step
+          onChange={handleReviewChange}
         />
       ),
     },

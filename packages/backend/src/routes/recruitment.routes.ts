@@ -15,6 +15,7 @@ const router: Router = express.Router();
 // API Routes (JSON responses)
 // GET Routes
 router.get('/', (req, res, next) => getRecruitments(req as any, res, next));
+//TODO: this route needs to be updated it is not being used currently
 router.get('/new', (req, res, next) =>
   getNewRecruitments(req as any, res, next)
 );

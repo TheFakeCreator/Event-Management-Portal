@@ -43,11 +43,72 @@ class CloudinaryUploader {
   private baseUrl: string;
 
   constructor() {
-    const config = env.getCloudinaryConfig();
-    this.cloudName = config.cloudName;
-    this.uploadPreset = config.uploadPreset;
+    // On server we can rely on env helpers (they validate on server start).
+    // In the browser the env helpers expect validateEnvironment() to have run
+    // (which doesn't happen client-side), so fall back to NEXT_PUBLIC_* vars.
+    let config: { cloudName?: string; uploadPreset?: string; apiKey?: string } =
+      {};
+
+    if (typeof window === 'undefined') {
+      // Server-side: use validated env getters
+      try {
+        config = env.getCloudinaryConfig();
+      } catch (e) {
+        // If validation hasn't run for some reason, still try process.env
+        config = {
+          cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+          uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+          apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+        };
+      }
+    } else {
+      // Client-side: read NEXT_PUBLIC_* directly (these are inlined at build)
+      config = {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+        apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+      };
+    }
+
+    this.cloudName = config.cloudName || '';
+    this.uploadPreset = config.uploadPreset || '';
     this.apiKey = config.apiKey;
     this.baseUrl = `https://api.cloudinary.com/v1_1/${this.cloudName}`;
+  }
+
+  /**
+   * Safe getter for upload configuration that works both server- and client-side.
+   * Falls back to NEXT_PUBLIC_* environment variables when the validated env
+   * object is not available (e.g. client bundle or when validation hasn't run).
+   */
+  private getUploadConfigSafe() {
+    try {
+      // Prefer the env helper when available (server-side validated)
+      if (typeof window === 'undefined') {
+        return env.getUploadConfig();
+      }
+    } catch (e) {
+      // fall through to fallback
+    }
+
+    // Client-side or fallback path: read NEXT_PUBLIC_* variables directly
+    const maxFileSize =
+      Number(process.env.NEXT_PUBLIC_MAX_FILE_SIZE) || 10 * 1024 * 1024;
+    const allowedFileTypes = (
+      process.env.NEXT_PUBLIC_ALLOWED_FILE_TYPES ||
+      'image/jpeg,image/png,image/webp,image/gif'
+    )
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const maxFilesPerUpload =
+      Number(process.env.NEXT_PUBLIC_MAX_FILES_PER_UPLOAD) || 5;
+
+    return {
+      maxFileSize,
+      allowedFileTypes,
+      maxFilesPerUpload,
+    };
   }
 
   /**
@@ -252,7 +313,7 @@ class CloudinaryUploader {
    * Validate file before upload
    */
   validateFile(file: File): { valid: boolean; error?: string } {
-    const uploadConfig = env.getUploadConfig();
+    const uploadConfig = this.getUploadConfigSafe();
 
     // Check file size
     if (file.size > uploadConfig.maxFileSize) {
@@ -277,7 +338,7 @@ class CloudinaryUploader {
    * Validate multiple files
    */
   validateFiles(files: File[]): { valid: boolean; errors: string[] } {
-    const uploadConfig = env.getUploadConfig();
+    const uploadConfig = this.getUploadConfigSafe();
     const errors: string[] = [];
 
     // Check number of files

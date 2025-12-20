@@ -109,15 +109,16 @@ export const versionFeatures: Record<string, VersionFeatures> = {
     maxRequestSize: '10mb',
     rateLimitPerMinute: 100,
   },
-  v2: {
-    enableAdvancedFiltering: true,
-    enableBulkOperations: true,
-    enableRealtimeNotifications: true,
-    enableFileUpload: true,
-    enableGraphQLEndpoints: true,
-    maxRequestSize: '50mb',
-    rateLimitPerMinute: 200,
-  },
+  // Can add future versions here
+  // v2: {
+  //   enableAdvancedFiltering: true,
+  //   enableBulkOperations: true,
+  //   enableRealtimeNotifications: true,
+  //   enableFileUpload: true,
+  //   enableGraphQLEndpoints: true,
+  //   maxRequestSize: '50mb',
+  //   rateLimitPerMinute: 200,
+  // },
 };
 
 /**

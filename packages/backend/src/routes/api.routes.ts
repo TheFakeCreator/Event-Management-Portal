@@ -18,7 +18,11 @@ import eventRoutes from './event.routes.js';
 import clubRoutes from './club.routes.js';
 import adminRoutes from './admin.routes.js';
 import devRoutes from './dev.routes.js';
+import uploadRoutes from './upload.routes.js';
+import announcementRoutes from './announcement.routes.js';
+import recruitmentRoutes from './recruitment.routes.js';
 import { isDevelopment } from '../configs/env.config.js';
+import { v2 } from 'cloudinary';
 
 /**
  * Main API router with versioning support
@@ -29,7 +33,7 @@ export function createApiRouter(): Router {
   // Apply global API middleware
   apiRouter.use(contentNegotiation());
   apiRouter.use(formatResponse());
-
+  // the below GET request points to /api/
   // API information endpoint
   apiRouter.get('/', (req: Request, res: Response) => {
     const response: ApiResponse = {
@@ -79,8 +83,17 @@ export function createApiRouter(): Router {
   // Event management routes
   v1Router.use('/events', eventRoutes);
 
+  // File uploads (server-side Cloudinary proxy)
+  v1Router.use('/uploads', uploadRoutes);
+
   // Club management routes
   v1Router.use('/clubs', clubRoutes);
+
+  // Announcements routes
+  v1Router.use('/announcements', announcementRoutes);
+
+  // Recruitment routes
+  v1Router.use('/recruitments', recruitmentRoutes);
 
   // Admin routes
   v1Router.use('/admin', adminRoutes);
@@ -114,8 +127,9 @@ export function createApiRouter(): Router {
 
   // Mount v1 router
   apiRouter.use('/v1', v1Router);
+  apiRouter.use('/v2/', createV2Router());
 
-  // Default version redirect (v1)
+  // Default version redirect (v1) so that we can access v1 routes via /api/auth, /api/users, etc. and not just /api/v1/auth thats why we created v1Router above
   apiRouter.use('/auth', (req, res, next) => {
     req.url = `/v1/auth${req.url}`;
     next();
@@ -136,6 +150,21 @@ export function createApiRouter(): Router {
     next();
   });
 
+  apiRouter.use('/uploads', (req, res, next) => {
+    req.url = `/v1/uploads${req.url}`;
+    next();
+  });
+
+  apiRouter.use('/announcements', (req, res, next) => {
+    req.url = `/v1/announcements${req.url}`;
+    next();
+  });
+
+  apiRouter.use('/recruitments', (req, res, next) => {
+    req.url = `/v1/recruitments${req.url}`;
+    next();
+  });
+
   apiRouter.use('/admin', (req, res, next) => {
     req.url = `/v1/admin${req.url}`;
     next();
@@ -148,10 +177,20 @@ export function createApiRouter(): Router {
  * Future API versions can be added here
  */
 export function createV2Router(): Router {
+  // Create v2 router
   const v2Router = createVersionedRouter('v2');
 
   // V2 specific features and routes would go here
   v2Router.get('/', (req, res) => {
+    const routes = v2Router.stack
+      .filter((layer: any) => layer.route)
+      .map((layer: any) => {
+        const path = layer.route.path;
+        const methods = Object.keys(layer.route.methods).map((m) =>
+          m.toUpperCase()
+        );
+        return { path, methods };
+      });
     const response: ApiResponse = {
       success: true,
       message: 'Event Management Portal API v2',
@@ -165,6 +204,7 @@ export function createV2Router(): Router {
           'Real-time subscriptions',
           'Enhanced file upload',
         ],
+        endpoints: routes,
         note: 'This version is under development',
       },
     };

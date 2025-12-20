@@ -8,12 +8,9 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
 import {
-  cloudinary,
   validateCloudinaryFile,
   type CloudinaryUploadResponse,
-  type UploadOptions,
 } from '@/lib/cloudinary';
-import { env } from '@/lib/env';
 
 export interface UploadedFile {
   id: string;
@@ -99,40 +96,82 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         )
       );
 
-      // Set up upload options
-      const uploadOptions: UploadOptions = {
-        folder,
-        tags: ['event-management', 'user-upload'],
-        context: {
-          uploadId,
-          timestamp: new Date().toISOString(),
-        },
-      };
+      // Set up folder name for backend upload
+      const folderName = folder || 'uploads';
 
-      // Use our Cloudinary service
-      const result: CloudinaryUploadResponse = await cloudinary.uploadFile(
-        file,
-        uploadOptions
-      );
+      // Upload via backend API (server-side Cloudinary proxy)
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+      const uploadEndpoint = `${apiBase}/api/v1/uploads`;
 
-      // Update file with success
-      setFiles((prev) => {
-        const updated = prev.map((f) =>
-          f.id === uploadId
-            ? {
-                ...f,
-                status: 'uploaded' as const,
-                progress: 100,
-                url: result.secure_url,
-                publicId: result.public_id,
+      const fd = new FormData();
+      fd.append('image', file);
+      fd.append('folder', folderName);
+
+      // Use XHR to allow some basic progress updates from the browser->server upload
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', uploadEndpoint, true);
+
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round(
+              (event.loaded / event.total) * 100
+            );
+            setFiles((prev) =>
+              prev.map((f) =>
+                f.id === uploadId ? { ...f, progress: percentComplete } : f
+              )
+            );
+          }
+        });
+
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                const resp = JSON.parse(xhr.responseText);
+                const result: {
+                  data: { imageUrl: string; publicId?: string };
+                } = resp;
+
+                setFiles((prev) => {
+                  const updated = prev.map((f) =>
+                    f.id === uploadId
+                      ? {
+                          ...f,
+                          status: 'uploaded' as const,
+                          progress: 100,
+                          url: result.data.imageUrl,
+                          publicId: result.data.publicId,
+                        }
+                      : f
+                  );
+                  onFilesChange?.(updated);
+                  return updated;
+                });
+
+                success(
+                  'Upload Successful',
+                  `${file.name} uploaded successfully`
+                );
+                resolve();
+              } catch (err) {
+                reject(new Error('Invalid JSON response from upload API'));
               }
-            : f
-        );
-        onFilesChange?.(updated);
-        return updated;
-      });
+            } else {
+              try {
+                const resp = JSON.parse(xhr.responseText);
+                reject(new Error(resp?.message || 'Upload failed'));
+              } catch (err) {
+                reject(new Error(`Upload failed with status ${xhr.status}`));
+              }
+            }
+          }
+        };
 
-      success('Upload Successful', `${file.name} uploaded successfully`);
+        xhr.onerror = () => reject(new Error('Network error during upload'));
+        xhr.send(fd);
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
 

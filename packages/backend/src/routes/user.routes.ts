@@ -10,10 +10,11 @@ import {
 } from '../controllers/user.controller.js';
 
 const router: Router = express.Router();
+router.use(isAuthenticated);
 
 // API Routes (JSON responses)
 // GET Routes
-router.get('/:userId/profile', isAuthenticated, (req, res, next) =>
+router.get('/:userId/profile', (req, res, next) =>
   getUserProfile(req as any, res, next)
 );
 
@@ -24,10 +25,10 @@ router.post(
   upload.single('avatar'),
   (req, res, next) => updateProfile(req as any, res, next)
 );
-router.post('/:userId/request-role', isAuthenticated, (req, res, next) =>
+router.post('/:userId/request-role', (req, res, next) =>
   requestRole(req as any, res, next)
 );
-router.post('/:userId/change-password', isAuthenticated, (req, res, next) =>
+router.post('/:userId/change-password', (req, res, next) =>
   changePassword(req as any, res, next)
 );
 
