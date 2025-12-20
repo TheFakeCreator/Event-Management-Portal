@@ -35,9 +35,12 @@ export function AppLayout({
       <div className="flex flex-1">
         {showSidebar && (
           <>
-            {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex">
-              <Sidebar className={sidebarClassName} />
+            {/* Desktop Sidebar - sticky and scrollable */}
+            {/* Adjust top offset to match header height (e.g., 64px) */}
+            <aside className="hidden lg:flex lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)]">
+              <div className="w-80 h-[calc(100vh-4rem)] sticky top-0 overflow-y-auto hover:scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground/40 scrollbar-track-transparent">
+                <Sidebar className={sidebarClassName} />
+              </div>
             </aside>
 
             {/* Mobile Sidebar Trigger - integrated into main content for mobile */}

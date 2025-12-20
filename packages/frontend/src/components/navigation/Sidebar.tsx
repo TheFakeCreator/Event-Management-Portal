@@ -24,6 +24,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 import { ROUTES } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -259,6 +264,8 @@ export function Sidebar({
     );
   };
 
+  const [accountPopoverOpen, setAccountPopoverOpen] = useState(false);
+
   const sidebarContent = (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -284,37 +291,52 @@ export function Sidebar({
         <div className="space-y-1">
           {sidebarItems.map((item) => renderSidebarItem(item))}
         </div>
+      </nav>
 
-        {isAuthenticated && (
-          <>
-            <div className="border-t pt-4 mt-4">
-              <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Account
-              </h3>
-              <div className="space-y-1">
-                {userItems.map((item) => renderSidebarItem(item))}
-              </div>
-            </div>
-
-            {/* User Info */}
-            <div className="border-t pt-4 mt-4">
-              <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted">
+      {/* Sticky Account Info at Bottom */}
+      {isAuthenticated && (
+        <div className="mt-auto border-t p-4">
+          <Popover
+            open={accountPopoverOpen}
+            onOpenChange={setAccountPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <button
+                className="flex items-center gap-3 w-full px-3 py-2 rounded-lg bg-muted hover:bg-accent transition-colors focus:outline-none"
+                aria-label="Account options"
+              >
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-primary-foreground text-sm font-medium">
                     {user?.name?.charAt(0) || 'U'}
                   </span>
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-left">
                   <p className="text-sm font-medium truncate">{user?.name}</p>
                   <p className="text-xs text-muted-foreground truncate">
                     {user?.email}
                   </p>
                 </div>
+                <Settings className="w-4 h-4 text-muted-foreground ml-2" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" side="top" className="w-56 p-2">
+              <div className="space-y-1">
+                {userItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-2 px-3 py-2 rounded hover:bg-accent transition-colors text-sm"
+                    onClick={() => setAccountPopoverOpen(false)}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
               </div>
-            </div>
-          </>
-        )}
-      </nav>
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
     </div>
   );
 
