@@ -17,6 +17,8 @@ import userRoutes from './user.routes.js';
 import eventRoutes from './event.routes.js';
 import clubRoutes from './club.routes.js';
 import adminRoutes from './admin.routes.js';
+import moderatorRoutes from './moderator.routes.js';
+import dashboardRoutes from './dashboard.routes.js';
 import devRoutes from './dev.routes.js';
 import uploadRoutes from './upload.routes.js';
 import announcementRoutes from './announcement.routes.js';
@@ -97,6 +99,12 @@ export function createApiRouter(): Router {
 
   // Admin routes
   v1Router.use('/admin', adminRoutes);
+
+  // Moderator routes
+  v1Router.use('/moderator', moderatorRoutes);
+
+  // Dashboard routes
+  v1Router.use('/dashboard', dashboardRoutes);
 
   // Development routes (only mounted in development)
   if (isDevelopment) {

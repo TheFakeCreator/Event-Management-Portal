@@ -11,9 +11,22 @@ export const isAuthenticated = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  console.log('[Auth Middleware] Request received:', {
+    path: req.path,
+    method: req.method,
+    hasCookie: !!(req.cookies && req.cookies.token),
+    hasAuthHeader: !!req.headers.authorization,
+  });
+
   try {
     const token =
-      req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+      (req.cookies && req.cookies.token) ||
+      req.headers.authorization?.replace('Bearer ', '');
+
+    console.log('[Auth Middleware] Token check:', {
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
+    });
 
     if (!token) {
       res.status(401).json({
@@ -25,8 +38,17 @@ export const isAuthenticated = async (
     }
 
     // Verify token with enhanced validation
+    console.log('[Auth Middleware] Verifying token...');
     const decoded = verifyToken(token, 'access');
+    console.log('[Auth Middleware] Token verified:', {
+      userId: decoded.userId,
+    });
+
     const user = await User.findById(decoded.userId).select('-password');
+    console.log('[Auth Middleware] User found:', {
+      userId: user?._id,
+      email: user?.email,
+    });
 
     if (!user) {
       res.clearCookie('token', getClearCookieOptions());
@@ -50,6 +72,7 @@ export const isAuthenticated = async (
 
     // Add user to request object
     req.userInfo = user as unknown as UserType;
+    req.user = user as any; // Also set req.user for permission middleware
     req.isUserAuthenticated = true;
 
     next();
@@ -59,25 +82,29 @@ export const isAuthenticated = async (
     // Clear invalid token
     res.clearCookie('token', getClearCookieOptions());
 
-    if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({
-        success: false,
-        message: 'Invalid authentication token',
-        error: 'Token verification failed',
-      });
-    } else if (error instanceof jwt.TokenExpiredError) {
-      res.status(401).json({
-        success: false,
-        message: 'Authentication token expired',
-        error: 'Please login again',
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: 'Authentication error',
-        error: 'Internal server error',
-      });
+    if (error instanceof Error) {
+      if (error.name === 'JsonWebTokenError') {
+        res.status(401).json({
+          success: false,
+          message: 'Invalid authentication token',
+          error: 'Token verification failed',
+        });
+        return;
+      } else if (error.name === 'TokenExpiredError') {
+        res.status(401).json({
+          success: false,
+          message: 'Authentication token expired',
+          error: 'Please login again',
+        });
+        return;
+      }
     }
+
+    res.status(500).json({
+      success: false,
+      message: 'Authentication error',
+      error: 'Internal server error',
+    });
   }
 };
 
@@ -89,7 +116,8 @@ export const optionalAuth = async (
 ): Promise<void> => {
   try {
     const token =
-      req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+      (req.cookies && req.cookies.token) ||
+      req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       req.isUserAuthenticated = false;
@@ -123,7 +151,7 @@ export const isAuthenticatedSSR = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies && req.cookies.token;
     if (!token) {
       const redirectUrl = req.originalUrl;
       res.redirect(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);

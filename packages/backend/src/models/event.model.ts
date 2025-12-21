@@ -32,6 +32,8 @@ export interface IEventDocument extends Document {
     reportedBy: mongoose.Types.ObjectId;
   })[];
   createdBy: mongoose.Types.ObjectId;
+  visibility?: 'public' | 'private' | 'club-only';
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -182,6 +184,16 @@ const eventSchema = new Schema<IEventDocument>({
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  visibility: {
+    type: String,
+    enum: ['public', 'private', 'club-only'],
+    default: 'public',
+  },
+  approvalStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved',
   },
   createdAt: {
     type: Date,

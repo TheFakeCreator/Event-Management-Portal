@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DashboardLayout } from '@/components/layout';
-import { ProtectedRoute } from '@/components/routing';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/constants';
@@ -10,7 +10,7 @@ import { LazyEventCreationForm } from '@/lib/lazy-components';
 
 export default function CreateEventPage() {
   return (
-    <ProtectedRoute requireAuth>
+    <ProtectedRoute requireAuth requiredRole={['moderator', 'admin']}>
       <DashboardLayout
         title="Create Event"
         description="Create a new event for your community"

@@ -43,6 +43,7 @@ const handler = NextAuth({
               role: user.role,
               isVerified: user.isVerified,
               avatar: user.avatar,
+              token: data.data.token, // Store backend JWT token
             };
           }
 
@@ -80,6 +81,7 @@ const handler = NextAuth({
           role: user.role,
           isVerified: user.isVerified,
           avatar: user.avatar,
+          backendToken: user.token, // Store backend JWT token
         };
       }
 
@@ -95,6 +97,7 @@ const handler = NextAuth({
           role: token.role as string,
           isVerified: token.isVerified as boolean,
           avatar: token.avatar as string,
+          token: token.backendToken as string, // Expose backend JWT token
         },
       };
     },

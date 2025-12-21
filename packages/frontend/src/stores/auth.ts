@@ -3,11 +3,13 @@ import { devtools, persist } from 'zustand/middleware';
 import { httpClient } from '@/lib/api-client';
 
 export interface User {
+  _id: string;
   id: string;
   name: string;
   email: string;
   avatar?: string;
   role: 'user' | 'moderator' | 'admin';
+  moderatorClubs?: string[];
   isActive: boolean;
   isEmailVerified: boolean;
   createdAt: string;
@@ -32,12 +34,14 @@ export interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrated: boolean;
   error: string | null;
 
   // Actions
   setUser: (user: User | null) => void;
   setTokens: (token: string, refreshToken: string) => void;
   setLoading: (loading: boolean) => void;
+  setHydrated: (hydrated: boolean) => void;
   setError: (error: string | null) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (data: {
@@ -67,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
+        isHydrated: false,
         error: null,
 
         // Actions
@@ -85,6 +90,10 @@ export const useAuthStore = create<AuthState>()(
 
         setLoading: (isLoading) => {
           set({ isLoading }, false, 'auth/setLoading');
+        },
+
+        setHydrated: (isHydrated) => {
+          set({ isHydrated }, false, 'auth/setHydrated');
         },
 
         setError: (error) => {
@@ -278,10 +287,26 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: state.refreshToken,
           isAuthenticated: state.isAuthenticated,
         }),
-        onRehydrateStorage: () => (state) => {
+        onRehydrateStorage: () => (state, error) => {
+          if (error) {
+            console.error('Hydration error:', error);
+          }
+
+          console.log('[Auth Store] Rehydrating:', {
+            hasState: !!state,
+            hasToken: !!state?.token,
+            hasUser: !!state?.user,
+            userRole: state?.user?.role,
+            isAuthenticated: state?.isAuthenticated,
+          });
+
           // Set auth token when rehydrating from storage
           if (state?.token) {
             httpClient.setAuthToken(state.token);
+          }
+          // Mark as hydrated using the setter
+          if (state) {
+            state.setHydrated(true);
           }
         },
       }

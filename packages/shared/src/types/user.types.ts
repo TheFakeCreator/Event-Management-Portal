@@ -42,6 +42,7 @@ export interface User {
   failedLoginAttempts: number;
   accountLockTime?: Date;
   lastPasswordChange: Date;
+  lastActivityAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

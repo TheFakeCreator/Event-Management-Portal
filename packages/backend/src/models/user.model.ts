@@ -39,6 +39,7 @@ export interface IUserDocument extends Document {
     hash: string;
     createdAt: Date;
   }>;
+  lastActivityAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 
@@ -191,6 +192,10 @@ const userSchema = new Schema<IUserDocument>(
       default: Date.now,
     },
     passwordHistory: [passwordHistorySchema],
+    lastActivityAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     timestamps: true, // Adds createdAt & updatedAt automatically

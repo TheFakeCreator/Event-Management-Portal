@@ -10,6 +10,7 @@ declare module 'next-auth' {
             role: string
             isVerified: boolean
             avatar?: string
+            token?: string // Backend JWT token
         }
     }
 
@@ -20,6 +21,7 @@ declare module 'next-auth' {
         role: string
         isVerified: boolean
         avatar?: string
+        token?: string // Backend JWT token
     }
 }
 
@@ -29,5 +31,6 @@ declare module 'next-auth/jwt' {
         role: string
         isVerified: boolean
         avatar?: string
+        backendToken?: string // Backend JWT token stored in JWT
     }
 }

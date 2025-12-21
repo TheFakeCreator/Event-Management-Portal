@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/constants';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore, useNotificationCount, useSidebar } from '@/stores';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface NavItem {
   label: string;
@@ -26,18 +27,43 @@ const mainNavItems: NavItem[] = [
   { label: 'About', href: ROUTES.ABOUT },
 ];
 
-const userMenuItems: NavItem[] = [
-  {
-    label: 'Profile',
-    href: ROUTES.PROFILE,
-    icon: <User className="w-4 h-4" />,
-  },
-  {
-    label: 'Settings',
-    href: ROUTES.SETTINGS,
-    icon: <Settings className="w-4 h-4" />,
-  },
-];
+const getUserMenuItems = (
+  isAdmin: boolean,
+  isModerator: boolean
+): NavItem[] => {
+  const items: NavItem[] = [
+    {
+      label: 'Profile',
+      href: ROUTES.PROFILE,
+      icon: <User className="w-4 h-4" />,
+    },
+    {
+      label: 'Settings',
+      href: ROUTES.SETTINGS,
+      icon: <Settings className="w-4 h-4" />,
+    },
+  ];
+
+  // Add admin dashboard link
+  if (isAdmin) {
+    items.unshift({
+      label: 'Admin Dashboard',
+      href: '/dashboard/admin',
+      icon: <Settings className="w-4 h-4" />,
+    });
+  }
+
+  // Add moderator dashboard link
+  if (isModerator && !isAdmin) {
+    items.unshift({
+      label: 'Moderator Dashboard',
+      href: '/dashboard/moderator',
+      icon: <Settings className="w-4 h-4" />,
+    });
+  }
+
+  return items;
+};
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -57,11 +83,16 @@ export function Header() {
   } = useAuthStore();
   const notificationCount = useNotificationCount();
   const { toggle: toggleSidebar } = useSidebar();
+  const { canCreateEvent, getDashboardRoute, isAdmin, isModerator } =
+    usePermissions();
 
   // Use store data if available, fallback to legacy hook
   const user = storeUser || legacyUser;
   const isAuthenticated = storeAuth || legacyAuth;
   const logout = storeUser ? storeLogout : legacyLogout;
+
+  // Get dynamic user menu items based on role
+  const userMenuItems = getUserMenuItems(isAdmin, isModerator);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
@@ -148,6 +179,13 @@ export function Header() {
 
             {isAuthenticated && user ? (
               <>
+                {/* Create Event Button - Only for Moderators & Admins */}
+                {canCreateEvent() && (
+                  <Button asChild variant="default" size="sm">
+                    <Link href="/events/create">Create Event</Link>
+                  </Button>
+                )}
+
                 {/* Notifications */}
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="w-4 h-4" />
