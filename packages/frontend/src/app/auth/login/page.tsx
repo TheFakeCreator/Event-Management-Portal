@@ -1,17 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn, getSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, Lock, LogIn, Chrome } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  LogIn,
+  Chrome,
+  AlertCircle,
+} from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -19,6 +28,15 @@ export default function LoginPage() {
     password: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  // Check for session expiration on mount
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'SessionExpired') {
+      setSessionExpired(true);
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -105,6 +123,21 @@ export default function LoginPage() {
 
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Session Expiration Warning */}
+            {sessionExpired && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    Your session has expired
+                  </p>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                    Please sign in again to continue
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Form Error */}
             {errors.form && (
               <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">

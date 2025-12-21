@@ -1,4 +1,4 @@
-import { getSession } from 'next-auth/react';
+import { getSession, signOut } from 'next-auth/react';
 import { API_CONFIG, ApiError } from './api-client';
 
 /**
@@ -61,23 +61,30 @@ class NextAuthHttpClient {
       headers,
     };
 
-    console.log('[AuthHttpClient] Request:', {
-      url,
-      method: config.method || 'GET',
-      hasAuthHeader: !!headers['Authorization'],
-      headers: Object.keys(headers),
-    });
-
     try {
       const response = await fetch(url, config);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new ApiError(
+        const apiError = new ApiError(
           errorData.message || `HTTP Error: ${response.status}`,
           response.status,
           errorData.code
         );
+
+        // Handle token expiration - auto logout and redirect to login
+        if (
+          response.status === 401 &&
+          (errorData.message?.includes('expired') ||
+            errorData.message?.includes('invalid') ||
+            errorData.code === 'TOKEN_EXPIRED')
+        ) {
+          console.log('[AuthHttpClient] Token expired, logging out...');
+          await signOut({ redirect: false });
+          window.location.href = '/auth/login?error=SessionExpired';
+        }
+
+        throw apiError;
       }
 
       const data = await response.json();

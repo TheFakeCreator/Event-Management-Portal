@@ -32,14 +32,6 @@ export function ProtectedRoute({
     // Wait for session to load
     if (isLoading) return;
 
-    console.log('[ProtectedRoute] Auth check:', {
-      isAuthenticated,
-      userRole: user?.role,
-      role,
-      requiredRole,
-      status,
-    });
-
     // Check authentication
     if (requireAuth && !isAuthenticated) {
       router.push(redirectTo || '/auth/login');

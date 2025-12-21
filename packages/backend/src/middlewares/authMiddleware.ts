@@ -11,22 +11,10 @@ export const isAuthenticated = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  console.log('[Auth Middleware] Request received:', {
-    path: req.path,
-    method: req.method,
-    hasCookie: !!(req.cookies && req.cookies.token),
-    hasAuthHeader: !!req.headers.authorization,
-  });
-
   try {
     const token =
       (req.cookies && req.cookies.token) ||
       req.headers.authorization?.replace('Bearer ', '');
-
-    console.log('[Auth Middleware] Token check:', {
-      hasToken: !!token,
-      tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
-    });
 
     if (!token) {
       res.status(401).json({
@@ -38,17 +26,9 @@ export const isAuthenticated = async (
     }
 
     // Verify token with enhanced validation
-    console.log('[Auth Middleware] Verifying token...');
     const decoded = verifyToken(token, 'access');
-    console.log('[Auth Middleware] Token verified:', {
-      userId: decoded.userId,
-    });
 
     const user = await User.findById(decoded.userId).select('-password');
-    console.log('[Auth Middleware] User found:', {
-      userId: user?._id,
-      email: user?.email,
-    });
 
     if (!user) {
       res.clearCookie('token', getClearCookieOptions());
