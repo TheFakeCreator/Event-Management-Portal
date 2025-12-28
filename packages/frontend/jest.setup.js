@@ -44,6 +44,7 @@ jest.mock('next-auth/react', () => ({
         data: null,
         status: 'unauthenticated',
     })),
+    getSession: jest.fn(() => Promise.resolve(null)),
     signIn: jest.fn(),
     signOut: jest.fn(),
     SessionProvider: ({ children }) => children,
@@ -58,8 +59,22 @@ jest.mock('@tanstack/react-query', () => ({
     QueryClientProvider: ({ children }) => children,
 }))
 
-// Mock Zustand stores
-jest.mock('@/stores/auth', () => ({
+// Mock Zustand notification store
+const mockNotificationStore = {
+    notifications: [],
+    addNotification: jest.fn((notification) => 'mock-id'),
+    removeNotification: jest.fn(),
+    clearAll: jest.fn(),
+    updateNotification: jest.fn(),
+    success: jest.fn((title, message) => 'mock-id'),
+    error: jest.fn((title, message) => 'mock-id'),
+    warning: jest.fn((title, message) => 'mock-id'),
+    info: jest.fn((title, message) => 'mock-id'),
+}
+
+// Mock the stores index file
+jest.mock('@/stores', () => ({
+    useNotificationStore: jest.fn(() => mockNotificationStore),
     useAuthStore: jest.fn(() => ({
         user: null,
         isAuthenticated: false,
@@ -70,21 +85,6 @@ jest.mock('@/stores/auth', () => ({
         register: jest.fn(),
         clearError: jest.fn(),
     })),
-}))
-
-jest.mock('@/stores/notifications', () => ({
-    useNotificationStore: jest.fn(() => ({
-        notifications: [],
-        unreadCount: 0,
-        add: jest.fn(),
-        remove: jest.fn(),
-        markAsRead: jest.fn(),
-        markAllAsRead: jest.fn(),
-        clear: jest.fn(),
-    })),
-}))
-
-jest.mock('@/stores/ui', () => ({
     useUIStore: jest.fn(() => ({
         theme: 'light',
         sidebarOpen: false,
@@ -97,9 +97,6 @@ jest.mock('@/stores/ui', () => ({
         closeModal: jest.fn(),
         setGlobalLoading: jest.fn(),
     })),
-}))
-
-jest.mock('@/stores/preferences', () => ({
     usePreferencesStore: jest.fn(() => ({
         preferences: {
             notifications: { email: true, push: false, inApp: true },

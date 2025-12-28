@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/toast';
 import {
   Users,
@@ -69,6 +70,10 @@ function AdminUsersManagement() {
   const [statusFilter, setStatusFilter] = useState<UserStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
 
+  // Bulk operations state
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -94,62 +99,46 @@ function AdminUsersManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/v1/admin/users');
-      // const data = await response.json();
 
-      // Mock data
-      setUsers([
-        {
-          _id: '1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          role: 'user',
-          status: 'active',
-          joinedAt: '2024-01-15',
-          lastLoginAt: '2025-01-20',
-        },
-        {
-          _id: '2',
-          name: 'Jane Smith',
-          email: 'jane@example.com',
-          role: 'moderator',
-          status: 'active',
-          joinedAt: '2023-09-20',
-          lastLoginAt: '2025-01-19',
-        },
-        {
-          _id: '3',
-          name: 'Bob Johnson',
-          email: 'bob@example.com',
-          role: 'user',
-          status: 'suspended',
-          joinedAt: '2024-12-10',
-        },
-        {
-          _id: '4',
-          name: 'Alice Williams',
-          email: 'alice@example.com',
-          role: 'member',
-          status: 'active',
-          joinedAt: '2024-11-05',
-          lastLoginAt: '2025-01-18',
-        },
-        {
-          _id: '5',
-          name: 'Charlie Brown',
-          email: 'charlie@example.com',
-          role: 'user',
-          status: 'pending',
-          joinedAt: '2025-01-20',
-        },
-      ]);
+      const response = await fetch('/api/admin/users', {
+        credentials: 'include',
+      });
+
+      console.log('[Admin Users] Response status:', response.status);
+
+      if (!response.ok) {
+        console.log('[Admin Users] Response not OK');
+        setUsers([]);
+        return;
+      }
+
+      const result = await response.json();
+      console.log('[Admin Users] Raw API response:', result);
+
+      const usersData = result.data?.users || result.users || [];
+      console.log('[Admin Users] Extracted users data:', usersData);
+      console.log('[Admin Users] Number of users:', usersData.length);
+
+      // Map backend response to frontend format
+      const mappedUsers = usersData.map((user: any) => ({
+        _id: user.id || user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.isVerified ? 'active' : 'pending',
+        joinedAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
+      }));
+
+      console.log('[Admin Users] Mapped users:', mappedUsers);
+      setUsers(mappedUsers);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('[Admin Users] Failed to fetch users:', error);
+      setUsers([]);
       toast({
-        title: 'Error',
-        message: 'Failed to load users',
-        type: 'error',
+        title: 'Info',
+        message: 'No users data available',
+        type: 'info',
       });
     } finally {
       setLoading(false);
@@ -158,11 +147,18 @@ function AdminUsersManagement() {
 
   const handleUpdateRole = async (userId: string, newRole: UserRole) => {
     try {
-      // TODO: API call
-      // await fetch(`/api/v1/admin/users/${userId}/role`, {
-      //   method: 'PUT',
-      //   body: JSON.stringify({ role: newRole }),
-      // });
+      const response = await fetch('/api/admin/assign-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId, role: newRole }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update role');
+      }
 
       setUsers((prev) =>
         prev.map((u) => (u._id === userId ? { ...u, role: newRole } : u))
@@ -186,10 +182,14 @@ function AdminUsersManagement() {
     if (!confirm('Are you sure you want to suspend this user?')) return;
 
     try {
-      // TODO: API call
-      // await fetch(`/api/v1/admin/users/${userId}/suspend`, {
-      //   method: 'POST',
-      // });
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to suspend user');
+      }
 
       setUsers((prev) =>
         prev.map((u) => (u._id === userId ? { ...u, status: 'suspended' } : u))
@@ -211,10 +211,18 @@ function AdminUsersManagement() {
 
   const handleActivateUser = async (userId: string) => {
     try {
-      // TODO: API call
-      // await fetch(`/api/v1/admin/users/${userId}/activate`, {
-      //   method: 'POST',
-      // });
+      const response = await fetch('/api/admin/assign-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId, role: 'user' }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to activate user');
+      }
 
       setUsers((prev) =>
         prev.map((u) => (u._id === userId ? { ...u, status: 'active' } : u))
@@ -238,6 +246,239 @@ function AdminUsersManagement() {
     const csv = [
       ['Name', 'Email', 'Role', 'Status', 'Joined Date'],
       ...filteredUsers.map((u) => [
+        u.name,
+        u.email,
+        u.role,
+        u.status,
+        new Date(u.joinedAt).toLocaleDateString(),
+      ]),
+    ]
+      .map((row) => row.join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Bulk operation handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(new Set(filteredUsers.map((u) => u._id)));
+    } else {
+      setSelectedUsers(new Set());
+    }
+  };
+
+  const handleSelectUser = (userId: string, checked: boolean) => {
+    const newSelected = new Set(selectedUsers);
+    if (checked) {
+      newSelected.add(userId);
+    } else {
+      newSelected.delete(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const handleBulkRoleUpdate = async (newRole: UserRole) => {
+    if (selectedUsers.size === 0) {
+      toast({
+        title: 'No users selected',
+        message: 'Please select users to update',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to change role to "${newRole}" for ${selectedUsers.size} user(s)?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+      // TODO: API call
+      // await fetch('/api/v1/admin/users/bulk/role', {
+      //   method: 'PUT',
+      //   body: JSON.stringify({ userIds: Array.from(selectedUsers), role: newRole }),
+      // });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          selectedUsers.has(u._id) ? { ...u, role: newRole } : u
+        )
+      );
+
+      toast({
+        title: 'Success',
+        message: `Updated ${selectedUsers.size} user(s) role to ${newRole}`,
+        type: 'success',
+      });
+      setSelectedUsers(new Set());
+    } catch (error) {
+      console.error('Failed to update roles:', error);
+      toast({
+        title: 'Error',
+        message: 'Failed to update user roles',
+        type: 'error',
+      });
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkActivate = async () => {
+    if (selectedUsers.size === 0) {
+      toast({
+        title: 'No users selected',
+        message: 'Please select users to activate',
+        type: 'error',
+      });
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+      // TODO: API call
+      // await fetch('/api/v1/admin/users/bulk/activate', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
+      // });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          selectedUsers.has(u._id) ? { ...u, status: 'active' } : u
+        )
+      );
+
+      toast({
+        title: 'Success',
+        message: `Activated ${selectedUsers.size} user(s)`,
+        type: 'success',
+      });
+      setSelectedUsers(new Set());
+    } catch (error) {
+      console.error('Failed to activate users:', error);
+      toast({
+        title: 'Error',
+        message: 'Failed to activate users',
+        type: 'error',
+      });
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkSuspend = async () => {
+    if (selectedUsers.size === 0) {
+      toast({
+        title: 'No users selected',
+        message: 'Please select users to suspend',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to suspend ${selectedUsers.size} user(s)?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+      // TODO: API call
+      // await fetch('/api/v1/admin/users/bulk/suspend', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
+      // });
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          selectedUsers.has(u._id) ? { ...u, status: 'suspended' } : u
+        )
+      );
+
+      toast({
+        title: 'Success',
+        message: `Suspended ${selectedUsers.size} user(s)`,
+        type: 'success',
+      });
+      setSelectedUsers(new Set());
+    } catch (error) {
+      console.error('Failed to suspend users:', error);
+      toast({
+        title: 'Error',
+        message: 'Failed to suspend users',
+        type: 'error',
+      });
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUsers.size === 0) {
+      toast({
+        title: 'No users selected',
+        message: 'Please select users to delete',
+        type: 'error',
+      });
+      return;
+    }
+
+    if (
+      !confirm(
+        `⚠️ WARNING: Are you sure you want to permanently delete ${selectedUsers.size} user(s)? This action cannot be undone!`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setBulkActionLoading(true);
+      // TODO: API call
+      // await fetch('/api/v1/admin/users/bulk/delete', {
+      //   method: 'DELETE',
+      //   body: JSON.stringify({ userIds: Array.from(selectedUsers) }),
+      // });
+
+      setUsers((prev) => prev.filter((u) => !selectedUsers.has(u._id)));
+
+      toast({
+        title: 'Success',
+        message: `Deleted ${selectedUsers.size} user(s)`,
+        type: 'success',
+      });
+      setSelectedUsers(new Set());
+    } catch (error) {
+      console.error('Failed to delete users:', error);
+      toast({
+        title: 'Error',
+        message: 'Failed to delete users',
+        type: 'error',
+      });
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleExportSelected = () => {
+    const usersToExport = users.filter((u) => selectedUsers.has(u._id));
+    const csv = [
+      ['Name', 'Email', 'Role', 'Status', 'Joined Date'],
+      ...usersToExport.map((u) => [
         u.name,
         u.email,
         u.role,
@@ -309,13 +550,109 @@ function AdminUsersManagement() {
       title="User Management"
       description="Manage all platform users and their permissions"
       actions={
-        <Button onClick={handleExportUsers}>
-          <Download className="w-4 h-4 mr-2" />
-          Export CSV
-        </Button>
+        <div className="flex gap-2">
+          {selectedUsers.size > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleExportSelected}
+              disabled={bulkActionLoading}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export Selected ({selectedUsers.size})
+            </Button>
+          )}
+          <Button onClick={handleExportUsers}>
+            <Download className="w-4 h-4 mr-2" />
+            Export All CSV
+          </Button>
+        </div>
       }
     >
       <div className="space-y-6">
+        {/* Bulk Actions Bar */}
+        {selectedUsers.size > 0 && (
+          <Card className="p-4 bg-primary/5 border-primary">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-medium">
+                {selectedUsers.size} user(s) selected
+              </span>
+              <div className="flex flex-wrap gap-2 ml-auto">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={bulkActionLoading}
+                    >
+                      <Shield className="w-4 h-4 mr-2" />
+                      Change Role
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() => handleBulkRoleUpdate('user')}
+                    >
+                      Set as User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleBulkRoleUpdate('member')}
+                    >
+                      Set as Member
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleBulkRoleUpdate('moderator')}
+                    >
+                      Set as Moderator
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleBulkRoleUpdate('admin')}
+                    >
+                      Set as Admin
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleBulkActivate}
+                  disabled={bulkActionLoading}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Activate
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleBulkSuspend}
+                  disabled={bulkActionLoading}
+                >
+                  <Ban className="w-4 h-4 mr-2" />
+                  Suspend
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleBulkDelete}
+                  disabled={bulkActionLoading}
+                >
+                  Delete
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setSelectedUsers(new Set())}
+                  disabled={bulkActionLoading}
+                >
+                  Clear Selection
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
         {/* Stats */}
         <div className="grid gap-6 md:grid-cols-4">
           <StatCard
@@ -395,102 +732,135 @@ function AdminUsersManagement() {
         {/* Users Table */}
         <Card className="p-6">
           <div className="space-y-3">
+            {/* Select All Header */}
+            {filteredUsers.length > 0 && (
+              <div className="flex items-center gap-3 p-3 border-b">
+                <Checkbox
+                  checked={
+                    selectedUsers.size === filteredUsers.length &&
+                    filteredUsers.length > 0
+                  }
+                  onCheckedChange={handleSelectAll}
+                  id="select-all"
+                />
+                <label
+                  htmlFor="select-all"
+                  className="text-sm font-medium cursor-pointer"
+                >
+                  Select All ({filteredUsers.length})
+                </label>
+              </div>
+            )}
+
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
+                  className="flex items-center gap-3 p-4 border rounded-lg hover:bg-accent transition-colors"
                 >
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-lg font-semibold text-primary">
-                        {user.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{user.name}</h3>
-                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4" />
-                        <span>{user.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-xs text-muted-foreground">
-                          Joined: {new Date(user.joinedAt).toLocaleDateString()}
-                        </p>
-                        {user.lastLoginAt && (
-                          <>
-                            <span className="text-xs text-muted-foreground">
-                              •
-                            </span>
-                            <p className="text-xs text-muted-foreground">
-                              Last login:{' '}
-                              {new Date(user.lastLoginAt).toLocaleDateString()}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <Checkbox
+                    checked={selectedUsers.has(user._id)}
+                    onCheckedChange={(checked) =>
+                      handleSelectUser(user._id, checked as boolean)
+                    }
+                    id={`select-${user._id}`}
+                  />
 
-                  <div className="flex items-center space-x-3">
-                    <Badge variant={getRoleBadgeVariant(user.role)}>
-                      {user.role}
-                    </Badge>
-                    <Badge variant={getStatusBadgeVariant(user.status)}>
-                      {user.status}
-                    </Badge>
+                  <div className="flex items-center justify-between flex-1">
+                    <div className="flex items-center space-x-4 flex-1">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-lg font-semibold text-primary">
+                          {user.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{user.name}</h3>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Mail className="w-4 h-4" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-xs text-muted-foreground">
+                            Joined:{' '}
+                            {new Date(user.joinedAt).toLocaleDateString()}
+                          </p>
+                          {user.lastLoginAt && (
+                            <>
+                              <span className="text-xs text-muted-foreground">
+                                •
+                              </span>
+                              <p className="text-xs text-muted-foreground">
+                                Last login:{' '}
+                                {new Date(
+                                  user.lastLoginAt
+                                ).toLocaleDateString()}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateRole(user._id, 'user')}
-                        >
-                          <Users className="w-4 h-4 mr-2" />
-                          Make User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateRole(user._id, 'member')}
-                        >
-                          <Shield className="w-4 h-4 mr-2" />
-                          Make Member
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            handleUpdateRole(user._id, 'moderator')
-                          }
-                        >
-                          <UserCog className="w-4 h-4 mr-2" />
-                          Make Moderator
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleUpdateRole(user._id, 'admin')}
-                        >
-                          <Shield className="w-4 h-4 mr-2" />
-                          Make Admin
-                        </DropdownMenuItem>
-                        {user.status === 'active' ? (
+                    <div className="flex items-center space-x-3">
+                      <Badge variant={getRoleBadgeVariant(user.role)}>
+                        {user.role}
+                      </Badge>
+                      <Badge variant={getStatusBadgeVariant(user.status)}>
+                        {user.status}
+                      </Badge>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => handleSuspendUser(user._id)}
-                            className="text-destructive"
+                            onClick={() => handleUpdateRole(user._id, 'user')}
                           >
-                            <Ban className="w-4 h-4 mr-2" />
-                            Suspend User
+                            <Users className="w-4 h-4 mr-2" />
+                            Make User
                           </DropdownMenuItem>
-                        ) : (
                           <DropdownMenuItem
-                            onClick={() => handleActivateUser(user._id)}
+                            onClick={() => handleUpdateRole(user._id, 'member')}
                           >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Activate User
+                            <Shield className="w-4 h-4 mr-2" />
+                            Make Member
                           </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateRole(user._id, 'moderator')
+                            }
+                          >
+                            <UserCog className="w-4 h-4 mr-2" />
+                            Make Moderator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleUpdateRole(user._id, 'admin')}
+                          >
+                            <Shield className="w-4 h-4 mr-2" />
+                            Make Admin
+                          </DropdownMenuItem>
+                          {user.status === 'active' ? (
+                            <DropdownMenuItem
+                              onClick={() => handleSuspendUser(user._id)}
+                              className="text-destructive"
+                            >
+                              <Ban className="w-4 h-4 mr-2" />
+                              Suspend User
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={() => handleActivateUser(user._id)}
+                            >
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Activate User
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               ))

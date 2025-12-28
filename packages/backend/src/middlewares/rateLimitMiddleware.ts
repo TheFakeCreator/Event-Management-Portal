@@ -33,7 +33,7 @@ const RATE_LIMIT_CONFIG: Record<RateLimitType, RateLimitConfig> = {
   // Authentication endpoints
   auth: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // attempts per window
+    max: 50, // attempts per window (increased for development)
     message: 'Too many login attempts, please try again later.',
   },
 

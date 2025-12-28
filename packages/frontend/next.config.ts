@@ -38,6 +38,34 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // API rewrites to proxy to backend
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/api/admin/:path*',
+          destination: 'http://localhost:3000/api/v1/admin/:path*',
+        },
+        {
+          source: '/api/dashboard/:path*',
+          destination: 'http://localhost:3000/api/v1/dashboard/:path*',
+        },
+        {
+          source: '/api/events/:path*',
+          destination: 'http://localhost:3000/api/v1/events/:path*',
+        },
+        {
+          source: '/api/clubs/:path*',
+          destination: 'http://localhost:3000/api/v1/clubs/:path*',
+        },
+        {
+          source: '/api/users/:path*',
+          destination: 'http://localhost:3000/api/v1/users/:path*',
+        },
+      ],
+    };
+  },
 };
 
 export default nextConfig;

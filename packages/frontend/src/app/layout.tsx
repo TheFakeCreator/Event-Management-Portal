@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { SessionProvider, QueryProvider } from '@/components/providers';
 import { ToastProvider } from '@/components/ui/toast';
+import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
+import { CookieConsentBanner } from '@/components/analytics/CookieConsent';
+import { PageViewTracker } from '@/components/analytics/PageViewTracker';
 import './globals.css';
 
 const geistSans = Geist({
@@ -51,7 +54,13 @@ export default function RootLayout({
         />
         <QueryProvider>
           <SessionProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <AnalyticsProvider>
+              <ToastProvider>
+                <PageViewTracker />
+                {children}
+                <CookieConsentBanner />
+              </ToastProvider>
+            </AnalyticsProvider>
           </SessionProvider>
         </QueryProvider>
       </body>

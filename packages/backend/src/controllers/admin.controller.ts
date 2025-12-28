@@ -242,8 +242,10 @@ export const getManageUsers = async (
   try {
     const users = await UserModel.find(
       {},
-      'name email role isVerified createdAt'
+      'name email role isVerified createdAt lastLoginAt'
     );
+
+    console.log(`[Admin] Fetched ${users.length} users from database`);
 
     res.status(200).json({
       success: true,
@@ -256,6 +258,7 @@ export const getManageUsers = async (
           role: user.role,
           isVerified: user.isVerified,
           createdAt: user.createdAt,
+          lastLoginAt: user.lastLoginAt,
         })),
         count: users.length,
       },
@@ -808,6 +811,52 @@ export const editEvent = async (
   try {
     const authReq = req as AuthenticatedRequest;
     const { id } = req.params;
+
+    // Check if this is a JSON API request (for status update)
+    const isJsonRequest =
+      req.headers['content-type']?.includes('application/json');
+
+    if (isJsonRequest && req.body.status) {
+      // Handle status update via JSON API
+      const { status } = req.body;
+
+      const updatedEvent = await Event.findByIdAndUpdate(
+        id,
+        { $set: { status } },
+        { new: true }
+      );
+
+      if (!updatedEvent) {
+        res.status(404).json({
+          success: false,
+          message: 'Event not found',
+        });
+        return;
+      }
+
+      await Log.create({
+        user: authReq.userInfo._id,
+        action: 'UPDATE',
+        targetType: 'EVENT',
+        targetId: id,
+        details: `Event ${updatedEvent.title} status changed to ${status} by ${authReq.userInfo.name}`,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Event status updated successfully',
+        data: {
+          event: {
+            id: updatedEvent._id,
+            title: updatedEvent.title,
+            status,
+          },
+        },
+      });
+      return;
+    }
+
+    // Original form-based update logic
     const {
       title,
       description,
@@ -885,8 +934,17 @@ export const editEvent = async (
     );
     res.redirect('/admin/events');
   } catch (error) {
-    (req as unknown as FlashRequest).flash('error', 'Server error');
-    res.redirect('/admin/events');
+    const isJsonRequest =
+      req.headers['content-type']?.includes('application/json');
+    if (isJsonRequest) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update event',
+      });
+    } else {
+      (req as unknown as FlashRequest).flash('error', 'Server error');
+      res.redirect('/admin/events');
+    }
   }
 };
 

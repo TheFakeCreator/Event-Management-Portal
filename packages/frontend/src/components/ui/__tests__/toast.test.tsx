@@ -77,7 +77,9 @@ describe('Toast Component', () => {
 
     render(<ToastComponent {...toast} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByRole('button', { name: /close/i });
+    const closeButton = screen.getByRole('button', {
+      name: /close notification/i,
+    });
     await user.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();
@@ -112,6 +114,24 @@ describe('Toast Component', () => {
 describe('useToast Hook', () => {
   it('creates different types of toasts', async () => {
     const user = userEvent.setup();
+    const { useNotificationStore } = require('@/stores');
+    const mockSuccess = jest.fn();
+    const mockError = jest.fn();
+    const mockWarning = jest.fn();
+    const mockInfo = jest.fn();
+
+    // Update mock to return testable functions
+    (useNotificationStore as jest.Mock).mockReturnValue({
+      notifications: [],
+      addNotification: jest.fn(),
+      removeNotification: jest.fn(),
+      clearAll: jest.fn(),
+      updateNotification: jest.fn(),
+      success: mockSuccess,
+      error: mockError,
+      warning: mockWarning,
+      info: mockInfo,
+    });
 
     render(<TestToastTrigger />);
 
@@ -121,15 +141,15 @@ describe('useToast Hook', () => {
     const infoButton = screen.getByText('Info Toast');
 
     await user.click(successButton);
-    expect(screen.getByText('Success message')).toBeInTheDocument();
+    expect(mockSuccess).toHaveBeenCalledWith('Success message');
 
     await user.click(errorButton);
-    expect(screen.getByText('Error message')).toBeInTheDocument();
+    expect(mockError).toHaveBeenCalledWith('Error message');
 
     await user.click(warningButton);
-    expect(screen.getByText('Warning message')).toBeInTheDocument();
+    expect(mockWarning).toHaveBeenCalledWith('Warning message');
 
     await user.click(infoButton);
-    expect(screen.getByText('Info message')).toBeInTheDocument();
+    expect(mockInfo).toHaveBeenCalledWith('Info message');
   });
 });

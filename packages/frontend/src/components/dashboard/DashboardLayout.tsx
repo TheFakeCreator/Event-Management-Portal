@@ -1,8 +1,10 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Header } from '@/components/navigation/header';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -15,6 +17,9 @@ import {
   UserCog,
   BarChart3,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  Menu,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -141,6 +146,8 @@ const adminNavItems: NavItem[] = [
 
 function DashboardSidebar({ role }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems =
     role === 'admin'
@@ -149,36 +156,123 @@ function DashboardSidebar({ role }: DashboardSidebarProps) {
         ? moderatorNavItems
         : userNavItems; // 'user' or 'member' both get user nav items
 
-  return (
-    <aside className="hidden lg:block w-64 border-r bg-card">
-      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
-        <nav className="p-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-accent hover:text-accent-foreground'
-                )}
-              >
-                {item.icon}
-                <span className="font-medium">{item.label}</span>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-xs px-2 py-0.5 rounded-full">
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+  const SidebarContent = () => (
+    <>
+      <div className="flex items-center justify-between p-4 border-b">
+        {!collapsed && (
+          <h2 className="font-semibold text-lg">
+            {role === 'admin'
+              ? 'Admin'
+              : role === 'moderator'
+                ? 'Moderator'
+                : 'User'}{' '}
+            Dashboard
+          </h2>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn('hidden lg:flex', collapsed && 'mx-auto')}
+        >
+          {collapsed ? (
+            <ChevronRight className="w-5 h-5" />
+          ) : (
+            <ChevronLeft className="w-5 h-5" />
+          )}
+        </Button>
       </div>
-    </aside>
+      <nav className="p-4 space-y-1">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center rounded-lg transition-colors',
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-accent hover:text-accent-foreground',
+                collapsed ? 'justify-center px-3 py-3' : 'space-x-3 px-3 py-2'
+              )}
+              title={collapsed ? item.label : undefined}
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className={collapsed ? 'w-6 h-6' : 'w-5 h-5'}>
+                {item.icon}
+              </span>
+              {!collapsed && (
+                <>
+                  <span className="font-medium flex-1">{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="bg-destructive text-destructive-foreground text-xs px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile toggle button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50"
+      >
+        <Menu className="w-5 h-5" />
+      </Button>
+
+      {/* Mobile sidebar */}
+      {mobileOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside className="fixed left-0 top-0 bottom-0 w-64 border-r bg-card z-50 lg:hidden overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="font-semibold text-lg">
+                {role === 'admin'
+                  ? 'Admin'
+                  : role === 'moderator'
+                    ? 'Moderator'
+                    : 'User'}{' '}
+                Dashboard
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileOpen(false)}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+            </div>
+            <SidebarContent />
+          </aside>
+        </>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          'hidden lg:block border-r bg-card transition-all duration-300',
+          collapsed ? 'w-20' : 'w-64'
+        )}
+      >
+        <div className="sticky top-[64px] h-[calc(100vh-64px)] overflow-y-auto">
+          <SidebarContent />
+        </div>
+      </aside>
+    </>
   );
 }
 
@@ -198,37 +292,42 @@ export function RoleBasedDashboardLayout({
   const { role } = usePermissions();
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <DashboardSidebar
-        role={role as 'user' | 'moderator' | 'admin' | 'member'}
-      />
+    <>
+      <Header />
+      <div className="flex min-h-screen bg-background">
+        <DashboardSidebar
+          role={role as 'user' | 'moderator' | 'admin' | 'member'}
+        />
 
-      <main className="flex-1">
-        {(title || description || actions) && (
-          <div className="border-b bg-card">
-            <div className="container mx-auto px-4 py-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  {title && (
-                    <h1 className="text-3xl font-bold tracking-tight">
-                      {title}
-                    </h1>
-                  )}
-                  {description && (
-                    <p className="text-muted-foreground mt-1">{description}</p>
+        <main className="flex-1">
+          {(title || description || actions) && (
+            <div className="border-b bg-card">
+              <div className="container mx-auto px-4 py-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    {title && (
+                      <h1 className="text-3xl font-bold tracking-tight">
+                        {title}
+                      </h1>
+                    )}
+                    {description && (
+                      <p className="text-muted-foreground mt-1">
+                        {description}
+                      </p>
+                    )}
+                  </div>
+                  {actions && (
+                    <div className="flex items-center space-x-2">{actions}</div>
                   )}
                 </div>
-                {actions && (
-                  <div className="flex items-center space-x-2">{actions}</div>
-                )}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="container mx-auto px-4 py-6">{children}</div>
-      </main>
-    </div>
+          <div className="container mx-auto px-4 py-6">{children}</div>
+        </main>
+      </div>
+    </>
   );
 }
 

@@ -79,9 +79,13 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      if (result?.error) {
-        setErrors({ form: 'Invalid email or password' });
-      } else if (result?.ok) {
+      console.log('[Login] signIn result:', result);
+      console.log('[Login] result?.error:', result?.error);
+      console.log('[Login] result?.ok:', result?.ok);
+
+      // Check ok first, then error (since both can be present)
+      if (result?.ok) {
+        console.log('[Login] Success detected, redirecting...');
         // Get session to check user data
         const session = await getSession();
         console.log('Login successful:', session);
@@ -89,6 +93,11 @@ export default function LoginPage() {
         // Redirect to dashboard or intended page
         router.push(ROUTES.DASHBOARD);
         router.refresh();
+      } else if (result?.error) {
+        console.log('[Login] Error detected, showing error message');
+        setErrors({ form: 'Invalid email or password' });
+      } else {
+        console.log('[Login] Unexpected result state');
       }
     } catch (error) {
       console.error('Login error:', error);

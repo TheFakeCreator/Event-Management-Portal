@@ -4,9 +4,32 @@ import userEvent from '@testing-library/user-event';
 import { render } from '@/test-utils';
 import { ThemeToggle, SimpleThemeToggle } from '../theme-toggle';
 
-// Mock the entire stores module
+// Mock the entire stores module with all required stores
 jest.mock('@/stores', () => ({
   useTheme: jest.fn(),
+  useNotificationStore: jest.fn(() => ({
+    notifications: [],
+    addNotification: jest.fn(),
+    removeNotification: jest.fn(),
+    clearAll: jest.fn(),
+    updateNotification: jest.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
+    warning: jest.fn(),
+    info: jest.fn(),
+  })),
+  useUIStore: jest.fn(() => ({
+    theme: 'light',
+    sidebarOpen: false,
+    sidebarCollapsed: false,
+    modals: [],
+    globalLoading: false,
+    setTheme: jest.fn(),
+    toggleSidebar: jest.fn(),
+    openModal: jest.fn(),
+    closeModal: jest.fn(),
+    setGlobalLoading: jest.fn(),
+  })),
 }));
 
 import { useTheme } from '@/stores';

@@ -461,3 +461,173 @@ export const getSystemHealth = async (req: Request, res: Response) => {
     });
   }
 };
+
+/**
+ * Get admin analytics data
+ * @route GET /api/v1/dashboard/admin/analytics
+ * @access Private (Admin)
+ */
+export const getAdminAnalytics = async (req: Request, res: Response) => {
+  try {
+    const timeRange = (req.query.timeRange as string) || '30d';
+
+    // Calculate date range
+    let startDate = new Date();
+    switch (timeRange) {
+      case '7d':
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(startDate.getDate() - 30);
+        break;
+      case '90d':
+        startDate.setDate(startDate.getDate() - 90);
+        break;
+      case '1y':
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        break;
+      default:
+        startDate.setDate(startDate.getDate() - 30);
+    }
+
+    // User growth data - aggregated by month
+    const userGrowth = await UserModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+          },
+          users: { $sum: 1 },
+          active: {
+            $sum: {
+              $cond: [{ $ne: ['$lastLoginAt', null] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $let: {
+              vars: {
+                monthsInString: [
+                  '',
+                  'Jan',
+                  'Feb',
+                  'Mar',
+                  'Apr',
+                  'May',
+                  'Jun',
+                  'Jul',
+                  'Aug',
+                  'Sep',
+                  'Oct',
+                  'Nov',
+                  'Dec',
+                ],
+              },
+              in: {
+                $arrayElemAt: ['$$monthsInString', '$_id.month'],
+              },
+            },
+          },
+          users: 1,
+          active: 1,
+        },
+      },
+    ]);
+
+    // Event stats by category
+    const eventStats = await EventModel.aggregate([
+      {
+        $group: {
+          _id: '$Type',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category: { $ifNull: ['$_id', 'Other'] },
+          count: 1,
+        },
+      },
+    ]);
+
+    // Club distribution by type/category
+    const clubDistribution = await ClubModel.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: { $ifNull: ['$_id', 'Other'] },
+          value: 1,
+        },
+      },
+    ]);
+
+    // Registration trends - weekly
+    const registrationTrends = await RegistrationModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            week: { $week: '$createdAt' },
+            year: { $year: '$createdAt' },
+          },
+          registrations: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { '_id.year': 1, '_id.week': 1 },
+      },
+      {
+        $limit: 10,
+      },
+      {
+        $project: {
+          _id: 0,
+          date: {
+            $concat: ['Week ', { $toString: '$_id.week' }],
+          },
+          registrations: 1,
+        },
+      },
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        userGrowth,
+        eventStats,
+        clubDistribution,
+        registrationTrends,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching admin analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch analytics data',
+    });
+  }
+};

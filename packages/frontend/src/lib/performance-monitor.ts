@@ -113,13 +113,21 @@ class PerformanceMonitor {
   }
 
   private sendToAnalytics(metric: PerformanceMetric) {
-    // Send to Google Analytics
-    if (typeof window !== 'undefined' && 'gtag' in window) {
-      (window as any).gtag('event', 'performance_metric', {
-        metric_name: metric.name,
-        metric_value: Math.round(metric.value),
-        page_path: metric.url,
-      });
+    // Use the centralized tracking function
+    if (typeof window !== 'undefined') {
+      import('@/contexts/AnalyticsContext')
+        .then(({ trackEvent }) => {
+          trackEvent('performance_metric', {
+            metric_name: metric.name,
+            metric_value: Math.round(metric.value),
+            metric_rating: metric.rating,
+            metric_delta: metric.delta,
+            page_path: metric.url,
+          });
+        })
+        .catch(() => {
+          // Silently fail if analytics context not available
+        });
     }
 
     // Send to custom analytics endpoint

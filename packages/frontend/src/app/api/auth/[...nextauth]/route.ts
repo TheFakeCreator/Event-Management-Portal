@@ -1,8 +1,8 @@
-import NextAuth from 'next-auth';
+import NextAuth, { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   providers: [
     // Credentials Provider (Email + Password)
     CredentialsProvider({
@@ -13,31 +13,44 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('[NextAuth] Missing credentials');
           return null;
         }
 
         try {
           // Call our backend API to authenticate user
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password,
-              }),
-            }
-          );
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+          console.log('[NextAuth] Calling backend API:', apiUrl);
+
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
 
           const data = await response.json();
+          console.log('[NextAuth] Backend response:', {
+            status: response.status,
+            ok: response.ok,
+            success: data.success,
+            hasUser: !!data.data?.user,
+            hasToken: !!data.data?.token,
+          });
 
-          if (response.ok && data.success && data.data.user) {
+          if (response.ok && data.success && data.data?.user) {
             const user = data.data.user;
+            console.log('[NextAuth] User authenticated:', {
+              id: user.id,
+              email: user.email,
+              role: user.role,
+            });
             return {
-              id: user._id,
+              id: user.id, // Backend sends 'id' not '_id'
               email: user.email,
               name: user.name,
               role: user.role,
@@ -47,9 +60,12 @@ const handler = NextAuth({
             };
           }
 
+          console.log(
+            '[NextAuth] Authentication failed - invalid response structure'
+          );
           return null;
         } catch (error) {
-          console.error('Authentication error:', error);
+          console.error('[NextAuth] Authentication error:', error);
           return null;
         }
       },
@@ -131,6 +147,8 @@ const handler = NextAuth({
   },
 
   debug: process.env.NODE_ENV === 'development',
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

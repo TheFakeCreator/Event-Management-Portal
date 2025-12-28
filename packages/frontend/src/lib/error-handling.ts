@@ -407,12 +407,14 @@ export class ErrorReportingService {
       }
     }
 
-    // Send to Google Analytics
-    if (typeof window !== 'undefined' && 'gtag' in window) {
-      (window as any).gtag('event', 'exception', {
-        description: `${error.name}: ${error.message}`,
-        fatal: false,
-        error_id: error.id,
+    // Use centralized tracking function
+    if (typeof window !== 'undefined') {
+      import('@/contexts/AnalyticsContext').then(({ trackEvent }) => {
+        trackEvent('exception', {
+          description: `${error.name}: ${error.message}`,
+          fatal: false,
+          error_id: error.id,
+        });
       });
     }
   }

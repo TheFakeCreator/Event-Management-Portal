@@ -9,6 +9,7 @@ import {
   getAdminDashboardStats,
   getAdminRecentActivity,
   getSystemHealth,
+  getAdminAnalytics,
 } from '../controllers/dashboard.controller.js';
 import { isAuthenticated } from '../middlewares/authMiddleware.js';
 import { requireRole } from '../middlewares/permission.middleware.js';
@@ -58,6 +59,12 @@ router.get(
   isAuthenticated,
   requireRole(['admin']),
   getSystemHealth
+);
+router.get(
+  '/admin/analytics',
+  isAuthenticated,
+  requireRole(['admin']),
+  getAdminAnalytics
 );
 
 export default router;

@@ -107,8 +107,11 @@ export function validateEnvironment(): Environment {
         .map((issue: z.ZodIssue) => `${issue.path.join('.')}: ${issue.message}`)
         .join('\n');
 
+      console.error('❌ Environment validation failed:');
+      console.error(issues);
       throw new Error(`Environment validation failed:\n${issues}`);
     }
+    console.error('❌ Unexpected error during environment validation:', error);
     throw error;
   }
 }

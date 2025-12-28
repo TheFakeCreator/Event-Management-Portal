@@ -18,14 +18,16 @@ class NextAuthHttpClient {
     if (typeof window === 'undefined') return null;
 
     const session = await getSession();
-    console.log('[AuthHttpClient] Session:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      hasToken: !!session?.user?.token,
-      token: session?.user?.token
-        ? `${session.user.token.substring(0, 20)}...`
-        : null,
-    });
+
+    // Only log in development mode
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AuthHttpClient] Session:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        hasToken: !!session?.user?.token,
+      });
+    }
+
     return session?.user?.token || null;
   }
 
@@ -36,10 +38,9 @@ class NextAuthHttpClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseURL}/api/${API_CONFIG.API_VERSION}/${endpoint.replace(/^\//, '')}`;
-
-    // Get auth token from session
-    const token = await this.getAuthToken();
+    // Use Next.js API routes as proxy instead of calling backend directly
+    // This ensures proper authentication token forwarding
+    const url = `/api/${endpoint.replace(/^\//, '')}`;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -51,14 +52,10 @@ class NextAuthHttpClient {
       Object.assign(headers, optionsHeaders);
     }
 
-    // Add auth token if available
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
     const config: RequestInit = {
       ...options,
       headers,
+      credentials: 'include', // Include cookies for session
     };
 
     try {

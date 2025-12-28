@@ -44,6 +44,7 @@ const ToastComponent: React.FC<ToastComponentProps> = ({
 
   return (
     <div
+      role="alert"
       className={`flex items-start p-4 border rounded-lg shadow-lg ${colors[type]}`}
     >
       <Icon className="w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
@@ -70,6 +71,7 @@ const ToastComponent: React.FC<ToastComponentProps> = ({
       </div>
       <button
         onClick={onClose}
+        aria-label="Close notification"
         className="ml-3 flex-shrink-0 p-1 rounded-md hover:bg-black/5 transition-colors"
       >
         <X className="w-4 h-4" />

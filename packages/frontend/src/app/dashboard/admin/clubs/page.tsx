@@ -62,7 +62,7 @@ function ClubsManagement() {
   };
 
   const filterClubs = () => {
-    let filtered = [...clubs];
+    let filtered = [...(clubs || [])];
 
     if (searchQuery) {
       filtered = filtered.filter(
