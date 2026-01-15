@@ -6,6 +6,9 @@
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
 
+> [!WARNING]
+>The application is being migrated to a new and modern tech stack. No more feature will be introduced till then
+
 > A modern full-stack open-source platform to manage 🎪 fests, 📅 events, 📝 recruitments & more — built for universities, clubs, and organizations.
 
 ---
